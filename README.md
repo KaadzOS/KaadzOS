@@ -96,3 +96,34 @@ Options, from easiest to hardest:
 Two things to expect on first boot: the default live login is user `user` / password `live`, and Sway won't launch automatically until we add an autostart config. That's the next step once the ISO boots.
 
 Want me to write that next layer (autostart Sway, a dark high-contrast theme for Sway and Waybar) once your first build works?
+
+
+---
+
+I'm a complete beginner building a hobby Linux distro. My PC is too weak to build anything locally, so everything must build in GitHub Actions, and I only use the github.com web editor.
+
+Create the minimal base for a Debian 13 "trixie" live ISO built with live-build. Give me ONLY these files, with full contents and exact paths:
+
+1. auto/config
+   - distribution trixie, amd64
+   - archive areas: main contrib non-free-firmware
+   - no Debian installer (--debian-installer none)
+   - apt recommends disabled (--apt-recommends false)
+   - quiet live boot
+
+2. config/package-lists/base.list.chroot
+   - Keep it tiny: kernel, firmware, NetworkManager, Sway, Waybar, foot, xwayland, one basic font. Nothing else.
+
+3. .github/workflows/build.yml
+   - Manual trigger (workflow_dispatch)
+   - Runs in a debian:trixie container (privileged)
+   - Installs live-build, runs the build, uploads the .iso as an artifact
+   - Handle any known GitHub runner disk-space or container issues
+
+Rules:
+- Only use packages that exist in Debian trixie. If unsure about one, say so.
+- Flag anything version-specific or uncertain about live-build instead of guessing.
+- No theming, no extra features, no installer. The only goal is an ISO that builds and boots.
+- Explain in plain language where to click in GitHub to create each file, how to run the build, and how to download the ISO.
+- Also tell me how to put the ISO on a USB (Ventoy or balenaEtcher) to test it.
+- If the build fails, I'll paste the last ~40 lines of the log and you'll give me the exact fix.
