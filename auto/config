@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+lb config \
+  --distribution trixie \
+  --architectures amd64 \
+  --archive-areas "main contrib non-free-firmware" \
+  --debian-installer none \
+  --apt-recommends false \
+  --bootappend-live "boot=live quiet"

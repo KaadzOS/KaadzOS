@@ -1,0 +1,8 @@
+linux-image-amd64
+firmware-linux
+network-manager
+sway
+waybar
+foot
+xwayland
+fonts-dejavu-core
