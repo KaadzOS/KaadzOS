@@ -1,5 +1,7 @@
 name: Build ISO
-on: workflow_dispatch
+
+on:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -7,22 +9,39 @@ jobs:
     container:
       image: debian:trixie
       options: --privileged
+
     steps:
-      - name: Install tools
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Disk space (before)
+        run: df -h
+
+      - name: Best-effort cleanup
+        run: |
+          apt-get clean || true
+          rm -rf /var/lib/apt/lists/* || true
+          df -h
+
+      - name: Install live-build
         run: |
           apt-get update
-          apt-get install -y live-build git ca-certificates
+          DEBIAN_FRONTEND=noninteractive apt-get install -y live-build
 
-      - uses: actions/checkout@v4
-
-      - name: Build
+      - name: Configure live-build
         run: |
           chmod +x auto/config
-          lb clean --purge || true
-          lb config
-          lb build
+          ./auto/config
 
-      - uses: actions/upload-artifact@v4
+      - name: Build ISO
+        run: lb build
+
+      - name: Verify ISO exists
+        run: ls -lh *.iso
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: iso
+          name: trixie-live-iso
           path: "*.iso"
+          if-no-files-found: error
