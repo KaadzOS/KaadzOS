@@ -1,0 +1,28 @@
+name: Build ISO
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:trixie
+      options: --privileged
+    steps:
+      - name: Install tools
+        run: |
+          apt-get update
+          apt-get install -y live-build git ca-certificates
+
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          chmod +x auto/config
+          lb clean --purge || true
+          lb config
+          lb build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iso
+          path: "*.iso"
