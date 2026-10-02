@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Disk space (before)
         run: df -h
@@ -25,8 +25,31 @@ jobs:
 
       - name: Install live-build
         run: |
+          sed -i 's/^Components: main$/Components: main contrib non-free-firmware/' /etc/apt/sources.list.d/debian.sources
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y live-build
+
+      - name: Verify package availability
+        run: |
+          while read -r package; do
+            case "$package" in
+              ""|'#'*) continue ;;
+            esac
+            apt-cache show "$package" >/dev/null
+          done < config/package-lists/base.list.chroot
+
+      - name: Set cache key
+        id: cache-key
+        run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore package cache
+        uses: actions/cache@v6
+        with:
+          path: cache/packages.chroot
+          key: live-build-packages-${{ runner.os }}-${{ steps.cache-key.outputs.week }}-${{ hashFiles('auto/config', 'config/package-lists/*.list.chroot') }}
+          restore-keys: |
+            live-build-packages-${{ runner.os }}-${{ steps.cache-key.outputs.week }}-
+            live-build-packages-${{ runner.os }}-
 
       - name: Configure live-build
         run: |
@@ -36,12 +59,19 @@ jobs:
       - name: Build ISO
         run: lb build
 
-      - name: Verify ISO exists
-        run: ls -lh *.iso
+      - name: Prepare artifacts
+        run: |
+          iso=$(find . -maxdepth 1 -type f -name '*.iso' -print -quit)
+          test -n "$iso"
+          mv "$iso" KaadzOS-trixie-amd64.iso
+          sha256sum KaadzOS-trixie-amd64.iso > KaadzOS-trixie-amd64.iso.sha256
+          ls -lh KaadzOS-trixie-amd64.iso KaadzOS-trixie-amd64.iso.sha256
 
       - name: Upload ISO artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: trixie-live-iso
-          path: "*.iso"
+          name: KaadzOS-trixie-amd64
+          path: |
+            KaadzOS-trixie-amd64.iso
+            KaadzOS-trixie-amd64.iso.sha256
           if-no-files-found: error

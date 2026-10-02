@@ -1,10 +1,23 @@
 #!/bin/sh
 set -eu
 
-lb config \
+lb config noauto \
   --distribution trixie \
   --architectures amd64 \
   --archive-areas "main contrib non-free-firmware" \
   --debian-installer none \
   --apt-recommends false \
-  --bootappend-live "boot=live quiet"
+  --apt-source-archives false \
+  --binary-image iso-hybrid \
+  --bootloaders "syslinux grub-efi" \
+  --bootappend-live "boot=live quiet" \
+  --checksums sha256 \
+  --chroot-filesystem squashfs \
+  --chroot-squashfs-compression-type zstd \
+  --chroot-squashfs-compression-level 10 \
+  --image-name kaadzos \
+  --iso-application "KaadzOS" \
+  --iso-publisher "KaadzOS" \
+  --iso-volume "KAADZOS" \
+  --memtest none \
+  "${@}"
