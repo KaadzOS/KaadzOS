@@ -35,7 +35,7 @@ Do not ask the user to paste logs. Do not begin a later phase until the current 
 
 ## Phase Status
 
-- Phase 1, base ISO: in progress. Configuration is implemented; GitHub Actions validation is pending.
+- Phase 1, base ISO: complete. CI run 37002963822 produced a 1000 MiB ISO; live-build took 4m54s and the complete job took 6m7s.
 - Phase 2, automated BIOS/UEFI boot testing: not started.
 - Phase 3, session and theming: not started.
 - Phase 4, CLI and on-demand packs: not started.

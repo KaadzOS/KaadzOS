@@ -74,4 +74,5 @@ jobs:
           path: |
             KaadzOS-trixie-amd64.iso
             KaadzOS-trixie-amd64.iso.sha256
+          compression-level: 0
           if-no-files-found: error
