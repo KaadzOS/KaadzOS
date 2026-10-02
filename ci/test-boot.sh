@@ -78,6 +78,14 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# Debian Live boot menus wait for input, so select their default live entry.
+for _ in {1..3}; do
+  sleep 5
+  if [[ -S "$monitor" ]]; then
+    printf 'sendkey ret\n' | socat - "UNIX-CONNECT:$monitor" >/dev/null
+  fi
+done
+
 deadline=$((SECONDS + 480))
 while (( SECONDS < deadline )); do
   if grep -q 'KAADZOS_SWAY_READY' "$serial_log" 2>/dev/null; then
