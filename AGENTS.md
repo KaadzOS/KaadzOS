@@ -31,12 +31,14 @@ Do not ask the user to paste logs. Do not begin a later phase until the current 
 - Root filesystem: squashfs using zstd level 10 to favor CI build time while retaining useful compression.
 - Base desktop packages: Linux kernel, Debian firmware, NetworkManager, Sway, Waybar, Foot, Xwayland, Fuzzel, and DejaVu fonts.
 - Artifact naming: `KaadzOS-trixie-amd64.iso` with a sibling SHA-256 checksum file.
+- Boot validation: QEMU tests both Syslinux BIOS and GRUB/OVMF UEFI boots, preferring KVM and falling back to TCG.
+- Session readiness: CI requires a successful Sway IPC query, emits `KAADZOS_SWAY_READY` on the serial console, and captures a screenshot.
 - Palette: not selected; define one source palette during Phase 3.
 
 ## Phase Status
 
 - Phase 1, base ISO: complete. CI run 37002963822 produced a 1000 MiB ISO; live-build took 4m54s and the complete job took 6m7s.
-- Phase 2, automated BIOS/UEFI boot testing: not started.
+- Phase 2, automated BIOS/UEFI boot testing: in progress. CI implementation is pending validation.
 - Phase 3, session and theming: not started.
 - Phase 4, CLI and on-demand packs: not started.
 - Phase 5, installer: not started.

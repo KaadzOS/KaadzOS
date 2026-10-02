@@ -76,3 +76,44 @@ jobs:
             KaadzOS-trixie-amd64.iso.sha256
           compression-level: 0
           if-no-files-found: error
+
+  boot-test:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        firmware:
+          - bios
+          - uefi
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download ISO artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: KaadzOS-trixie-amd64
+          path: artifacts
+
+      - name: Verify ISO checksum
+        working-directory: artifacts
+        run: sha256sum --check KaadzOS-trixie-amd64.iso.sha256
+
+      - name: Install boot-test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes qemu-system-x86 ovmf socat netpbm
+
+      - name: Boot ISO with ${{ matrix.firmware }} firmware
+        run: bash ci/test-boot.sh "${{ matrix.firmware }}" artifacts/KaadzOS-trixie-amd64.iso boot-results
+
+      - name: Upload ${{ matrix.firmware }} boot diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: boot-${{ matrix.firmware }}
+          path: boot-results
+          if-no-files-found: warn

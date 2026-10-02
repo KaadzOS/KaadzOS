@@ -10,7 +10,7 @@ lb config noauto \
   --apt-source-archives false \
   --binary-image iso-hybrid \
   --bootloaders "syslinux grub-efi" \
-  --bootappend-live "boot=live quiet" \
+  --bootappend-live "boot=live components username=kaadzos hostname=kaadzos quiet console=tty0 console=ttyS0,115200n8" \
   --checksums sha256 \
   --chroot-filesystem squashfs \
   --chroot-squashfs-compression-type zstd \

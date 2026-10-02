@@ -1,0 +1,22 @@
+set $mod Mod4
+font pango:DejaVu Sans 11
+
+output * bg #111318 solid_color
+
+bar {
+    position top
+    status_command while date '+KaadzOS  |  %Y-%m-%d  %H:%M:%S'; do sleep 1; done
+    colors {
+        statusline #f2f4f8
+        background #1b1f27
+        inactive_workspace #1b1f27 #1b1f27 #8b93a7
+        focused_workspace #5e81ac #5e81ac #ffffff
+    }
+}
+
+exec foot --title "KaadzOS Boot Test"
+exec sh /usr/local/bin/kaadzos-session-ready
+
+bindsym $mod+Return exec foot
+bindsym $mod+d exec fuzzel
+bindsym $mod+Shift+e exit

@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+attempt=0
+while [ "$attempt" -lt 30 ]; do
+  if swaymsg -t get_outputs >/dev/null 2>&1; then
+    printf 'KAADZOS_SWAY_READY\n' > /dev/ttyS0
+    exit 0
+  fi
+
+  attempt=$((attempt + 1))
+  sleep 1
+done
+
+exit 1
