@@ -7,3 +7,8 @@ foot
 xwayland
 fuzzel
 fonts-dejavu-core
+user-setup
+sudo
+dbus
+libpam-systemd
+libgl1-mesa-dri

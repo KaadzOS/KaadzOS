@@ -1,10 +1,17 @@
 #!/bin/sh
 set -eu
 
+serial=/dev/ttyS0
+if [ ! -w "$serial" ]; then
+  serial=/dev/null
+fi
+
+printf 'KAADZOS_SWAY_WAIT\n' > "$serial"
+
 attempt=0
-while [ "$attempt" -lt 30 ]; do
+while [ "$attempt" -lt 60 ]; do
   if swaymsg -t get_outputs >/dev/null 2>&1; then
-    printf 'KAADZOS_SWAY_READY\n' > /dev/ttyS0
+    printf 'KAADZOS_SWAY_READY\n' > "$serial"
     exit 0
   fi
 
@@ -12,4 +19,5 @@ while [ "$attempt" -lt 30 ]; do
   sleep 1
 done
 
+printf 'KAADZOS_SWAY_FAIL\n' > "$serial"
 exit 1
