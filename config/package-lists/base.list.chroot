@@ -8,6 +8,7 @@ xwayland
 fuzzel
 fonts-dejavu-core
 user-setup
+live-config-systemd
 sudo
 dbus
 libpam-systemd
