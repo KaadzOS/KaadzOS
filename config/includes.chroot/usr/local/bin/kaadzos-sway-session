@@ -1,0 +1,16 @@
+#!/bin/sh
+# Sway session wrapper: exports the environment, runs Sway, and reports the
+# exit code to the serial console so CI can see why a session ended.
+export XDG_SESSION_TYPE=wayland
+export WLR_RENDERER_ALLOW_SOFTWARE=1
+export WLR_NO_HARDWARE_CURSORS=1
+
+sway
+rc=$?
+
+serial=/dev/ttyS0
+if [ ! -w "$serial" ]; then
+  serial=/dev/null
+fi
+printf 'KAADZOS_SWAY_EXIT rc=%s\n' "$rc" > "$serial"
+exit "$rc"

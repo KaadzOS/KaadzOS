@@ -2,3 +2,4 @@
 set -eu
 
 chmod 755 /usr/local/bin/kaadzos-session-ready
+chmod 755 /usr/local/bin/kaadzos-sway-session

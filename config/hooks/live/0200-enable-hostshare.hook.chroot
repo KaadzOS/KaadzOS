@@ -4,5 +4,5 @@ set -eu
 # Enable the 9p host-share mount so the CI guest can write grim screenshots
 # into the runner's artifact directory.
 mkdir -p /etc/systemd/system/sysinit.target.wants
-ln -sf /etc/systemd/system/hostshare.mount \
-  /etc/systemd/system/sysinit.target.wants/hostshare.mount
+ln -sf /etc/systemd/system/run-hostshare.mount \
+  /etc/systemd/system/sysinit.target.wants/run-hostshare.mount
