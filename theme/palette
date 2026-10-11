@@ -1,0 +1,56 @@
+#!/bin/sh
+# KaadzOS "Night" palette -- the single source of truth for the entire theme.
+#
+# Every themed config (Sway, Waybar, foot, fuzzel, mako, swaylock, GTK, Qt,
+# wallpaper, console) is generated from these values by theme/generate.sh.
+# Edit colours here, then re-run theme/generate.sh to propagate.
+#
+# Design: a near-black, cool blue-tinted base with a bright cyan-blue accent.
+# High contrast between text (#e2e8f0) and background (#0a0e14) for readability.
+
+# ---------------------------------------------------------------- raw colours
+KAADZ_BLACK="#0a0e14"
+KAADZ_MANTLE="#0d1219"
+KAADZ_SURFACE="#131a24"
+KAADZ_OVERLAY="#1c2533"
+KAADZ_BORDER="#2a3547"
+KAADZ_SUBT0="#64748b"
+KAADZ_SUBT1="#94a3b8"
+KAADZ_TEXT="#e2e8f0"
+KAADZ_SKY="#7dd3fc"
+KAADZ_BLUE="#38bdf8"
+KAADZ_PURPLE="#a78bfa"
+KAADZ_TEAL="#2dd4bf"
+KAADZ_GREEN="#4ade80"
+KAADZ_YELLOW="#fbbf24"
+KAADZ_ORANGE="#fb923c"
+KAADZ_RED="#f87171"
+KAADZ_PINK="#f472b6"
+
+# ------------------------------------------------------------- semantic roles
+# Surfaces / background
+KAADZ_BG="$KAADZ_BLACK"        # main background
+KAADZ_BG_ALT="$KAADZ_MANTLE"   # slightly raised background (bars, docks)
+KAADZ_SURFACE="$KAADZ_SURFACE" # cards, popups, menus
+KAADZ_BORDER="$KAADZ_BORDER"   # hairlines, separators, outlines
+
+# Foreground / text
+KAADZ_FG="$KAADZ_TEXT"         # primary text (highest contrast)
+KAADZ_FG_ALT="$KAADZ_SUBT1"    # secondary text
+KAADZ_FG_MUTED="$KAADZ_SUBT0"  # muted / disabled text
+
+# Accents & states
+KAADZ_ACCENT="$KAADZ_BLUE"     # primary accent (focus, highlights)
+KAADZ_ACCENT_ALT="$KAADZ_PURPLE"
+KAADZ_URGENT="$KAADZ_RED"      # errors, close, urgent
+KAADZ_WARNING="$KAADZ_YELLOW"
+KAADZ_SUCCESS="$KAADZ_GREEN"
+KAADZ_INFO="$KAADZ_TEAL"
+KAADZ_URGENT_FG="$KAADZ_BLACK" # text drawn on an urgent background
+
+# --------------------------------------------------------------- typography
+KAADZ_FONT_UI="Inter"          # sans-serif UI font
+KAADZ_FONT_MONO="JetBrains Mono" # monospace / terminal font
+KAADZ_FONT_FALLBACK="DejaVu Sans"
+KAADZ_FONT_SIZE="11"
+KAADZ_FONT_SIZE_TERM="12"

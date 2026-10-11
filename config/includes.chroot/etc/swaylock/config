@@ -1,0 +1,21 @@
+# KaadzOS lock screen (generated from theme/palette).
+daemonize
+show-failed-attempts
+ignore-empty-password
+image=/usr/share/backgrounds/kaadzos/wallpaper.png
+scaling=fill
+color=0a0e14
+inside-color=131a24cc
+ring-color=2a3547
+key-hl-color=38bdf8
+bs-hl-color=f87171
+text-color=e2e8f0
+inside-clear-color=0d1219cc
+inside-ver-color=0d1219cc
+inside-wrong-color=f87171cc
+ring-clear-color=2dd4bf
+ring-ver-color=38bdf8
+ring-wrong-color=f87171
+text-ver-color=e2e8f0
+text-clear-color=e2e8f0
+text-wrong-color=0a0e14

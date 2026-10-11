@@ -28,7 +28,7 @@ qemu_args=(
   -m 2048
   -smp 2
   "${acceleration[@]}"
-  -device virtio-vga
+  -vga std
   -display none
   -serial "file:$serial_log"
   -monitor "unix:$monitor,server=on,wait=off"

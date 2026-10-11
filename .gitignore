@@ -1,0 +1,7 @@
+# CI / local build artifacts
+artifacts/
+cache/
+boot-logs/
+boot-logs-*/
+*.iso
+*.img

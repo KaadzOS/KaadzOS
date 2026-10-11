@@ -1,0 +1,41 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 34,
+    "spacing": 0,
+    "modules-left": ["sway/workspaces", "sway/mode"],
+    "modules-center": ["clock"],
+    "modules-right": ["network", "pulseaudio", "battery", "tray"],
+    "sway/workspaces": {
+        "format": "{name}",
+        "all-outputs": true,
+        "persistent-workspaces": { "1": [], "2": [], "3": [], "4": [], "5": [] }
+    },
+    "sway/mode": "resize",
+    "clock": {
+        "format": "{:%a %d %b  %H:%M}",
+        "tooltip-format": "<tt>{calendar}</tt>",
+        "calendar": { "mode": "month" }
+    },
+    "network": {
+        "format-wifi": "󰤨 {essid}",
+        "format-ethernet": "󰈀 {ifname}",
+        "format-disconnected": "󰤭 offline",
+        "tooltip-format": "{ipaddr}/{cidr}"
+    },
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "󰝟 muted",
+        "format-icons": ["󰕾", "󰕿", "󰖀"],
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-click-right": "pavucontrol || foot -T Volume -e wpctl status"
+    },
+    "battery": {
+        "states": { "good": 80, "warning": 30, "critical": 15 },
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "tooltip-format": "{timeTo} remaining"
+    },
+    "tray": { "icon-size": 18, "spacing": 8 }
+}
