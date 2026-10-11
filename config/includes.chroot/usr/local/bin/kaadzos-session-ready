@@ -9,15 +9,31 @@ fi
 printf 'KAADZOS_SWAY_WAIT\n' > "$serial"
 
 attempt=0
+ready=0
 while [ "$attempt" -lt 60 ]; do
   if swaymsg -t get_outputs >/dev/null 2>&1; then
     printf 'KAADZOS_SWAY_READY\n' > "$serial"
-    exit 0
+    ready=1
+    break
   fi
 
   attempt=$((attempt + 1))
   sleep 1
 done
 
-printf 'KAADZOS_SWAY_FAIL\n' > "$serial"
-exit 1
+if [ "$ready" -ne 1 ]; then
+  printf 'KAADZOS_SWAY_FAIL\n' > "$serial"
+  exit 1
+fi
+
+# Capture the real Wayland output with grim for CI. QEMU's screendump cannot
+# read a DRM/KMS scanout, so we write the PNG into the host-shared 9p folder
+# (mounted read-write by hostshare.mount) where the runner picks it up.
+for dir in /run/hostshare /mnt/hostshare; do
+  if [ -d "$dir" ] && [ -w "$dir" ]; then
+    grim "$dir/kaadzos-desktop.png" 2>/dev/null || true
+    break
+  fi
+done
+
+exit 0

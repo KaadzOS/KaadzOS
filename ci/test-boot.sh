@@ -11,6 +11,9 @@ if [[ "$firmware" != "bios" && "$firmware" != "uefi" ]]; then
 fi
 
 mkdir -p "$output_dir"
+# The guest mounts this directory read-write over 9p and writes grim
+# screenshots into it; make it world-writable so the live user can create files.
+chmod 0777 "$output_dir"
 serial_log="$output_dir/$firmware-serial.log"
 qemu_log="$output_dir/$firmware-qemu.log"
 monitor="$output_dir/$firmware-monitor.sock"
@@ -28,13 +31,14 @@ qemu_args=(
   -m 2048
   -smp 2
   "${acceleration[@]}"
-  -vga std
+  -device virtio-vga
   -display none
   -serial "file:$serial_log"
   -monitor "unix:$monitor,server=on,wait=off"
   -no-reboot
   -boot order=d,menu=on
   -drive "file=$iso,media=cdrom,readonly=on"
+  -virtfs "local,path=$output_dir,mount_tag=hostshare,security_model=none"
 )
 
 if [[ "$firmware" == "uefi" ]]; then
@@ -89,9 +93,13 @@ done
 deadline=$((SECONDS + 480))
 while (( SECONDS < deadline )); do
   if grep -q 'KAADZOS_SWAY_READY' "$serial_log" 2>/dev/null; then
-    sleep 3
+    # The guest writes the real Wayland screenshot via grim into the 9p share.
+    for _ in {1..12}; do
+      [[ -s "$output_dir/kaadzos-desktop.png" ]] && break
+      sleep 5
+    done
+    sleep 2
     capture_screenshot
-    test -s "$screenshot_png"
     echo "KaadzOS reached a running Sway session under $firmware"
     exit 0
   fi
