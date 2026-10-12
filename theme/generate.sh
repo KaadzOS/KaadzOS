@@ -193,7 +193,7 @@ cat > "$cfg/waybar/config" <<WBAR
         "all-outputs": true,
         "persistent-workspaces": { "1": [], "2": [], "3": [], "4": [], "5": [] }
     },
-    "sway/mode": "resize",
+    "sway/mode": { "format": " {} " },
     "clock": {
         "format": "{:%a %d %b  %H:%M}",
         "tooltip-format": "<tt>{calendar}</tt>",
