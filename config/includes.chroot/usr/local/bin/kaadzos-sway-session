@@ -6,7 +6,8 @@ export WLR_RENDERER=pixman
 export WLR_RENDERER_ALLOW_SOFTWARE=1
 export WLR_NO_HARDWARE_CURSORS=1
 
-sway
+# Log sway stderr (config errors) to the host-shared 9p folder for CI.
+sway 2>/run/hostshare/sway.log
 rc=$?
 
 serial=/dev/ttyS0
