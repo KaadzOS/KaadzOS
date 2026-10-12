@@ -2,6 +2,7 @@
 # Sway session wrapper: exports the environment, runs Sway, and reports the
 # exit code to the serial console so CI can see why a session ended.
 export XDG_SESSION_TYPE=wayland
+export WLR_RENDERER=pixman
 export WLR_RENDERER_ALLOW_SOFTWARE=1
 export WLR_NO_HARDWARE_CURSORS=1
 
