@@ -91,7 +91,7 @@ smart_gaps on
 smart_borders on
 
 # Autostart
-exec waybar
+exec waybar >/run/hostshare/waybar.log 2>&1
 exec mako
 exec foot --title "KaadzOS Terminal"
 exec sh /usr/local/bin/kaadzos-session-ready
