@@ -88,7 +88,6 @@ default_floating_border pixel 2
 gaps inner 6
 gaps outer 2
 smart_gaps on
-smart_borders on
 
 # Autostart
 exec waybar >/run/hostshare/waybar.log 2>&1
@@ -267,8 +266,6 @@ cat > "$cfg/foot/foot.ini" <<FOOT
 [main]
 font=${KAADZ_FONT_MONO}:size=${KAADZ_FONT_SIZE_TERM}
 pad=12x10
-scrollback-lines=10000
-notify-focus-urgent=yes
 
 [colors]
 alpha=1.0
