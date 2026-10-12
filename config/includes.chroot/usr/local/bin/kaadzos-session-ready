@@ -26,6 +26,16 @@ if [ "$ready" -ne 1 ]; then
   exit 1
 fi
 
+# Diagnostic: confirm the themed configs landed in the live user's home.
+for f in "$HOME/.config/sway/config" "$HOME/.config/waybar/style.css" \
+         "$HOME/.config/foot/foot.ini"; do
+  if [ -f "$f" ]; then
+    printf 'KAADZOS_CFG %s bytes=%s\n' "$f" "$(wc -c < "$f")" > "$serial"
+  else
+    printf 'KAADZOS_CFG %s MISSING\n' "$f" > "$serial"
+  fi
+done
+
 # Under QEMU TCG the software renderer paints slowly; give the desktop a
 # moment to draw the wallpaper, bar and terminal before capturing.
 sleep 8

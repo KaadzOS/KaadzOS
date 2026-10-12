@@ -10,14 +10,16 @@ root=$(cd "$here/.." && pwd)
 . "$here/palette"
 
 chroot="$root/config/includes.chroot"
-bg="$chroot/etc"
+sys="$chroot/etc"                                # system-wide configs (GTK)
+cfg="$chroot/etc/skel/.config"                    # per-user configs (copied to $HOME)
 wall_dir="$chroot/usr/share/backgrounds/kaadzos"
 # Path as it appears inside the running guest (never a build-machine path).
 wall_guest="/usr/share/backgrounds/kaadzos"
 
 mkdir -p \
-  "$bg/sway" "$bg/waybar" "$bg/foot" "$bg/fuzzel" "$bg/mako" \
-  "$bg/swaylock" "$bg/gtk-3.0" "$bg/gtk-4.0" "$bg/qt6ct/colors" \
+  "$cfg/sway" "$cfg/waybar" "$cfg/foot" "$cfg/fuzzel" "$cfg/mako" \
+  "$cfg/swaylock" "$cfg/qt6ct/colors" \
+  "$sys/gtk-3.0" "$sys/gtk-4.0" \
   "$wall_dir" "$chroot/usr/local/share/kaadzos"
 
 # foot/swaylock want RRGGBB without a leading '#'; the rest want '#RRGGBB'.
@@ -52,7 +54,7 @@ cat > "$wall_dir/wallpaper.svg" <<SVG
 SVG
 
 # ------------------------------------------------------------------------ sway
-cat > "$bg/sway/config" <<SWAY
+cat > "$cfg/sway/config" <<SWAY
 # KaadzOS Sway configuration (generated from theme/palette).
 set \$mod Mod4
 set \$term foot
@@ -176,8 +178,8 @@ bindsym \$mod+r mode "resize"
 SWAY
 
 # ---------------------------------------------------------------------- waybar
-mkdir -p "$bg/waybar"
-cat > "$bg/waybar/config" <<WBAR
+mkdir -p "$cfg/waybar"
+cat > "$cfg/waybar/config" <<WBAR
 {
     "layer": "top",
     "position": "top",
@@ -221,7 +223,7 @@ cat > "$bg/waybar/config" <<WBAR
 }
 WBAR
 
-cat > "$bg/waybar/style.css" <<WCSS
+cat > "$cfg/waybar/style.css" <<WCSS
 /* KaadzOS Waybar (generated from theme/palette). */
 * {
     border: none;
@@ -261,7 +263,7 @@ window#waybar {
 WCSS
 
 # ------------------------------------------------------------------------ foot
-cat > "$bg/foot/foot.ini" <<FOOT
+cat > "$cfg/foot/foot.ini" <<FOOT
 [main]
 font=${KAADZ_FONT_MONO}:size=${KAADZ_FONT_SIZE_TERM}
 pad=12x10
@@ -295,7 +297,7 @@ blink=yes
 FOOT
 
 # ---------------------------------------------------------------------- fuzzel
-cat > "$bg/fuzzel/fuzzel.ini" <<FUZ
+cat > "$cfg/fuzzel/fuzzel.ini" <<FUZ
 [main]
 font=${KAADZ_FONT_UI}:size=${KAADZ_FONT_SIZE}
 lines=10
@@ -319,7 +321,7 @@ radius=10
 FUZ
 
 # ----------------------------------------------------------------------- mako
-cat > "$bg/mako/config" <<MAKO
+cat > "$cfg/mako/config" <<MAKO
 # KaadzOS notifications (generated from theme/palette).
 font=${KAADZ_FONT_UI} ${KAADZ_FONT_SIZE}
 background-color=${KAADZ_SURFACE}
@@ -343,7 +345,7 @@ default-timeout=0
 MAKO
 
 # ------------------------------------------------------------------- swaylock
-cat > "$bg/swaylock/config" <<LOCK
+cat > "$cfg/swaylock/config" <<LOCK
 # KaadzOS lock screen (generated from theme/palette).
 daemonize
 show-failed-attempts
@@ -369,7 +371,7 @@ LOCK
 
 # ----------------------------------------------------------------------- GTK
 for ver in 3.0 4.0; do
-cat > "$bg/gtk-$ver/settings.ini" <<GTK
+cat > "$sys/gtk-$ver/settings.ini" <<GTK
 [Settings]
 gtk-theme-name=Adwaita-dark
 gtk-icon-theme-name=Adwaita
@@ -382,7 +384,7 @@ GTK
 done
 
 # ---------------------------------------------------------------------- Qt6ct
-cat > "$bg/qt6ct/qt6ct.conf" <<QTC
+cat > "$cfg/qt6ct/qt6ct.conf" <<QTC
 [Appearance]
 color_scheme_path=/etc/qt6ct/colors/KaadzNight.conf
 standard_dialogs=gtk3
@@ -394,7 +396,7 @@ font="${KAADZ_FONT_UI},${KAADZ_FONT_SIZE},-1,0,50,0,0,0,0,0"
 fixed="${KAADZ_FONT_MONO},${KAADZ_FONT_SIZE_TERM},-1,0,50,0,0,0,0,0"
 QTC
 
-cat > "$bg/qt6ct/colors/KaadzNight.conf" <<QSC
+cat > "$cfg/qt6ct/colors/KaadzNight.conf" <<QSC
 [ColorScheme]
 active_colors=#${KAADZ_FG#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_SURFACE#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG#\#}, #${KAADZ_FG#\#}, #${KAADZ_FG#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_BG#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_ACCENT#\#}, #${KAADZ_URGENT_FG#\#}, #${KAADZ_ACCENT#\#}, #${KAADZ_URGENT#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BG#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG#\#}, #${KAADZ_ACCENT_ALT#\#}
 disabled_colors=#${KAADZ_FG_MUTED#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_SURFACE#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_BG#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BG#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BORDER#\#}
