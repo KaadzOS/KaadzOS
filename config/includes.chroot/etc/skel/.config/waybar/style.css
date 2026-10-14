@@ -2,7 +2,7 @@
 * {
     border: none;
     border-radius: 0;
-    font-family: "Inter", "DejaVu Sans";
+    font-family: "Inter", "FontAwesome", "DejaVu Sans";
     font-size: 11px;
     min-height: 0;
 }
@@ -16,7 +16,9 @@ window#waybar {
     color: #64748b;
     background: transparent;
 }
-#workspaces button.focused {
+#workspaces button.focused,
+#workspaces button.current,
+#workspaces button.visible {
     color: #38bdf8;
     border-bottom: 2px solid #38bdf8;
 }

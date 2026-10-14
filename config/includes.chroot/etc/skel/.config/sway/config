@@ -32,15 +32,16 @@ gaps inner 6
 gaps outer 2
 smart_gaps on
 
-# Autostart
-exec waybar >/run/hostshare/waybar.log 2>&1
-exec mako
+# Autostart (logs go to /tmp; /run/hostshare only exists in the QEMU boot test)
+exec waybar >/tmp/waybar.log 2>&1
+exec mako >/tmp/mako.log 2>&1
 exec foot --title "KaadzOS Terminal"
 exec sh /usr/local/bin/kaadzos-session-ready
 
 # Launchers / system
 bindsym $mod+Return exec $term
 bindsym $mod+d exec $launcher
+bindsym $mod+q kill
 bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
 bindsym $mod+Shift+l exec $lock
 bindsym $mod+Shift+c reload
@@ -97,8 +98,8 @@ bindsym $mod+Tab workspace next
 bindsym $mod+Shift+Tab workspace prev
 
 # Screenshots
-bindsym Print exec grim "${HOME}/Pictures/Screenshot-$(date +%s).png" && notify-send 'Screenshot saved'
-bindsym Shift+Print exec grim -g "$(slurp)" "${HOME}/Pictures/Screenshot-$(date +%s).png" && notify-send 'Screenshot saved'
+bindsym Print exec kaadzos-screenshot full
+bindsym Shift+Print exec kaadzos-screenshot region
 
 # Media keys
 bindsym XF86AudioRaiseVolume exec wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+

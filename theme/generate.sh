@@ -18,8 +18,8 @@ wall_guest="/usr/share/backgrounds/kaadzos"
 
 mkdir -p \
   "$cfg/sway" "$cfg/waybar" "$cfg/foot" "$cfg/fuzzel" "$cfg/mako" \
-  "$cfg/swaylock" "$cfg/qt6ct/colors" \
-  "$sys/gtk-3.0" "$sys/gtk-4.0" \
+  "$cfg/swaylock" "$cfg/qt6ct" "$sys/qt6ct/colors" \
+  "$sys/gtk-3.0" "$sys/gtk-4.0" "$sys/systemd/system" \
   "$wall_dir" "$chroot/usr/local/share/kaadzos"
 
 # foot/swaylock want RRGGBB without a leading '#'; the rest want '#RRGGBB'.
@@ -89,15 +89,16 @@ gaps inner 6
 gaps outer 2
 smart_gaps on
 
-# Autostart
-exec waybar >/run/hostshare/waybar.log 2>&1
-exec mako
+# Autostart (logs go to /tmp; /run/hostshare only exists in the QEMU boot test)
+exec waybar >/tmp/waybar.log 2>&1
+exec mako >/tmp/mako.log 2>&1
 exec foot --title "KaadzOS Terminal"
 exec sh /usr/local/bin/kaadzos-session-ready
 
 # Launchers / system
 bindsym \$mod+Return exec \$term
 bindsym \$mod+d exec \$launcher
+bindsym \$mod+q kill
 bindsym \$mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
 bindsym \$mod+Shift+l exec \$lock
 bindsym \$mod+Shift+c reload
@@ -154,8 +155,8 @@ bindsym \$mod+Tab workspace next
 bindsym \$mod+Shift+Tab workspace prev
 
 # Screenshots
-bindsym Print exec grim "\${HOME}/Pictures/Screenshot-\$(date +%s).png" && notify-send 'Screenshot saved'
-bindsym Shift+Print exec grim -g "\$(slurp)" "\${HOME}/Pictures/Screenshot-\$(date +%s).png" && notify-send 'Screenshot saved'
+bindsym Print exec kaadzos-screenshot full
+bindsym Shift+Print exec kaadzos-screenshot region
 
 # Media keys
 bindsym XF86AudioRaiseVolume exec wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+
@@ -199,23 +200,23 @@ cat > "$cfg/waybar/config" <<WBAR
         "calendar": { "mode": "month" }
     },
     "network": {
-        "format-wifi": "󰤨 {essid}",
-        "format-ethernet": "󰈀 {ifname}",
-        "format-disconnected": "󰤭 offline",
+        "format-wifi": "\uf1eb {essid}",
+        "format-ethernet": "\uf1e6 {ifname}",
+        "format-disconnected": "\uf127 offline",
         "tooltip-format": "{ipaddr}/{cidr}"
     },
     "pulseaudio": {
         "format": "{icon} {volume}%",
-        "format-muted": "󰝟 muted",
-        "format-icons": ["󰕾", "󰕿", "󰖀"],
+        "format-muted": "\uf026 muted",
+        "format-icons": ["\uf026", "\uf027", "\uf028"],
         "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
         "on-click-right": "pavucontrol || foot -T Volume -e wpctl status"
     },
     "battery": {
         "states": { "good": 80, "warning": 30, "critical": 15 },
         "format": "{icon} {capacity}%",
-        "format-charging": "󰂄 {capacity}%",
-        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "format-charging": "\uf0e7 {capacity}%",
+        "format-icons": ["\uf244", "\uf243", "\uf242", "\uf241", "\uf240"],
         "tooltip-format": "{timeTo} remaining"
     },
     "tray": { "icon-size": 18, "spacing": 8 }
@@ -227,7 +228,7 @@ cat > "$cfg/waybar/style.css" <<WCSS
 * {
     border: none;
     border-radius: 0;
-    font-family: "${KAADZ_FONT_UI}", "${KAADZ_FONT_FALLBACK}";
+    font-family: "${KAADZ_FONT_UI}", "FontAwesome", "${KAADZ_FONT_FALLBACK}";
     font-size: ${KAADZ_FONT_SIZE}px;
     min-height: 0;
 }
@@ -241,7 +242,9 @@ window#waybar {
     color: ${KAADZ_FG_MUTED};
     background: transparent;
 }
-#workspaces button.focused {
+#workspaces button.focused,
+#workspaces button.current,
+#workspaces button.visible {
     color: ${KAADZ_ACCENT};
     border-bottom: 2px solid ${KAADZ_ACCENT};
 }
@@ -370,7 +373,7 @@ LOCK
 for ver in 3.0 4.0; do
 cat > "$sys/gtk-$ver/settings.ini" <<GTK
 [Settings]
-gtk-theme-name=Adwaita-dark
+gtk-theme-name=Adwaita
 gtk-icon-theme-name=Adwaita
 gtk-font-name=${KAADZ_FONT_UI} ${KAADZ_FONT_SIZE}
 gtk-cursor-theme-name=Breeze_Snow
@@ -393,12 +396,52 @@ font="${KAADZ_FONT_UI},${KAADZ_FONT_SIZE},-1,0,50,0,0,0,0,0"
 fixed="${KAADZ_FONT_MONO},${KAADZ_FONT_SIZE_TERM},-1,0,50,0,0,0,0,0"
 QTC
 
-cat > "$cfg/qt6ct/colors/KaadzNight.conf" <<QSC
+cat > "$sys/qt6ct/colors/KaadzNight.conf" <<QSC
 [ColorScheme]
 active_colors=#${KAADZ_FG#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_SURFACE#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG#\#}, #${KAADZ_FG#\#}, #${KAADZ_FG#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_BG#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_ACCENT#\#}, #${KAADZ_URGENT_FG#\#}, #${KAADZ_ACCENT#\#}, #${KAADZ_URGENT#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BG#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG#\#}, #${KAADZ_ACCENT_ALT#\#}
 disabled_colors=#${KAADZ_FG_MUTED#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_SURFACE#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_BG#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BG#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BORDER#\#}
 inactive_colors=#${KAADZ_FG_ALT#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_SURFACE#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_BG#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_ACCENT#\#}, #${KAADZ_URGENT_FG#\#}, #${KAADZ_ACCENT#\#}, #${KAADZ_URGENT#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BG#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_ACCENT_ALT#\#}
 QSC
+
+# ------------------------------------------------------------- virtual console
+# A 16-colour palette for the Linux virtual terminals, applied by setvtrgb.
+# setvtrgb reads 16 lines of "R G B" (0-255), one per ANSI colour.
+hex2rgb() { printf '%d %d %d' "$((16#${1:1:2}))" "$((16#${1:3:2}))" "$((16#${1:5:2}))"; }
+{
+  hex2rgb "$KAADZ_BG";      echo
+  hex2rgb "$KAADZ_RED";     echo
+  hex2rgb "$KAADZ_GREEN";   echo
+  hex2rgb "$KAADZ_YELLOW";  echo
+  hex2rgb "$KAADZ_ACCENT";  echo
+  hex2rgb "$KAADZ_PURPLE";  echo
+  hex2rgb "$KAADZ_TEAL";    echo
+  hex2rgb "$KAADZ_FG";      echo
+  hex2rgb "$KAADZ_FG_MUTED";echo
+  hex2rgb "$KAADZ_ORANGE";  echo
+  hex2rgb "$KAADZ_GREEN";   echo
+  hex2rgb "$KAADZ_WARNING"; echo
+  hex2rgb "$KAADZ_SKY";     echo
+  hex2rgb "$KAADZ_PINK";    echo
+  hex2rgb "$KAADZ_TEAL";    echo
+  hex2rgb "$KAADZ_FG";      echo
+} > "$sys/vtrgb"
+
+cat > "$sys/systemd/system/kaadzos-console-colors.service" <<'SVC'
+[Unit]
+Description=Apply the KaadzOS virtual-console palette
+DefaultDependencies=no
+After=systemd-vconsole-setup.service
+Before=getty.target
+ConditionPathExists=/dev/tty0
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/setvtrgb /etc/vtrgb
+
+[Install]
+WantedBy=sysinit.target
+SVC
 
 echo "KaadzOS theme configs generated into config/includes.chroot."
 

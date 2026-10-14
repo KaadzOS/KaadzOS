@@ -1,13 +1,20 @@
 #!/bin/sh
-# Sway session wrapper: exports the environment, runs Sway, and reports the
-# exit code to the serial console so CI can see why a session ended.
+# Sway session wrapper: exports the environment, runs Sway inside a D-Bus
+# session bus, and reports the exit code to the serial console so CI can see
+# why a session ended. Logs live in /tmp so they work on real hardware too.
 export XDG_SESSION_TYPE=wayland
 export WLR_RENDERER=pixman
 export WLR_RENDERER_ALLOW_SOFTWARE=1
 export WLR_NO_HARDWARE_CURSORS=1
+export QT_QPA_PLATFORMTHEME=qt6ct
+export MOZ_ENABLE_WAYLAND=1
 
-# Log sway stderr (config errors) to the host-shared 9p folder for CI.
-sway 2>/run/hostshare/sway.log
+log=/tmp/sway.log
+if command -v dbus-run-session >/dev/null 2>&1; then
+  dbus-run-session -- sway >"$log" 2>&1
+else
+  sway >"$log" 2>&1
+fi
 rc=$?
 
 serial=/dev/ttyS0

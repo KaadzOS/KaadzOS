@@ -40,7 +40,7 @@ done
 # moment to draw the wallpaper, bar and terminal before capturing.
 sleep 8
 
-# Dump window/layer layout and process list for debugging the desktop look.
+# Dump window/layer layout, logs and process list for diagnosing the desktop look.
 for dir in /run/hostshare /mnt/hostshare; do
   if [ -d "$dir" ] && [ -w "$dir" ]; then
     {
@@ -50,17 +50,22 @@ for dir in /run/hostshare /mnt/hostshare; do
       swaymsg -t get_outputs 2>&1
       echo '=== waybar procs ==='
       ps -eo pid,args 2>/dev/null | grep -E '[w]aybar|[m]ako|[f]oot|[s]way'
+      for log in /tmp/sway.log /tmp/waybar.log /tmp/mako.log; do
+        echo "=== $log ==="
+        cat "$log" 2>&1
+      done
     } > "$dir/diag.txt" 2>&1
     break
   fi
 done
 
 # Capture the real Wayland output with grim for CI. QEMU's screendump cannot
-# read a DRM/KMS scanout, so we write the PNG into the host-shared 9p folder
+# read a DRM/KMS scanout, so we write the image into the host-shared 9p folder
 # (mounted read-write by run-hostshare.mount) where the runner picks it up.
 for dir in /run/hostshare /mnt/hostshare; do
   if [ -d "$dir" ] && [ -w "$dir" ]; then
     grim "$dir/kaadzos-desktop.png" 2>/dev/null || true
+    grim -t ppm "$dir/kaadzos-desktop.ppm" 2>/dev/null || true
     break
   fi
 done

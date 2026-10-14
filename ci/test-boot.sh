@@ -79,6 +79,7 @@ cleanup() {
   capture_screenshot
   kill "$qemu_pid" 2>/dev/null || true
   wait "$qemu_pid" 2>/dev/null || true
+  rm -f "$monitor"
 }
 trap cleanup EXIT
 
@@ -90,16 +91,22 @@ for _ in {1..3}; do
   fi
 done
 
+guest_shot="$output_dir/kaadzos-desktop.png"
+
 deadline=$((SECONDS + 480))
 while (( SECONDS < deadline )); do
   if grep -q 'KAADZOS_SWAY_READY' "$serial_log" 2>/dev/null; then
     # The guest writes the real Wayland screenshot via grim into the 9p share.
-    for _ in {1..12}; do
-      [[ -s "$output_dir/kaadzos-desktop.png" ]] && break
+    for _ in {1..18}; do
+      [[ -s "$guest_shot" ]] && break
       sleep 5
     done
     sleep 2
     capture_screenshot
+    if [[ ! -s "$guest_shot" ]]; then
+      echo "Sway became ready but the guest produced no screenshot under $firmware" >&2
+      exit 1
+    fi
     echo "KaadzOS reached a running Sway session under $firmware"
     exit 0
   fi

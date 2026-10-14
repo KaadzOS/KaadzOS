@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+
+# Enable the palette-driven virtual-console colours at boot.
+mkdir -p /etc/systemd/system/sysinit.target.wants
+ln -sf /etc/systemd/system/kaadzos-console-colors.service \
+  /etc/systemd/system/sysinit.target.wants/kaadzos-console-colors.service

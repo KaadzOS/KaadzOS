@@ -1,0 +1,14 @@
+#!/bin/sh
+# Save a Wayland screenshot with grim and announce it via mako.
+set -eu
+
+dir="${HOME:-/tmp}/Pictures"
+mkdir -p "$dir"
+file="$dir/Screenshot-$(date +%s).png"
+
+case "${1:-full}" in
+  region) grim -g "$(slurp)" "$file" ;;
+  *) grim "$file" ;;
+esac
+
+notify-send 'Screenshot saved' "$file" 2>/dev/null || true
