@@ -16,8 +16,8 @@ KaadzOS is a Debian 13 (trixie) amd64 live and installable distribution built wi
 For every implementation task:
 
 1. Make the change and commit it.
-2. Push the commit and trigger the relevant workflow with `gh`.
-3. Watch the run and inspect failures with `gh run view --log-failed`.
+2. Push the commit and trigger the relevant workflow. Pushes to `main` trigger `build.yml` automatically (as well as the manual `workflow_dispatch` entry point).
+3. Watch the run and inspect failures with the GitHub API or `gh run view --log-failed`.
 4. Fix, commit, and repeat until CI is green.
 
 Do not ask the user to paste logs. Do not begin a later phase until the current phase passes CI. Consult the live-build manual and actual build output when behavior is uncertain instead of guessing.
@@ -33,13 +33,13 @@ Do not ask the user to paste logs. Do not begin a later phase until the current 
 - Artifact naming: `KaadzOS-trixie-amd64.iso` with a sibling SHA-256 checksum file.
 - Boot validation: QEMU tests both Syslinux BIOS and GRUB/OVMF UEFI boots, preferring KVM and falling back to TCG.
 - Session readiness: CI requires a successful Sway IPC query, emits `KAADZOS_SWAY_READY` on the serial console, and captures a screenshot.
-- Palette: not selected; define one source palette during Phase 3.
+- Palette: the "Night" palette in `theme/palette` is the single source of truth; `theme/generate.sh` renders every themed config (Sway, Waybar, foot, fuzzel, mako, swaylock, GTK/Qt, wallpaper) from it. Near-black cool base with a bright cyan-blue accent for high contrast.
 
 ## Phase Status
 
 - Phase 1, base ISO: complete. CI run 37002963822 produced a 1000 MiB ISO; live-build took 4m54s and the complete job took 6m7s.
-- Phase 2, automated BIOS/UEFI boot testing: in progress. CI implementation is pending validation.
-- Phase 3, session and theming: not started.
+- Phase 2, automated BIOS/UEFI boot testing: complete. CI run 38247764091 (commit `bc8ea09`) passed `boot-test (bios)` and `boot-test (uefi)`; each reached `KAADZOS_SWAY_READY` and captured a grim screenshot. Artifacts: `KaadzOS-trixie-amd64` (ISO + SHA-256), `boot-bios`, `boot-uefi`.
+- Phase 3, session and theming: in progress. Night palette and palette-driven theme are generated; iterating on the desktop look via CI screenshots.
 - Phase 4, CLI and on-demand packs: not started.
 - Phase 5, installer: not started.
 - Phase 6, boot polish and identity: not started.
