@@ -103,7 +103,7 @@ bindsym \$mod+Return exec \$term
 bindsym \$mod+d exec \$launcher
 bindsym \$mod+q kill
 bindsym \$mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
-bindsym \$mod+Shift+l exec \$lock
+bindsym \$mod+Shift+x exec \$lock
 bindsym \$mod+Shift+c reload
 bindsym \$mod+Shift+r exec swaymsg restart
 

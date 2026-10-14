@@ -90,6 +90,13 @@ done
 deadline=$((SECONDS + 480))
 while (( SECONDS < deadline )); do
   if grep -q 'KAADZOS_SWAY_READY' "$serial_log" 2>/dev/null; then
+    # Wait (bounded) for the guest diagnostics so the config-warning marker is
+    # present before we judge whether the desktop is acceptable.
+    for _ in {1..60}; do
+      grep -q 'KAADZOS_DIAG_END' "$serial_log" 2>/dev/null && break
+      sleep 1
+    done
+
     # Give the compositor a moment to paint, then capture the framebuffer.
     sleep 8
     capture_screenshot
@@ -97,6 +104,14 @@ while (( SECONDS < deadline )); do
       echo "Sway became ready but no screenshot was captured under $firmware" >&2
       exit 1
     fi
+
+    # A red swaynag bar means the Sway config emitted errors/warnings; the
+    # desktop is not polished, so fail the run.
+    if grep -q 'KAADZOS_SWAY_CONFIG_WARNINGS' "$serial_log" 2>/dev/null; then
+      echo "Sway reported config warnings (swaynag error bar) under $firmware" >&2
+      exit 1
+    fi
+
     echo "KaadzOS reached a running Sway session under $firmware"
     exit 0
   fi

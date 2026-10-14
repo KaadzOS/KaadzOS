@@ -41,6 +41,13 @@ done
 # Under QEMU TCG the software renderer paints slowly; let the desktop draw.
 sleep 8
 
+# A swaynag error bar is spawned when the Sway config produces errors or
+# warnings (e.g. an overwritten binding). That is a polish failure, so flag it
+# explicitly for the boot test instead of shipping a desktop with a red banner.
+if ps -eo args 2>/dev/null | grep -q '[s]waynag'; then
+  printf 'KAADZOS_SWAY_CONFIG_WARNINGS\n' > "$serial"
+fi
+
 # Dump layout and logs between markers so the runner can parse them.
 {
   printf 'KAADZOS_DIAG_BEGIN\n'
