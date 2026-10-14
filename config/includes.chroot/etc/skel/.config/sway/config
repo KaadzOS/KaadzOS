@@ -32,6 +32,9 @@ gaps inner 6
 gaps outer 2
 smart_gaps on
 
+# The welcome terminal floats centred so the wallpaper stays visible.
+for_window [app_id="foot" title="KaadzOS Terminal"] floating enable, resize set 1100 690, move position center
+
 # Autostart (logs go to /tmp; /run/hostshare only exists in the QEMU boot test)
 exec waybar >/tmp/waybar.log 2>&1
 exec mako >/tmp/mako.log 2>&1

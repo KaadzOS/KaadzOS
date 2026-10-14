@@ -89,6 +89,9 @@ gaps inner 6
 gaps outer 2
 smart_gaps on
 
+# The welcome terminal floats centred so the wallpaper stays visible.
+for_window [app_id="foot" title="KaadzOS Terminal"] floating enable, resize set 1100 690, move position center
+
 # Autostart (logs go to /tmp; /run/hostshare only exists in the QEMU boot test)
 exec waybar >/tmp/waybar.log 2>&1
 exec mako >/tmp/mako.log 2>&1
@@ -405,25 +408,19 @@ QSC
 
 # ------------------------------------------------------------- virtual console
 # A 16-colour palette for the Linux virtual terminals, applied by setvtrgb.
-# setvtrgb reads 16 lines of "R G B" (0-255), one per ANSI colour.
+# setvtrgb expects three lines (red, green, blue) of 16 comma-separated values.
 hex2rgb() { printf '%d %d %d' "$((16#${1:1:2}))" "$((16#${1:3:2}))" "$((16#${1:5:2}))"; }
 {
-  hex2rgb "$KAADZ_BG";      echo
-  hex2rgb "$KAADZ_RED";     echo
-  hex2rgb "$KAADZ_GREEN";   echo
-  hex2rgb "$KAADZ_YELLOW";  echo
-  hex2rgb "$KAADZ_ACCENT";  echo
-  hex2rgb "$KAADZ_PURPLE";  echo
-  hex2rgb "$KAADZ_TEAL";    echo
-  hex2rgb "$KAADZ_FG";      echo
-  hex2rgb "$KAADZ_FG_MUTED";echo
-  hex2rgb "$KAADZ_ORANGE";  echo
-  hex2rgb "$KAADZ_GREEN";   echo
-  hex2rgb "$KAADZ_WARNING"; echo
-  hex2rgb "$KAADZ_SKY";     echo
-  hex2rgb "$KAADZ_PINK";    echo
-  hex2rgb "$KAADZ_TEAL";    echo
-  hex2rgb "$KAADZ_FG";      echo
+  for channel in 1 2 3; do
+    line=
+    for hex in "$KAADZ_BG" "$KAADZ_RED" "$KAADZ_GREEN" "$KAADZ_YELLOW" \
+               "$KAADZ_ACCENT" "$KAADZ_PURPLE" "$KAADZ_TEAL" "$KAADZ_FG" \
+               "$KAADZ_FG_MUTED" "$KAADZ_ORANGE" "$KAADZ_GREEN" "$KAADZ_WARNING" \
+               "$KAADZ_SKY" "$KAADZ_PINK" "$KAADZ_TEAL" "$KAADZ_FG"; do
+      line="${line:+$line,}$(hex2rgb "$hex" | cut -d' ' -f"$channel")"
+    done
+    printf '%s\n' "$line"
+  done
 } > "$sys/vtrgb"
 
 cat > "$sys/systemd/system/kaadzos-console-colors.service" <<'SVC'
