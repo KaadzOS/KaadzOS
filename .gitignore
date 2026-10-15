@@ -5,3 +5,6 @@ boot-logs/
 boot-logs-*/
 *.iso
 *.img
+
+# Packs are canonical in packs/; CI copies them into the image before build.
+config/includes.chroot/usr/share/kaadzos/packs/

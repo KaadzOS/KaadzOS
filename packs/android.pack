@@ -1,0 +1,10 @@
+name=android
+description=Android apps via Waydroid (Wayland container)
+size=3GB
+requires=wayland
+apt=waydroid
+repo-url=https://repo.waydro.id/
+repo-suite=trixie
+repo-components=main
+repo-key=https://repo.waydro.id/waydroid.gpg
+hook=android

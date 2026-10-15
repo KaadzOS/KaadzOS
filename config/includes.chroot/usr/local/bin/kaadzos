@@ -1,0 +1,401 @@
+#!/bin/sh
+# kaadzos - KaadzOS pack manager.
+#
+# Written in POSIX sh (dash-compatible) on purpose:
+#   - The base ISO ships no Python/Go runtime and apt-recommends is off, so a
+#     shell CLI adds zero bytes of runtime and needs no toolchain in the image.
+#   - Its whole job is orchestrating apt/dpkg/curl/systemctl, which are
+#     shell-native. A single static binary would only duplicate that glue.
+set -eu
+
+VERSION="0.1.0"
+PACKS_DIR="${KAADZOS_PACKS_DIR:-/usr/share/kaadzos/packs}"
+HOOKS_DIR="$PACKS_DIR/hooks"
+STATE_DIR="${KAADZOS_STATE_DIR:-/var/lib/kaadzos}"
+INSTALLED_DB="$STATE_DIR/installed"
+
+DRY_RUN="${KAADZOS_DRY_RUN:-0}"
+if [ "${1:-}" = "--dry-run" ]; then
+  DRY_RUN=1
+  shift
+fi
+
+# Current pack fields; reset before every parse.
+p_name= p_desc= p_size= p_requires= p_apt=
+p_repo_url= p_repo_suite= p_repo_components= p_repo_key= p_hook=
+
+msg()  { printf '%s\n' "$*"; }
+info() { printf '  %s\n' "$*"; }
+die()  { printf 'kaadzos: error: %s\n' "$*" >&2; exit 1; }
+
+# Run a command, or print it when in dry-run mode.
+run() {
+  if [ "$DRY_RUN" = 1 ]; then
+    printf '[dry-run] %s\n' "$*"
+  else
+    "$@"
+  fi
+}
+
+usage() {
+  cat <<EOF
+kaadzos $VERSION - KaadzOS on-demand pack manager
+
+Usage:
+  kaadzos [--dry-run] <command> [args]
+
+Commands:
+  add <pack>       Install a pack (idempotent)
+  remove <pack>    Remove a pack (idempotent)
+  list             List packs with availability and status
+  status           Show system and installed-pack information
+  update           Refresh apt indexes and upgrade the system
+  addons           Open the graphical Add-ons menu (fuzzel)
+  help             Show this help
+
+Packs live in $PACKS_DIR as declarative *.pack files.
+Set KAADZOS_DRY_RUN=1 (or pass --dry-run first) to preview actions.
+EOF
+}
+
+# ---------------------------------------------------------------- pack loading
+pack_load() {
+  file=$1
+  p_name= p_desc= p_size= p_requires= p_apt=
+  p_repo_url= p_repo_suite= p_repo_components= p_repo_key= p_hook=
+
+  if [ ! -f "$file" ]; then
+    die "pack file not found: $file"
+  fi
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    # Skip blank and comment lines.
+    case $line in
+      ''|'#'*) continue ;;
+    esac
+    # Skip whitespace-only lines.
+    case $line in
+      *[![:space:]]*) ;;
+      *) continue ;;
+    esac
+    case $line in
+      *=*) ;;
+      *) die "$file: malformed line (expected key=value): $line" ;;
+    esac
+
+    key=${line%%=*}
+    val=${line#*=}
+    case $key in
+      name)           p_name=$val ;;
+      description)    p_desc=$val ;;
+      size)           p_size=$val ;;
+      requires)       p_requires=$val ;;
+      apt)            p_apt=$val ;;
+      repo-url)       p_repo_url=$val ;;
+      repo-suite)     p_repo_suite=$val ;;
+      repo-components) p_repo_components=$val ;;
+      repo-key)       p_repo_key=$val ;;
+      hook)           p_hook=$val ;;
+      *) die "$file: unknown key '$key'" ;;
+    esac
+  done < "$file"
+
+  if [ -z "$p_name" ]; then die "$file: missing required key 'name'"; fi
+  if [ -z "$p_desc" ]; then die "$file: missing required key 'description'"; fi
+
+  base=$(basename "$file" .pack)
+  if [ "$p_name" != "$base" ]; then
+    die "$file: 'name=$p_name' does not match filename '$base'"
+  fi
+  if [ -z "$p_apt" ] && [ -z "$p_repo_url" ] && [ -z "$p_hook" ]; then
+    die "$file: pack does nothing (need apt, repo-url, or hook)"
+  fi
+}
+
+find_pack() {
+  case $1 in
+    ''|*[!a-z0-9-]*) return 1 ;;
+  esac
+  f="$PACKS_DIR/$1.pack"
+  if [ -f "$f" ]; then
+    printf '%s\n' "$f"
+  else
+    return 1
+  fi
+}
+
+is_installed() {
+  if [ -f "$INSTALLED_DB" ]; then
+    grep -qx "$1" "$INSTALLED_DB"
+  else
+    return 1
+  fi
+}
+
+# ------------------------------------------------------------- requirement checks
+# 'requires' holds space-separated tokens: known names get specific messages,
+# anything else must simply be a command on PATH.
+check_requires() {
+  if [ -z "$p_requires" ]; then
+    return 0
+  fi
+  for tok in $p_requires; do
+    case $tok in
+      wayland)
+        if [ -z "${WAYLAND_DISPLAY:-}" ] && [ "${XDG_SESSION_TYPE:-}" != "wayland" ]; then
+          die "pack '$p_name' needs a Wayland session (no WAYLAND_DISPLAY)"
+        fi ;;
+      binder)
+        if [ ! -e /dev/binder ] && [ ! -e /dev/binderfs ]; then
+          die "pack '$p_name' needs the binder kernel interface (/dev/binder)"
+        fi ;;
+      kvm)
+        if [ ! -e /dev/kvm ]; then
+          die "pack '$p_name' needs KVM (/dev/kvm is missing)"
+        fi ;;
+      *)
+        if ! command -v "$tok" >/dev/null 2>&1; then
+          die "pack '$p_name' needs '$tok' in PATH"
+        fi ;;
+    esac
+  done
+}
+
+# ------------------------------------------------------------------- apt repos
+setup_repo() {
+  suite=${p_repo_suite:-trixie}
+  comps=${p_repo_components:-main}
+  keyfile="/etc/apt/keyrings/kaadzos-$p_name.gpg"
+  listfile="/etc/apt/sources.list.d/kaadzos-$p_name.list"
+
+  if [ "$DRY_RUN" = 1 ]; then
+    info "(dry-run) add apt repo: $p_repo_url $suite [$comps]"
+    if [ -n "$p_repo_key" ]; then
+      info "(dry-run) import signing key: $p_repo_key -> $keyfile"
+    fi
+    return 0
+  fi
+
+  mkdir -p /etc/apt/keyrings
+  if [ -n "$p_repo_key" ]; then
+    tmp=$(mktemp)
+    curl -fsSL "$p_repo_key" -o "$tmp"
+    if grep -q -- "-----BEGIN" "$tmp"; then
+      gpg --batch --yes --dearmor -o "$keyfile" "$tmp"
+    else
+      install -m 0644 "$tmp" "$keyfile"
+    fi
+    rm -f "$tmp"
+  fi
+
+  printf 'deb [signed-by=%s] %s %s %s\n' \
+    "$keyfile" "$p_repo_url" "$suite" "$comps" > "$listfile"
+  info "added apt source: $listfile"
+}
+
+remove_repo() {
+  keyfile="/etc/apt/keyrings/kaadzos-$p_name.gpg"
+  listfile="/etc/apt/sources.list.d/kaadzos-$p_name.list"
+  if [ "$DRY_RUN" = 1 ]; then
+    if [ -f "$listfile" ]; then
+      info "(dry-run) remove apt source: $listfile"
+    fi
+    return 0
+  fi
+  rm -f "$listfile" "$keyfile"
+}
+
+# ---------------------------------------------------------------------- commands
+do_add() {
+  name=${1:-}
+  if [ -z "$name" ]; then die "usage: kaadzos add <pack>"; fi
+  file=$(find_pack "$name") || die "unknown pack '$name' (try: kaadzos list)"
+  pack_load "$file"
+
+  if is_installed "$p_name"; then
+    msg "$p_name is already installed (nothing to do)"
+    return 0
+  fi
+  check_requires
+
+  msg "Adding pack '$p_name': $p_desc"
+  if [ -n "$p_repo_url" ]; then
+    setup_repo
+  fi
+  if [ -n "$p_repo_url" ] || [ -n "$p_apt" ]; then
+    run env DEBIAN_FRONTEND=noninteractive apt-get -y update
+  fi
+  if [ -n "$p_apt" ]; then
+    run env DEBIAN_FRONTEND=noninteractive apt-get -y install $p_apt
+  fi
+  if [ -n "$p_hook" ]; then
+    run sh "$HOOKS_DIR/$p_hook.sh" add
+  fi
+
+  if [ "$DRY_RUN" = 1 ]; then
+    info "(dry-run) would record '$p_name' as installed"
+  else
+    mkdir -p "$STATE_DIR"
+    printf '%s\n' "$p_name" >> "$INSTALLED_DB"
+  fi
+  msg "Pack added: $p_name"
+}
+
+do_remove() {
+  name=${1:-}
+  if [ -z "$name" ]; then die "usage: kaadzos remove <pack>"; fi
+  file=$(find_pack "$name") || die "unknown pack '$name' (try: kaadzos list)"
+  pack_load "$file"
+
+  if ! is_installed "$p_name"; then
+    msg "$p_name is not installed (nothing to do)"
+    return 0
+  fi
+
+  msg "Removing pack '$p_name'"
+  if [ -n "$p_hook" ]; then
+    run sh "$HOOKS_DIR/$p_hook.sh" remove
+  fi
+  if [ -n "$p_apt" ]; then
+    run env DEBIAN_FRONTEND=noninteractive apt-get -y remove $p_apt
+  fi
+  remove_repo
+
+  if [ "$DRY_RUN" = 1 ]; then
+    info "(dry-run) would remove '$p_name' from the installed list"
+  else
+    if [ -f "$INSTALLED_DB" ]; then
+      tmpdb="$INSTALLED_DB.tmp.$$"
+      grep -vx "$p_name" "$INSTALLED_DB" > "$tmpdb" || true
+      mv "$tmpdb" "$INSTALLED_DB"
+    fi
+  fi
+  msg "Pack removed: $p_name"
+}
+
+do_list() {
+  if [ ! -d "$PACKS_DIR" ]; then
+    die "pack directory not found: $PACKS_DIR"
+  fi
+  printf '%-12s %-10s %s\n' "PACK" "STATUS" "DESCRIPTION"
+  for f in "$PACKS_DIR"/*.pack; do
+    if [ ! -f "$f" ]; then
+      die "no *.pack files in $PACKS_DIR"
+    fi
+    pack_load "$f"
+    if is_installed "$p_name"; then
+      st="installed"
+    else
+      st="available"
+    fi
+    printf '%-12s %-10s %s' "$p_name" "$st" "$p_desc"
+    if [ -n "$p_size" ]; then
+      printf ' (~%s)' "$p_size"
+    fi
+    printf '\n'
+  done
+}
+
+do_status() {
+  msg "kaadzos $VERSION pack status"
+  msg "packs directory: $PACKS_DIR"
+  n=0
+  if [ -d "$PACKS_DIR" ]; then
+    for f in "$PACKS_DIR"/*.pack; do
+      if [ -f "$f" ]; then
+        n=$((n + 1))
+      fi
+    done
+  fi
+  msg "available packs: $n"
+
+  msg "installed packs:"
+  if [ -f "$INSTALLED_DB" ] && [ -s "$INSTALLED_DB" ]; then
+    while IFS= read -r p; do
+      if [ -n "$p" ]; then
+        info "$p"
+      fi
+    done < "$INSTALLED_DB"
+  else
+    info "(none)"
+  fi
+
+  if [ -n "${WAYLAND_DISPLAY:-}" ] || [ "${XDG_SESSION_TYPE:-}" = "wayland" ]; then
+    info "session: Wayland"
+  else
+    info "session: not Wayland"
+  fi
+
+  for r in /etc/apt/sources.list.d/kaadzos-*.list; do
+    if [ -f "$r" ]; then
+      info "apt source: $r"
+    fi
+  done
+}
+
+do_update() {
+  msg "Refreshing package indexes..."
+  run env DEBIAN_FRONTEND=noninteractive apt-get -y update
+  msg "Upgrading installed packages..."
+  run env DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
+  msg "System is up to date"
+}
+
+do_addons() {
+  if ! command -v fuzzel >/dev/null 2>&1; then
+    die "fuzzel is not installed"
+  fi
+  if [ ! -d "$PACKS_DIR" ]; then
+    die "pack directory not found: $PACKS_DIR"
+  fi
+
+  menu=$(for f in "$PACKS_DIR"/*.pack; do
+    if [ ! -f "$f" ]; then
+      continue
+    fi
+    pack_load "$f"
+    if is_installed "$p_name"; then
+      printf '%s :: %s [installed]\n' "$p_name" "$p_desc"
+    else
+      printf '%s :: %s\n' "$p_name" "$p_desc"
+    fi
+  done)
+
+  sel=$(printf '%s\n' "$menu" | fuzzel --dmenu --prompt "Add-ons> ")
+  if [ -z "$sel" ]; then
+    exit 0
+  fi
+  name=${sel%% *}
+
+  # Escalate only the chosen action; the menu itself needs no privileges.
+  if is_installed "$name"; then
+    exec sudo -E "$0" remove "$name"
+  else
+    exec sudo -E "$0" add "$name"
+  fi
+}
+
+# ------------------------------------------------------------------------ entry
+cmd=${1:-}
+case "$cmd" in
+  add|remove|update)
+    if [ "$DRY_RUN" != 1 ] && [ "$(id -u)" -ne 0 ]; then
+      exec sudo -E "$0" "$@"
+    fi ;;
+esac
+
+if [ $# -gt 0 ]; then
+  shift
+fi
+
+case "$cmd" in
+  add)      do_add "$@" ;;
+  remove)   do_remove "$@" ;;
+  list)     do_list "$@" ;;
+  status)   do_status "$@" ;;
+  update)   do_update "$@" ;;
+  addons)   do_addons "$@" ;;
+  help|--help|-h|"") usage ;;
+  --version|-V) msg "kaadzos $VERSION" ;;
+  *) die "unknown command '$cmd' (try: kaadzos help)" ;;
+esac

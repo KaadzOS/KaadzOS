@@ -1,0 +1,5 @@
+name=windows
+description=Run Windows apps with Wine and Bottles (i386 multiarch)
+size=4GB
+apt=wine wine64 winetricks flatpak
+hook=windows

@@ -1,0 +1,4 @@
+name=cloudflare
+description=cloudflared tunnel client for Cloudflare services
+size=60MB
+hook=cloudflare

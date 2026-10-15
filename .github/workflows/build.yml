@@ -62,6 +62,12 @@ jobs:
           chmod +x auto/config
           ./auto/config
 
+      - name: Stage packs into image
+        run: |
+          mkdir -p config/includes.chroot/usr/share/kaadzos
+          rm -rf config/includes.chroot/usr/share/kaadzos/packs
+          cp -r packs config/includes.chroot/usr/share/kaadzos/packs
+
       - name: Build ISO
         run: lb build
 
@@ -82,6 +88,32 @@ jobs:
             KaadzOS-trixie-amd64.iso.sha256
           compression-level: 0
           if-no-files-found: error
+
+  pack-test:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:trixie
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Enable archive areas and refresh indexes
+        run: |
+          sed -i 's/^Components: main$/Components: main contrib non-free-firmware/' /etc/apt/sources.list.d/debian.sources
+          apt-get update
+
+      - name: Verify base package availability
+        run: |
+          while read -r package; do
+            case "$package" in
+              ""|'#'*) continue ;;
+            esac
+            apt-cache show "$package" >/dev/null
+          done < config/package-lists/base.list.chroot
+
+      - name: Run pack resolution tests
+        run: bash ci/test-packs.sh
 
   boot-test:
     needs: build

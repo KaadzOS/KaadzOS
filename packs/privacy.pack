@@ -1,0 +1,4 @@
+name=privacy
+description=Tor, a validating DNS resolver and MAC randomisation
+size=150MB
+apt=tor unbound macchanger

@@ -1,0 +1,4 @@
+name=gaming
+description=GameMode, MangoHud and Wine gaming helpers
+size=2GB
+apt=wine winetricks gamemode mangohud

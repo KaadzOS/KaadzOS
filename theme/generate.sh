@@ -101,6 +101,7 @@ exec sh /usr/local/bin/kaadzos-session-ready
 # Launchers / system
 bindsym \$mod+Return exec \$term
 bindsym \$mod+d exec \$launcher
+bindsym \$mod+a exec kaadzos addons
 bindsym \$mod+q kill
 bindsym \$mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
 bindsym \$mod+Shift+x exec \$lock

@@ -1,0 +1,4 @@
+name=creative
+description=Image, vector and 3D creative studio (GIMP, Inkscape, Krita, Blender)
+size=3GB
+apt=gimp inkscape krita blender

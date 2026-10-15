@@ -27,3 +27,6 @@ sudo
 dbus
 libpam-systemd
 libgl1-mesa-dri
+curl
+ca-certificates
+gnupg
