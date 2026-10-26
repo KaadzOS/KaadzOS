@@ -28,10 +28,12 @@ fi
 if [ ! -d /etc/calamares-ci ] || [ -e /etc/kaadzos/installed ]; then
   exit 0
 fi
-if [ -e /run/kaadzos-ci-install.started ]; then
+if [ -e /tmp/kaadzos-ci-install.started ]; then
   exit 0
 fi
-: > /run/kaadzos-ci-install.started
+# /tmp is world-writable; /run is not, and a failed redirect is fatal under
+# dash, which killed the driver before it could emit any marker.
+: > /tmp/kaadzos-ci-install.started || true
 
 mark "KAADZOS_INSTALLER_START"
 

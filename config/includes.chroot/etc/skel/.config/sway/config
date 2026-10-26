@@ -44,7 +44,7 @@ exec sh -c 'if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Termi
 exec sh /usr/local/bin/kaadzos-session-ready
 # Unattended install driver: only fires in the CI VM with the CI Calamares
 # configuration and no installed marker.
-exec sh -c 'if [ -r /sys/class/dmi/id/product_name ] && [ "$(cat /sys/class/dmi/id/product_name)" = KAADZOS-CI-INSTALL ] && [ -d /etc/calamares-ci ] && [ ! -e /etc/kaadzos/installed ] && [ ! -e /run/kaadzos-ci-install.started ]; then /usr/local/bin/kaadzos-ci-install; fi'
+exec sh -c 'if [ -r /sys/class/dmi/id/product_name ] && [ "$(cat /sys/class/dmi/id/product_name)" = KAADZOS-CI-INSTALL ] && [ -d /etc/calamares-ci ] && [ ! -e /etc/kaadzos/installed ] && [ ! -e /tmp/kaadzos-ci-install.started ]; then /usr/local/bin/kaadzos-ci-install; fi'
 
 # Launchers / system
 bindsym $mod+Return exec $term

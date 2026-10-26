@@ -125,7 +125,10 @@ The driver is started from the Sway autostart only when **all** of these hold:
   `KAADZOS-CI-INSTALL`;
 - `/etc/calamares-ci` exists;
 - `/etc/kaadzos/installed` does not exist;
-- `/run/kaadzos-ci-install.started` does not exist.
+- `/tmp/kaadzos-ci-install.started` does not exist (world-writable `/tmp`
+  rather than `/run`: the unprivileged live user cannot create files in
+  `/run`, and under dash a failed redirect is fatal, which killed the
+  driver before its first marker in the first CI attempt).
 
 `product_name` is used deliberately: `/sys/class/dmi/id/product_serial` is
 root-only, so the unprivileged live user cannot read it. The install test must

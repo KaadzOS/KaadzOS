@@ -163,7 +163,23 @@ done
 # The guest's own watchdog is 40 minutes; the extra slack covers the boot menu,
 # the live boot and the driver's exit wait.
 deadline=$((SECONDS + 3000))
+driver_deadline=
 while (( SECONDS < deadline )); do
+  # Fail fast when the driver never started. The Sway autostart spawns it
+  # within seconds of the session becoming ready, so a ready session without
+  # the start marker means the driver died or was never launched; waiting out
+  # the full deadline would only hide the error.
+  if [[ -z "$driver_deadline" ]] \
+    && grep -q 'KAADZOS_SWAY_READY' "$install_serial" 2>/dev/null; then
+    driver_deadline=$((SECONDS + 300))
+  fi
+  if [[ -n "$driver_deadline" ]] && (( SECONDS >= driver_deadline )) \
+    && ! grep -q 'KAADZOS_INSTALLER_START' "$install_serial" 2>/dev/null; then
+    dump_serial_tail "$install_serial"
+    echo "The live session is up but the unattended driver never started under $firmware" >&2
+    exit 1
+  fi
+
   # Progress screenshots, one attempt each.
   if [[ ! -f "$install_window_png" ]] \
     && grep -q 'KAADZOS_INSTALLER_WINDOW' "$install_serial" 2>/dev/null; then

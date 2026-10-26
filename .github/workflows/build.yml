@@ -118,7 +118,10 @@ jobs:
   boot-test:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # 20 minutes was exceeded by a slow runner apt mirror alone (packages were
+    # still downloading when the job was cancelled); QEMU then needs its own
+    # minutes under TCG, so keep real headroom.
+    timeout-minutes: 40
     strategy:
       fail-fast: false
       matrix:
@@ -143,7 +146,7 @@ jobs:
       - name: Install boot-test dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes qemu-system-x86 ovmf socat netpbm
+          sudo apt-get install --no-install-recommends --yes qemu-system-x86 ovmf socat netpbm
 
       - name: Boot ISO with ${{ matrix.firmware }} firmware
         run: bash ci/test-boot.sh "${{ matrix.firmware }}" artifacts/KaadzOS-trixie-amd64.iso boot-results
@@ -179,7 +182,9 @@ jobs:
   install-test:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 70
+    # The install phase has a 50-minute deadline and the installed boot up to
+    # 10 more; leave room for slow apt mirrors on top.
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
@@ -204,7 +209,7 @@ jobs:
       - name: Install install-test dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes qemu-system-x86 qemu-utils ovmf socat netpbm
+          sudo apt-get install --no-install-recommends --yes qemu-system-x86 qemu-utils ovmf socat netpbm
 
       - name: Install KaadzOS with ${{ matrix.firmware }} firmware
         run: bash ci/test-install.sh "${{ matrix.firmware }}" artifacts/KaadzOS-trixie-amd64.iso install-results
