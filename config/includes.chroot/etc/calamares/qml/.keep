@@ -1,0 +1,4 @@
+# Calamares requires a qml/ directory inside its app-data directory when the
+# branding ships a QML slideshow (see branding/kaadzos/show.qml); it fails to
+# start with "explicitly configured application data directory is missing
+# qml/" otherwise. No QML modules are used, so the directory stays empty.

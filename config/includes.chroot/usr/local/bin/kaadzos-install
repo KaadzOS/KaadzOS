@@ -5,7 +5,7 @@
 set -eu
 
 if [ "$(id -u)" -eq 0 ]; then
-  exec /usr/bin/calamares "$@"
+  exec /usr/bin/calamares -c /etc/calamares "$@"
 fi
 
 if [ -n "${WAYLAND_DISPLAY:-}" ]; then
@@ -14,4 +14,7 @@ else
   platform=xcb
 fi
 
-exec sudo -E env HOME=/root QT_QPA_PLATFORM="$platform" /usr/bin/calamares "$@"
+# -c pins the app-data directory (settings, modules, branding and the required
+# qml/ dir) instead of relying on the distro-compiled default.
+exec sudo -E env HOME=/root QT_QPA_PLATFORM="$platform" \
+  /usr/bin/calamares -c /etc/calamares "$@"
