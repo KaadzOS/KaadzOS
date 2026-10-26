@@ -1,0 +1,18 @@
+[Unit]
+Description=KaadzOS installed-system first-boot cleanup
+Documentation=man:kaadzos(1)
+ConditionPathExists=/etc/kaadzos/installed
+ConditionPathExists=!/etc/kaadzos/firstboot-done
+After=local-fs.target
+Before=greetd.service
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/kaadzos-firstboot
+RemainAfterExit=yes
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,17 @@
+#!/bin/sh
+# Launch the KaadzOS installer. Calamares needs root, but the live session
+# runs as the unprivileged kaadzos user, so re-exec through sudo with the
+# Wayland environment preserved (live sudoers grants SETENV for this).
+set -eu
+
+if [ "$(id -u)" -eq 0 ]; then
+  exec /usr/bin/calamares "$@"
+fi
+
+if [ -n "${WAYLAND_DISPLAY:-}" ]; then
+  platform=wayland
+else
+  platform=xcb
+fi
+
+exec sudo -E env HOME=/root QT_QPA_PLATFORM="$platform" /usr/bin/calamares "$@"

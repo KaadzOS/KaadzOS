@@ -1,0 +1,43 @@
+# KaadzOS Calamares branding (generated from theme/palette by theme/generate.sh)
+---
+componentName: kaadzos
+
+welcomeStyleCalamares: false
+welcomeExpandingLogo: true
+windowExpanding: normal
+windowSize: 1000px,650px
+windowPlacement: center
+
+strings:
+    productName:         "KaadzOS"
+    shortProductName:    "KaadzOS"
+    version:             "trixie"
+    shortVersion:        "trixie"
+    versionedName:       "KaadzOS trixie"
+    shortVersionedName:  "KaadzOS trixie"
+    bootloaderEntryName: "KaadzOS"
+    productUrl:          ""
+    supportUrl:          ""
+    knownIssuesUrl:      ""
+    releaseNotesUrl:     ""
+    donateUrl:           ""
+
+sidebar: widget
+navigation: widget
+
+images:
+    productLogo:    "logo.png"
+    productIcon:    "logo.png"
+    productWelcome: "welcome.png"
+
+slideshow: "show.qml"
+slideshowAPI: 2
+
+style:
+    SidebarBackground:        "#0d1219"
+    SidebarText:              "#e2e8f0"
+    SidebarTextCurrent:       "#0a0e14"
+    SidebarBackgroundCurrent: "#38bdf8"
+
+uploadServer:
+    type: "none"

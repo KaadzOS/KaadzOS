@@ -8,6 +8,12 @@ if [ ! -w "$serial" ]; then
   serial=/dev/null
 fi
 
+mode=live
+if [ -e /etc/kaadzos/installed ]; then
+  mode=installed
+fi
+printf 'KAADZOS_MODE %s\n' "$mode" > "$serial"
+
 printf 'KAADZOS_SWAY_WAIT\n' > "$serial"
 
 attempt=0
@@ -38,6 +44,28 @@ for f in "$HOME/.config/sway/config" "$HOME/.config/waybar/style.css" \
   fi
 done
 
+# Installed-system checks: live-only sudo and the Calamares package must be
+# gone, and the first-boot cleanup must have completed.
+if [ "$mode" = installed ]; then
+  if [ -e /etc/sudoers.d/kaadzos-live ]; then
+    printf 'KAADZOS_LIVE_SUDOERS_PRESENT\n' > "$serial"
+  else
+    printf 'KAADZOS_LIVE_SUDOERS_ABSENT\n' > "$serial"
+  fi
+
+  if command -v calamares >/dev/null 2>&1 || [ -d /etc/calamares ]; then
+    printf 'KAADZOS_CALAMARES_PRESENT\n' > "$serial"
+  else
+    printf 'KAADZOS_CALAMARES_ABSENT\n' > "$serial"
+  fi
+
+  if [ -e /etc/kaadzos/firstboot-done ]; then
+    printf 'KAADZOS_FIRSTBOOT_DONE\n' > "$serial"
+  else
+    printf 'KAADZOS_FIRSTBOOT_PENDING\n' > "$serial"
+  fi
+fi
+
 # Under QEMU TCG the software renderer paints slowly; let the desktop draw.
 sleep 8
 
@@ -51,13 +79,21 @@ fi
 # Dump layout and logs between markers so the runner can parse them.
 {
   printf 'KAADZOS_DIAG_BEGIN\n'
+  echo "=== mode ==="
+  echo "$mode"
   echo '=== outputs ==='
   swaymsg -t get_outputs 2>&1
   echo '=== tree ==='
   swaymsg -t get_tree 2>&1
   echo '=== processes ==='
-  ps -eo pid,args 2>/dev/null | grep -E '[w]aybar|[m]ako|[f]oot|[s]way'
-  for log in /tmp/sway.log /tmp/waybar.log /tmp/mako.log; do
+  ps -eo pid,args 2>/dev/null | grep -E '[w]aybar|[m]ako|[f]oot|[s]way|[g]reetd|[t]uigreet'
+  echo '=== installer ==='
+  if [ "$mode" = installed ]; then
+    ls -l /etc/kaadzos 2>&1
+    cat /etc/kaadzos/firstboot-done 2>&1
+    ls -ld /etc/calamares /etc/calamares-ci /etc/live 2>&1
+  fi
+  for log in /tmp/sway.log /tmp/waybar.log /tmp/mako.log /tmp/calamares-ci.log; do
     echo "=== $log ==="
     cat "$log" 2>&1
   done

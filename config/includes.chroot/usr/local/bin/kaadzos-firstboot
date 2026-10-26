@@ -1,0 +1,32 @@
+#!/bin/sh
+# First-boot cleanup for an installed KaadzOS system. The installer keeps
+# /etc/calamares and the calamares package until the target has booted, so the
+# branding and the installer logs are available if installation needs
+# debugging. This unit removes them, then writes a marker and disables itself.
+set -eu
+
+export DEBIAN_FRONTEND=noninteractive
+
+serial=/dev/ttyS0
+if [ ! -w "$serial" ]; then
+  serial=/dev/null
+fi
+
+if dpkg-query -W -f='${Status}' calamares 2>/dev/null | grep -q 'install ok installed'; then
+  dpkg --purge calamares
+fi
+
+rm -rf /etc/calamares /etc/calamares-ci /etc/live /usr/share/kaadzos/ci
+rm -f /etc/sudoers.d/kaadzos-live \
+      /usr/local/bin/kaadzos-ci-install \
+      /usr/local/bin/kaadzos-install \
+      /usr/local/bin/kaadzos-install-finalize \
+      /usr/local/bin/kaadzos-install-live-cleanup
+
+mkdir -p /etc/kaadzos
+date -u +%Y-%m-%dT%H:%M:%SZ > /etc/kaadzos/firstboot-done
+
+systemctl disable kaadzos-firstboot.service >/dev/null 2>&1 || true
+systemctl daemon-reload >/dev/null 2>&1 || true
+
+printf 'KAADZOS_FIRSTBOOT_DONE\n' > "$serial" 2>/dev/null || true

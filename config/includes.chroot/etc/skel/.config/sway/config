@@ -32,19 +32,25 @@ gaps inner 6
 gaps outer 2
 smart_gaps on
 
-# The welcome terminal floats centred so the wallpaper stays visible.
+# The welcome terminal floats centred so the wallpaper stays visible. It is a
+# live-session affordance only; installed systems boot straight to Waybar.
 for_window [app_id="foot" title="KaadzOS Terminal"] floating enable, resize set 1100 690, move position center
+for_window [app_id="calamares"] fullscreen enable
 
 # Autostart (logs go to /tmp; /run/hostshare only exists in the QEMU boot test)
 exec waybar >/tmp/waybar.log 2>&1
 exec mako >/tmp/mako.log 2>&1
-exec foot --title "KaadzOS Terminal"
+exec sh -c 'if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Terminal"; fi'
 exec sh /usr/local/bin/kaadzos-session-ready
+# Unattended install driver: only fires in the CI VM with the CI Calamares
+# configuration and no installed marker.
+exec sh -c 'if [ -r /sys/class/dmi/id/product_name ] && [ "$(cat /sys/class/dmi/id/product_name)" = KAADZOS-CI-INSTALL ] && [ -d /etc/calamares-ci ] && [ ! -e /etc/kaadzos/installed ] && [ ! -e /run/kaadzos-ci-install.started ]; then /usr/local/bin/kaadzos-ci-install; fi'
 
 # Launchers / system
 bindsym $mod+Return exec $term
 bindsym $mod+d exec $launcher
 bindsym $mod+a exec kaadzos addons
+bindsym $mod+i exec sh -c 'command -v kaadzos-install >/dev/null 2>&1 && kaadzos-install'
 bindsym $mod+q kill
 bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
 bindsym $mod+Shift+x exec $lock

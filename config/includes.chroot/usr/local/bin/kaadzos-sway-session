@@ -1,13 +1,21 @@
 #!/bin/sh
-# Sway session wrapper: exports the environment, runs Sway inside a D-Bus
-# session bus, and reports the exit code to the serial console so CI can see
-# why a session ended. Logs live in /tmp so they work on real hardware too.
+# Sway session wrapper used by the live autologin and by greetd/tuigreet in
+# the installed system. Exports the session environment, runs Sway inside a
+# D-Bus session bus, and reports the exit code to the serial console so CI can
+# see why a session ended. Logs live in /tmp so they work on real hardware too.
 export XDG_SESSION_TYPE=wayland
-export WLR_RENDERER=pixman
-export WLR_RENDERER_ALLOW_SOFTWARE=1
-export WLR_NO_HARDWARE_CURSORS=1
+export XDG_CURRENT_DESKTOP=sway
+export XDG_SESSION_DESKTOP=sway
 export QT_QPA_PLATFORMTHEME=qt6ct
 export MOZ_ENABLE_WAYLAND=1
+
+# QEMU's virtio GPU has no useful GL under the CI runner, so force Sway's
+# software renderer there. Real hardware keeps the default renderer.
+if grep -qi qemu /sys/class/dmi/id/product_name /sys/class/dmi/id/sys_vendor 2>/dev/null; then
+  export WLR_RENDERER=pixman
+  export WLR_RENDERER_ALLOW_SOFTWARE=1
+  export WLR_NO_HARDWARE_CURSORS=1
+fi
 
 log=/tmp/sway.log
 if command -v dbus-run-session >/dev/null 2>&1; then

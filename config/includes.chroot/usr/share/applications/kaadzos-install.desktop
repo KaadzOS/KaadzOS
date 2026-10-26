@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Install KaadzOS
+Comment=Install KaadzOS to this computer
+Exec=kaadzos-install
+Icon=calamares
+Terminal=false
+Categories=System;
+Keywords=install;installer;setup;calamares;

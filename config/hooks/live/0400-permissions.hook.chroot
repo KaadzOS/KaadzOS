@@ -1,17 +1,13 @@
 #!/bin/sh
 set -eu
 
-# Guarantee the pack manager is executable (git only reliably preserves the
-# exec bit; ensure it regardless of the checkout platform).
-if [ -f /usr/local/bin/kaadzos ]; then
-  chmod 755 /usr/local/bin/kaadzos
-fi
-
-# Passwordless sudo for the live user so 'kaadzos add/remove/update' can manage
-# packages without a password prompt (the live account has no known password).
-# This is live-only configuration and must be removed at install time (Phase 5).
+# Passwordless sudo for the live user so 'kaadzos add/remove/update' and the
+# Calamares installer can run without a password prompt (the live account has
+# no known password). SETENV lets the installer preserve the Wayland
+# environment when it re-executes Calamares as root. This is live-only
+# configuration and is removed by the installer.
 if [ -d /etc/sudoers.d ]; then
-  printf 'kaadzos ALL=(ALL) NOPASSWD:ALL\n' > /etc/sudoers.d/kaadzos-live
+  printf 'kaadzos ALL=(ALL) NOPASSWD: SETENV: ALL\n' > /etc/sudoers.d/kaadzos-live
   chmod 440 /etc/sudoers.d/kaadzos-live
   # Fail the build early if the snippet is somehow invalid.
   visudo -cf /etc/sudoers.d/kaadzos-live >/dev/null

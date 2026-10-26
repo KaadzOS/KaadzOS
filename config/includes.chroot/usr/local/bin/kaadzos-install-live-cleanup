@@ -1,0 +1,34 @@
+#!/bin/sh
+# Remove live-only packages and configuration from the target system.
+# Runs inside the target chroot, immediately after unpackfs and before the
+# initramfs module. live-config diverts update-initramfs, so this must happen
+# first or the installed system gets a broken initramfs.
+set -eu
+
+export DEBIAN_FRONTEND=noninteractive
+
+packages=
+for pkg in live-config-systemd live-config live-boot-initramfs-tools live-boot live-tools; do
+  if dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'install ok installed'; then
+    packages="$packages $pkg"
+  fi
+done
+
+if [ -n "$packages" ]; then
+  # shellcheck disable=SC2086
+  apt-get purge -y --no-install-recommends $packages
+else
+  echo "kaadzos-install-live-cleanup: no live packages installed"
+fi
+
+# The live boot/config resources and the passwordless live sudoers rule.
+rm -rf /etc/live
+rm -f /etc/sudoers.d/kaadzos-live
+
+# Make sure the installed system still has the initramfs generator after the
+# live packages are gone (it is a dependency of the kernel, but be explicit).
+if ! command -v update-initramfs >/dev/null 2>&1; then
+  apt-get install -y --no-install-recommends initramfs-tools
+fi
+
+echo "kaadzos-install-live-cleanup: live packages and configuration removed"

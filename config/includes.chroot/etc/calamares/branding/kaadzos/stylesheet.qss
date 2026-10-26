@@ -1,0 +1,123 @@
+/* KaadzOS Calamares stylesheet (generated from theme/palette). */
+
+QWidget {
+    background-color: #0a0e14;
+    color: #e2e8f0;
+    selection-background-color: #38bdf8;
+    selection-color: #0a0e14;
+}
+
+QMainWindow, QDialog {
+    background-color: #0a0e14;
+}
+
+#sidebarApp {
+    background-color: #0d1219;
+}
+
+#logoApp {
+    padding: 12px;
+}
+
+QPushButton {
+    background-color: #1c2533;
+    color: #e2e8f0;
+    border: 1px solid #2a3547;
+    border-radius: 6px;
+    padding: 7px 18px;
+    min-width: 84px;
+}
+
+QPushButton:hover {
+    border-color: #38bdf8;
+    color: #e2e8f0;
+}
+
+QPushButton:default, QPushButton:focus {
+    background-color: #38bdf8;
+    border-color: #38bdf8;
+    color: #0a0e14;
+    font-weight: 600;
+}
+
+QPushButton:disabled {
+    background-color: #131a24;
+    border-color: #1c2533;
+    color: #64748b;
+}
+
+QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox, QTextEdit, QPlainTextEdit {
+    background-color: #131a24;
+    color: #e2e8f0;
+    border: 1px solid #2a3547;
+    border-radius: 4px;
+    padding: 5px 8px;
+}
+
+QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus, QComboBox:focus {
+    border-color: #38bdf8;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #131a24;
+    color: #e2e8f0;
+    selection-background-color: #1c2533;
+    selection-color: #38bdf8;
+}
+
+QCheckBox, QRadioButton, QLabel {
+    color: #e2e8f0;
+}
+
+QCheckBox::indicator, QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+QGroupBox {
+    border: 1px solid #2a3547;
+    border-radius: 6px;
+    margin-top: 12px;
+    padding-top: 12px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 12px;
+    padding: 0 4px;
+    color: #94a3b8;
+}
+
+QScrollArea, QScrollArea > QWidget > QWidget {
+    background-color: transparent;
+    border: none;
+}
+
+QProgressBar {
+    background-color: #131a24;
+    border: 1px solid #2a3547;
+    border-radius: 4px;
+    text-align: center;
+    color: #e2e8f0;
+    min-height: 18px;
+}
+
+QProgressBar::chunk {
+    background-color: #38bdf8;
+    border-radius: 3px;
+}
+
+QListWidget, QTreeView, QTableView {
+    background-color: #0d1219;
+    color: #e2e8f0;
+    border: 1px solid #2a3547;
+    selection-background-color: #1c2533;
+    selection-color: #38bdf8;
+}
+
+QToolTip {
+    background-color: #1c2533;
+    color: #e2e8f0;
+    border: 1px solid #38bdf8;
+    padding: 4px;
+}

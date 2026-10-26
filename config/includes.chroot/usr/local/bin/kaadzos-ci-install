@@ -1,0 +1,146 @@
+#!/bin/sh
+# Unattended Calamares driver for ci/test-install.sh.
+#
+# This is only started from the Sway autostart when the VM exposes the CI DMI
+# product name and the CI Calamares configuration is present. It types through
+# the pages with wtype (Wayland-native, so it works under Sway without a seat
+# daemon) and writes progress markers to the serial console. product_name is
+# used because /sys/class/dmi/id/product_serial is root-only; the live user
+# could not read it.
+set -u
+
+serial=/dev/ttyS0
+if [ ! -w "$serial" ]; then
+  serial=/dev/null
+fi
+
+mark() {
+  printf '%s\n' "$*" > "$serial" 2>/dev/null || true
+}
+
+# Never run on a normal live boot, in the installed system, or twice.
+if [ ! -r /sys/class/dmi/id/product_name ]; then
+  exit 0
+fi
+if [ "$(cat /sys/class/dmi/id/product_name 2>/dev/null)" != "KAADZOS-CI-INSTALL" ]; then
+  exit 0
+fi
+if [ ! -d /etc/calamares-ci ] || [ -e /etc/kaadzos/installed ]; then
+  exit 0
+fi
+if [ -e /run/kaadzos-ci-install.started ]; then
+  exit 0
+fi
+: > /run/kaadzos-ci-install.started
+
+mark "KAADZOS_INSTALLER_START"
+
+# Give the live session a moment to settle, then get the welcome terminal out
+# of the way so Calamares owns the output.
+sleep 10
+pkill -x foot 2>/dev/null || true
+
+log=/tmp/calamares-ci.log
+: > "$log"
+sudo -E env HOME=/root QT_QPA_PLATFORM=wayland \
+  /usr/bin/calamares -c /etc/calamares-ci >>"$log" 2>&1 &
+cal_pid=$!
+
+wait_for_window() {
+  i=0
+  while [ "$i" -lt 180 ]; do
+    if ! kill -0 "$cal_pid" 2>/dev/null; then
+      return 1
+    fi
+    if swaymsg -t get_tree 2>/dev/null | grep -q '"app_id": "calamares"'; then
+      return 0
+    fi
+    i=$((i + 1))
+    sleep 1
+  done
+  return 1
+}
+
+if ! wait_for_window; then
+  mark "KAADZOS_INSTALLER_WINDOW_TIMEOUT"
+  wait "$cal_pid" 2>/dev/null
+  mark "KAADZOS_INSTALL_EXIT rc=$?"
+  mark "KAADZOS_CI_LOG_BEGIN"
+  tail -n 80 "$log" > "$serial" 2>&1 || true
+  mark "KAADZOS_CI_LOG_END"
+  sudo -n poweroff -f 2>/dev/null || true
+  exit 1
+fi
+
+mark "KAADZOS_INSTALLER_WINDOW"
+swaymsg '[app_id="calamares"] fullscreen enable' >/dev/null 2>&1 || true
+sleep 6
+
+# Navigation. Calamares uses mnemonics (&Next / &Install); each page below has
+# a single Next, so Alt+N advances. The pause after the keyboard page gives
+# the partition module time to finish its device scan before Next is enabled.
+mark "KAADZOS_CI_STEP welcome"
+wtype -M alt -k n -m alt
+sleep 5
+
+mark "KAADZOS_CI_STEP locale"
+wtype -M alt -k n -m alt
+sleep 4
+
+mark "KAADZOS_CI_STEP keyboard"
+wtype -M alt -k n -m alt
+sleep 40
+
+mark "KAADZOS_CI_STEP partition"
+wtype -M alt -k n -m alt
+sleep 5
+
+# Users page: onActivate() focuses the full name field. Full name, login name
+# and hostname are the three focusable fields before the password box; the
+# presets already contain sane values, so leave them alone.
+mark "KAADZOS_CI_STEP users"
+wtype -k Tab
+wtype -k Tab
+wtype -k Tab
+sleep 1
+wtype 'kaadzos2026'
+sleep 1
+wtype -k Tab
+wtype 'kaadzos2026'
+sleep 2
+wtype -M alt -k n -m alt
+sleep 5
+
+mark "KAADZOS_CI_STEP summary"
+wtype -M alt -k i -m alt
+
+# 40 minute watchdog. Under TCG a full unpackfs + initramfs run is slow.
+deadline=$(( $(date +%s) + 2400 ))
+watchdog=0
+while kill -0 "$cal_pid" 2>/dev/null; do
+  if [ "$(date +%s)" -ge "$deadline" ]; then
+    watchdog=1
+    mark "KAADZOS_INSTALL_WATCHDOG"
+    kill "$cal_pid" 2>/dev/null || true
+    sleep 2
+    kill -9 "$cal_pid" 2>/dev/null || true
+    break
+  fi
+  sleep 5
+done
+
+wait "$cal_pid"
+rc=$?
+
+mark "KAADZOS_INSTALL_EXIT rc=$rc"
+mark "KAADZOS_CI_LOG_BEGIN"
+tail -n 120 "$log" > "$serial" 2>&1 || true
+mark "KAADZOS_CI_LOG_END"
+
+sync
+sudo -n poweroff -f 2>/dev/null || true
+
+if [ "$watchdog" -eq 1 ]; then
+  exit 1
+fi
+exit "$rc"

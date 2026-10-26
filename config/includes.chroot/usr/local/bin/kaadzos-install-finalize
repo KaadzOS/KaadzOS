@@ -1,0 +1,58 @@
+#!/bin/sh
+# Finalise the target system. Runs inside the target chroot after all packages
+# and the bootloader have been configured, and before umount.
+set -eu
+
+export DEBIAN_FRONTEND=noninteractive
+
+# Live-only sudo, CI-only Calamares configuration and the installer helpers.
+rm -f /etc/sudoers.d/kaadzos-live
+rm -rf /etc/calamares-ci /usr/share/kaadzos/ci
+rm -f /usr/local/bin/kaadzos-install \
+      /usr/local/bin/kaadzos-ci-install \
+      /usr/local/bin/kaadzos-install-live-cleanup \
+      /usr/local/bin/kaadzos-install-finalize
+
+# greetd's displaymanager module writes vt = "next"; the installed system
+# wants a fixed VT so tty7 is consistently the graphical login.
+if [ -f /etc/greetd/config.toml ] && command -v python3 >/dev/null 2>&1; then
+  python3 - <<'PY'
+import toml
+path = "/etc/greetd/config.toml"
+with open(path, "r") as handle:
+    data = toml.load(handle)
+terminal = data.setdefault("terminal", {})
+terminal["vt"] = 7
+default = data.setdefault("default_session", {})
+default["user"] = "_greetd"
+with open(path, "w") as handle:
+    toml.dump(data, handle)
+PY
+fi
+
+# Make the graphical login the default target and make sure the first-boot
+# cleanup unit is enabled even if services-systemd did not run.
+systemctl set-default graphical.target >/dev/null 2>&1 || true
+systemctl enable greetd.service >/dev/null 2>&1 || true
+systemctl enable kaadzos-firstboot.service >/dev/null 2>&1 || true
+
+# Installed systems get useful Debian sources if the squashfs carried none.
+if [ ! -s /etc/apt/sources.list ] && \
+   ! ls /etc/apt/sources.list.d/*.sources >/dev/null 2>&1 && \
+   ! ls /etc/apt/sources.list.d/*.list >/dev/null 2>&1; then
+  cat > /etc/apt/sources.list <<'EOF'
+deb http://deb.debian.org/debian trixie main contrib non-free-firmware
+deb http://deb.debian.org/debian trixie-updates main contrib non-free-firmware
+deb http://security.debian.org/debian-security trixie-security main contrib non-free-firmware
+EOF
+fi
+
+# Marker read by kaadzos-session-ready and kaadzos-firstboot. Keep the
+# directory out of the live image's way by creating it only here.
+mkdir -p /etc/kaadzos
+{
+  echo "installed=yes"
+  echo "installed-at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+} > /etc/kaadzos/installed
+
+echo "kaadzos-install-finalize: target marked as installed"

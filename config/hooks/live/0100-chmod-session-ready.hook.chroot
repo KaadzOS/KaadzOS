@@ -1,5 +1,18 @@
 #!/bin/sh
 set -eu
 
-chmod 755 /usr/local/bin/kaadzos-session-ready
-chmod 755 /usr/local/bin/kaadzos-sway-session
+# Guarantee the KaadzOS helpers are executable (git only reliably preserves
+# the exec bit; ensure it regardless of the checkout platform).
+for script in \
+  /usr/local/bin/kaadzos \
+  /usr/local/bin/kaadzos-install \
+  /usr/local/bin/kaadzos-ci-install \
+  /usr/local/bin/kaadzos-install-live-cleanup \
+  /usr/local/bin/kaadzos-install-finalize \
+  /usr/local/bin/kaadzos-firstboot \
+  /usr/local/bin/kaadzos-session-ready \
+  /usr/local/bin/kaadzos-sway-session; do
+  if [ -f "$script" ]; then
+    chmod 755 "$script"
+  fi
+done

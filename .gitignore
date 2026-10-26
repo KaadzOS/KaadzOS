@@ -8,3 +8,7 @@ boot-logs-*/
 
 # Packs are canonical in packs/; CI copies them into the image before build.
 config/includes.chroot/usr/share/kaadzos/packs/
+
+# Python bytecode from theme/render-artwork.py (generated locally, not shipped).
+__pycache__/
+*.pyc

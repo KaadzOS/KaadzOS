@@ -15,12 +15,13 @@ cfg="$chroot/etc/skel/.config"                    # per-user configs (copied to 
 wall_dir="$chroot/usr/share/backgrounds/kaadzos"
 # Path as it appears inside the running guest (never a build-machine path).
 wall_guest="/usr/share/backgrounds/kaadzos"
+cal_brand="$chroot/etc/calamares/branding/kaadzos"
 
 mkdir -p \
   "$cfg/sway" "$cfg/waybar" "$cfg/foot" "$cfg/fuzzel" "$cfg/mako" \
   "$cfg/swaylock" "$cfg/qt6ct" "$sys/qt6ct/colors" \
   "$sys/gtk-3.0" "$sys/gtk-4.0" "$sys/systemd/system" \
-  "$wall_dir" "$chroot/usr/local/share/kaadzos"
+  "$wall_dir" "$cal_brand" "$chroot/usr/local/share/kaadzos"
 
 # foot/swaylock want RRGGBB without a leading '#'; the rest want '#RRGGBB'.
 strip() { printf '%s' "${1#\#}"; }
@@ -89,19 +90,25 @@ gaps inner 6
 gaps outer 2
 smart_gaps on
 
-# The welcome terminal floats centred so the wallpaper stays visible.
+# The welcome terminal floats centred so the wallpaper stays visible. It is a
+# live-session affordance only; installed systems boot straight to Waybar.
 for_window [app_id="foot" title="KaadzOS Terminal"] floating enable, resize set 1100 690, move position center
+for_window [app_id="calamares"] fullscreen enable
 
 # Autostart (logs go to /tmp; /run/hostshare only exists in the QEMU boot test)
 exec waybar >/tmp/waybar.log 2>&1
 exec mako >/tmp/mako.log 2>&1
-exec foot --title "KaadzOS Terminal"
+exec sh -c 'if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Terminal"; fi'
 exec sh /usr/local/bin/kaadzos-session-ready
+# Unattended install driver: only fires in the CI VM with the CI Calamares
+# configuration and no installed marker.
+exec sh -c 'if [ -r /sys/class/dmi/id/product_name ] && [ "\$(cat /sys/class/dmi/id/product_name)" = KAADZOS-CI-INSTALL ] && [ -d /etc/calamares-ci ] && [ ! -e /etc/kaadzos/installed ] && [ ! -e /run/kaadzos-ci-install.started ]; then /usr/local/bin/kaadzos-ci-install; fi'
 
 # Launchers / system
 bindsym \$mod+Return exec \$term
 bindsym \$mod+d exec \$launcher
 bindsym \$mod+a exec kaadzos addons
+bindsym \$mod+i exec sh -c 'command -v kaadzos-install >/dev/null 2>&1 && kaadzos-install'
 bindsym \$mod+q kill
 bindsym \$mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
 bindsym \$mod+Shift+x exec \$lock
@@ -407,6 +414,241 @@ disabled_colors=#${KAADZ_FG_MUTED#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_SURFACE#\#}
 inactive_colors=#${KAADZ_FG_ALT#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_SURFACE#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_BG#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_ACCENT#\#}, #${KAADZ_URGENT_FG#\#}, #${KAADZ_ACCENT#\#}, #${KAADZ_URGENT#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BG#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_ACCENT_ALT#\#}
 QSC
 
+# ------------------------------------------------------------------ Calamares
+cat > "$cal_brand/branding.desc" <<BRAND
+# KaadzOS Calamares branding (generated from theme/palette by theme/generate.sh)
+---
+componentName: kaadzos
+
+welcomeStyleCalamares: false
+welcomeExpandingLogo: true
+windowExpanding: normal
+windowSize: 1000px,650px
+windowPlacement: center
+
+strings:
+    productName:         "KaadzOS"
+    shortProductName:    "KaadzOS"
+    version:             "trixie"
+    shortVersion:        "trixie"
+    versionedName:       "KaadzOS trixie"
+    shortVersionedName:  "KaadzOS trixie"
+    bootloaderEntryName: "KaadzOS"
+    productUrl:          ""
+    supportUrl:          ""
+    knownIssuesUrl:      ""
+    releaseNotesUrl:     ""
+    donateUrl:           ""
+
+sidebar: widget
+navigation: widget
+
+images:
+    productLogo:    "logo.png"
+    productIcon:    "logo.png"
+    productWelcome: "welcome.png"
+
+slideshow: "show.qml"
+slideshowAPI: 2
+
+style:
+    SidebarBackground:        "${KAADZ_BG_ALT}"
+    SidebarText:              "${KAADZ_FG}"
+    SidebarTextCurrent:       "${KAADZ_BG}"
+    SidebarBackgroundCurrent: "${KAADZ_ACCENT}"
+
+uploadServer:
+    type: "none"
+BRAND
+
+cat > "$cal_brand/stylesheet.qss" <<QSS
+/* KaadzOS Calamares stylesheet (generated from theme/palette). */
+
+QWidget {
+    background-color: ${KAADZ_BG};
+    color: ${KAADZ_FG};
+    selection-background-color: ${KAADZ_ACCENT};
+    selection-color: ${KAADZ_BG};
+}
+
+QMainWindow, QDialog {
+    background-color: ${KAADZ_BG};
+}
+
+#sidebarApp {
+    background-color: ${KAADZ_BG_ALT};
+}
+
+#logoApp {
+    padding: 12px;
+}
+
+QPushButton {
+    background-color: ${KAADZ_OVERLAY};
+    color: ${KAADZ_FG};
+    border: 1px solid ${KAADZ_BORDER};
+    border-radius: 6px;
+    padding: 7px 18px;
+    min-width: 84px;
+}
+
+QPushButton:hover {
+    border-color: ${KAADZ_ACCENT};
+    color: ${KAADZ_FG};
+}
+
+QPushButton:default, QPushButton:focus {
+    background-color: ${KAADZ_ACCENT};
+    border-color: ${KAADZ_ACCENT};
+    color: ${KAADZ_URGENT_FG};
+    font-weight: 600;
+}
+
+QPushButton:disabled {
+    background-color: ${KAADZ_SURFACE};
+    border-color: ${KAADZ_OVERLAY};
+    color: ${KAADZ_FG_MUTED};
+}
+
+QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox, QTextEdit, QPlainTextEdit {
+    background-color: ${KAADZ_SURFACE};
+    color: ${KAADZ_FG};
+    border: 1px solid ${KAADZ_BORDER};
+    border-radius: 4px;
+    padding: 5px 8px;
+}
+
+QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus, QComboBox:focus {
+    border-color: ${KAADZ_ACCENT};
+}
+
+QComboBox QAbstractItemView {
+    background-color: ${KAADZ_SURFACE};
+    color: ${KAADZ_FG};
+    selection-background-color: ${KAADZ_OVERLAY};
+    selection-color: ${KAADZ_ACCENT};
+}
+
+QCheckBox, QRadioButton, QLabel {
+    color: ${KAADZ_FG};
+}
+
+QCheckBox::indicator, QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+QGroupBox {
+    border: 1px solid ${KAADZ_BORDER};
+    border-radius: 6px;
+    margin-top: 12px;
+    padding-top: 12px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 12px;
+    padding: 0 4px;
+    color: ${KAADZ_FG_ALT};
+}
+
+QScrollArea, QScrollArea > QWidget > QWidget {
+    background-color: transparent;
+    border: none;
+}
+
+QProgressBar {
+    background-color: ${KAADZ_SURFACE};
+    border: 1px solid ${KAADZ_BORDER};
+    border-radius: 4px;
+    text-align: center;
+    color: ${KAADZ_FG};
+    min-height: 18px;
+}
+
+QProgressBar::chunk {
+    background-color: ${KAADZ_ACCENT};
+    border-radius: 3px;
+}
+
+QListWidget, QTreeView, QTableView {
+    background-color: ${KAADZ_BG_ALT};
+    color: ${KAADZ_FG};
+    border: 1px solid ${KAADZ_BORDER};
+    selection-background-color: ${KAADZ_OVERLAY};
+    selection-color: ${KAADZ_ACCENT};
+}
+
+QToolTip {
+    background-color: ${KAADZ_OVERLAY};
+    color: ${KAADZ_FG};
+    border: 1px solid ${KAADZ_ACCENT};
+    padding: 4px;
+}
+QSS
+
+cat > "$cal_brand/show.qml" <<QML
+/* KaadzOS Calamares slideshow (generated from theme/palette). */
+
+import QtQuick 2.5;
+import calamares.slideshow 1.0;
+
+Presentation
+{
+    id: presentation
+
+    textColor: "${KAADZ_FG}"
+    fontFamily: "${KAADZ_FONT_UI}"
+
+    Timer {
+        interval: 12000
+        running: presentation.activatedInCalamares
+        repeat: true
+        onTriggered: presentation.goToNextSlide()
+    }
+
+    Slide {
+        Image {
+            id: background1
+            source: "slide.png"
+            anchors.fill: parent
+            fillMode: Image.PreserveAspectCrop
+            opacity: 0.35
+        }
+        Text {
+            anchors.centerIn: parent
+            width: parent.width * 0.86
+            horizontalAlignment: Text.Center
+            wrapMode: Text.WordWrap
+            color: "${KAADZ_FG}"
+            font.family: "${KAADZ_FONT_UI}"
+            font.pixelSize: 26
+            font.bold: true
+            text: qsTr("Installing KaadzOS")
+        }
+    }
+
+    Slide {
+        centeredText: qsTr("KaadzOS is copying the live system to disk, then\n" +
+                           "removing live-only configuration and building a\n" +
+                           "fresh initramfs for the installed kernel.")
+    }
+
+    Slide {
+        centeredText: qsTr("The Night theme, Sway session and Waybar carry over\n" +
+                           "unchanged. The installer removes itself on the first\n" +
+                           "boot, leaving a clean installed system.")
+    }
+
+    function onActivate() {
+        presentation.currentSlide = 0;
+    }
+
+    function onLeave() {
+    }
+}
+QML
+
 # ------------------------------------------------------------- virtual console
 # A 16-colour palette for the Linux virtual terminals, applied by setvtrgb.
 # setvtrgb expects three lines (red, green, blue) of 16 comma-separated values.
@@ -441,40 +683,25 @@ ExecStart=/usr/bin/setvtrgb /etc/vtrgb
 WantedBy=sysinit.target
 SVC
 
-echo "KaadzOS theme configs generated into config/includes.chroot."
+# ---------------------------------------------------------------- PNG artwork
+# The wallpaper raster and the Calamares artwork all come from the same
+# palette. The PNGs are committed, so a machine without Python still builds a
+# complete image; re-run this script after touching theme/palette.
+py=
+for candidate in python3 python; do
+  if command -v "$candidate" >/dev/null 2>&1; then
+    py=$candidate
+    break
+  fi
+done
 
-# ------------------------------------------------------ optional PNG wallpaper
-# swaybg renders SVG only if an SVG loader is present; a committed PNG is the
-# reliable fallback. Generate one here when Python is available.
-if command -v python3 >/dev/null 2>&1; then
-python3 - "$wall_dir/wallpaper.png" <<PY
-import struct, zlib, sys
-W,H=1920,1080
-def h2r(x): x=x.lstrip('#'); return tuple(int(x[i:i+2],16) for i in (0,2,4))
-top=h2r('$KAADZ_BG_ALT'); bot=h2r('$KAADZ_BG')
-acc=h2r('$KAADZ_ACCENT'); pur=h2r('$KAADZ_PURPLE')
-rows=bytearray()
-cx,cy=W*0.72,H*0.28
-for y in range(H):
-    rows.append(0)
-    t=y/(H-1)
-    br=tuple(int(top[i]+(bot[i]-top[i])*t) for i in range(3))
-    for x in range(W):
-        d=((x-cx)**2+(y-cy)**2)**0.5
-        g=max(0.0,1.0-d/(W*0.9))
-        r=min(255,int(br[0]+(acc[0]-br[0])*g*0.35))
-        gch=min(255,int(br[1]+(acc[1]-br[1])*g*0.35))
-        b=min(255,int(br[2]+(acc[2]-br[2])*g*0.35))
-        rows+=bytes((r,gch,b))
-def chunk(t,d):
-    c=t+d; return struct.pack('>I',len(d))+c+struct.pack('>I',zlib.crc32(c)&0xffffffff)
-png=b'\x89PNG\r\n\x1a\n'
-png+=chunk(b'IHDR',struct.pack('>IIBBBBB',W,H,8,2,0,0,0))
-png+=chunk(b'IDAT',zlib.compress(bytes(rows),6))
-png+=chunk(b'IEND',b'')
-open(sys.argv[1],'wb').write(png)
-print('wallpaper.png written')
-PY
+if [ -n "$py" ]; then
+  "$py" "$here/render-artwork.py" "$wall_dir" "$cal_brand" \
+    "$KAADZ_BG" "$KAADZ_BG_ALT" "$KAADZ_SURFACE" "$KAADZ_BORDER" \
+    "$KAADZ_FG" "$KAADZ_FG_ALT" "$KAADZ_FG_MUTED" \
+    "$KAADZ_ACCENT" "$KAADZ_ACCENT_ALT"
 else
-echo "python3 not found; skipped wallpaper.png (SVG still present)."
+  echo "python3/python not found; kept the committed PNG artwork."
 fi
+
+echo "KaadzOS theme configs generated into config/includes.chroot."

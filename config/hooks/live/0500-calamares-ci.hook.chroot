@@ -1,0 +1,30 @@
+#!/bin/sh
+# Stage the CI copy of the Calamares configuration and make the live image's
+# service state match the installed-system plan.
+set -eu
+
+# The CI variant is a complete copy: Calamares' -c points at a replacement
+# app-data directory, so branding/ and every module config must be present.
+rm -rf /etc/calamares-ci
+cp -a /etc/calamares /etc/calamares-ci
+cp -a /usr/share/kaadzos/ci/calamares/. /etc/calamares-ci/
+
+# Keep the CI settings out of the normal installer's branding path.
+chmod -R u+rwX,go+rX /etc/calamares-ci
+
+# greetd is the installed-system login manager; the live image autologins on
+# tty1 and must not start a display manager. graphical.target is still the
+# installed default.
+systemctl disable greetd.service >/dev/null 2>&1 || true
+rm -f /etc/systemd/system/display-manager.service
+systemctl enable kaadzos-firstboot.service >/dev/null 2>&1 || true
+
+# The first-boot unit is condition-guarded, so enabling it in the live image is
+# safe: it only runs when /etc/kaadzos/installed exists.
+if [ ! -e /etc/systemd/system/multi-user.target.wants/kaadzos-firstboot.service ]; then
+  mkdir -p /etc/systemd/system/multi-user.target.wants
+  ln -s /etc/systemd/system/kaadzos-firstboot.service \
+    /etc/systemd/system/multi-user.target.wants/kaadzos-firstboot.service
+fi
+
+exit 0
