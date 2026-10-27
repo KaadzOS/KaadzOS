@@ -61,10 +61,10 @@ Installer execution order (`config/includes.chroot/etc/calamares/settings.conf`)
 
 ```
 show: welcome, locale, keyboard, partition, users, summary
-exec: kaadzos-exec-marker, partition, mount, unpackfs,
-      kaadzos-cleanup, machineid, fstab, locale, keyboard, localecfg,
+exec: shellprocess@kaadzos-exec-marker, partition, mount, unpackfs,
+      shellprocess@kaadzos-cleanup, machineid, fstab, locale, keyboard, localecfg,
       users, displaymanager, networkcfg, hwclock, services-systemd,
-      bootloader, grubcfg, initramfs, kaadzos-finalize, umount
+      bootloader, grubcfg, initramfs, shellprocess@kaadzos-finalize, umount
 show: finished
 ```
 
