@@ -54,7 +54,7 @@ wait_for_window() {
     if ! kill -0 "$cal_pid" 2>/dev/null; then
       return 1
     fi
-    if swaymsg -t get_tree 2>/dev/null | grep -q '"app_id": "calamares"'; then
+    if window_matches; then
       return 0
     fi
     i=$((i + 1))
@@ -63,8 +63,32 @@ wait_for_window() {
   return 1
 }
 
+# Calamares does not necessarily expose the bare binary name as its Wayland
+# app_id: Qt derives it from the desktop file name, so it can arrive as a
+# reverse-DNS value such as io.calamares.calamares, and under XWayland the
+# window only carries class/instance. Matching the value as a substring keeps
+# the wait working for all three cases. The welcome page title is a last
+# resort, since its text is known and stable for this build.
+window_matches() {
+  swaymsg -t get_tree 2>/dev/null \
+    | grep -Eiq '"(app_id|class|instance)": "[^"]*calamares[^"]*"' && return 0
+  swaymsg -t get_tree 2>/dev/null | grep -Fqi 'Welcome to the KaadzOS' && return 0
+  return 1
+}
+
+# Bounded dump of every window key, so a future timeout records the real
+# app_id instead of failing silently the way this one did.
+dump_tree() {
+  mark "KAADZOS_INSTALLER_TREE_BEGIN"
+  swaymsg -t get_tree 2>/dev/null \
+    | grep -E '"(app_id|name|class|instance)":' \
+    | sed -n '1,80p' > "$serial" 2>&1 || true
+  mark "KAADZOS_INSTALLER_TREE_END"
+}
+
 if ! wait_for_window; then
   mark "KAADZOS_INSTALLER_WINDOW_TIMEOUT"
+  dump_tree
   wait "$cal_pid" 2>/dev/null
   mark "KAADZOS_INSTALL_EXIT rc=$?"
   mark "KAADZOS_CI_LOG_BEGIN"
@@ -75,8 +99,12 @@ if ! wait_for_window; then
 fi
 
 mark "KAADZOS_INSTALLER_WINDOW"
+# Sway criteria are regular expressions, so "calamares" already matches a
+# reverse-DNS app_id. The class rule covers the XWayland case.
 swaymsg '[app_id="calamares"] fullscreen enable' >/dev/null 2>&1 || true
 swaymsg '[app_id="calamares"] focus' >/dev/null 2>&1 || true
+swaymsg '[class="calamares"] fullscreen enable' >/dev/null 2>&1 || true
+swaymsg '[class="calamares"] focus' >/dev/null 2>&1 || true
 sleep 6
 
 # Navigation. Calamares uses mnemonics (&Next / &Install); each page below has

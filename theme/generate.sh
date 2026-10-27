@@ -93,7 +93,11 @@ smart_gaps on
 # The welcome terminal floats centred so the wallpaper stays visible. It is a
 # live-session affordance only; installed systems boot straight to Waybar.
 for_window [app_id="foot" title="KaadzOS Terminal"] floating enable, resize set 1100 690, move position center
+# Calamares runs on Wayland (app_id, sometimes reverse-DNS) or under XWayland
+# (class only), so match both. Sway criteria are regex, so a bare "calamares"
+# also matches io.calamares.calamares.
 for_window [app_id="calamares"] fullscreen enable
+for_window [class="calamares"] fullscreen enable
 
 # Autostart (logs go to /tmp; /run/hostshare only exists in the QEMU boot test)
 exec waybar >/tmp/waybar.log 2>&1

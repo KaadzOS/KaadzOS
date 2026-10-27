@@ -36,6 +36,7 @@ smart_gaps on
 # live-session affordance only; installed systems boot straight to Waybar.
 for_window [app_id="foot" title="KaadzOS Terminal"] floating enable, resize set 1100 690, move position center
 for_window [app_id="calamares"] fullscreen enable
+for_window [class="calamares"] fullscreen enable
 
 # Autostart (logs go to /tmp; /run/hostshare only exists in the QEMU boot test)
 exec waybar >/tmp/waybar.log 2>&1
