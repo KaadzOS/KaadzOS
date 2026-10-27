@@ -221,3 +221,23 @@ jobs:
           name: install-${{ matrix.firmware }}
           path: install-results
           if-no-files-found: warn
+
+      - name: Publish ${{ matrix.firmware }} install diagnostics
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          if [ ! -d install-results ]; then
+            echo "no install diagnostics to publish"
+            exit 0
+          fi
+          cd install-results
+          git init -q
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -q -b "ci-artifacts/install-${{ matrix.firmware }}"
+          git add -A
+          git commit -qm "install diagnostics (${{ matrix.firmware }}) @ ${{ github.sha }}"
+          git push -q --force \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            "HEAD:refs/heads/ci-artifacts/install-${{ matrix.firmware }}"
