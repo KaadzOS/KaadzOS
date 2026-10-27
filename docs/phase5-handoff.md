@@ -1,11 +1,96 @@
 # Phase 5 handoff — Calamares installer
 
-Status: **in progress, not complete.** The guest-side installer, the CI-only
-Calamares profile, the installed-system login/first-boot handling and the
-installer artwork are written and pass local static checks. The unattended
-install test (`ci/test-install.sh`) and the `install-test` CI job do **not**
-exist yet, so no CI run has installed KaadzOS to a disk or booted the installed
-system. Phase 6 must not start until the install test is green.
+Status: **in progress, not complete.** The unattended driver now launches
+Calamares and the wizard renders correctly; the remaining failure is the
+driver's window detection (see "Continuation" below). The live-boot path
+(`build`, `pack-test`, `boot-test bios/uefi`) is green again.
+
+## Continuation — 2026-10-27 (session 2)
+
+Base commit before this continuation: `78d612b` (publish install diagnostics).
+Latest commit: `073990b`. Latest run: **40430355063** — `build`, `pack-test`,
+`boot-test (bios)`, `boot-test (uefi)` all green; `install-test (bios/uefi)`
+fail at `KAADZOS_INSTALLER_WINDOW_TIMEOUT`.
+
+### Fixed this session (in commit order)
+
+1. `003657c` — added `ci/test-install.sh` (two-phase: unattended install into a
+   sparse 12G qcow2, then boot the installed disk without the ISO reusing the
+   OVMF vars) and the `install-test` matrix job in `build.yml`.
+2. `a4caa1f` — the driver died silently before its first marker: it wrote its
+   started guard under `/run`, which the unprivileged live user cannot create
+   files in, and a failed redirect is fatal under dash. Guard moved to
+   `/tmp/kaadzos-ci-install.started` with a non-fatal write. The runner now
+   also fails fast when the live session is ready but
+   `KAADZOS_INSTALLER_START` never appears (300 s). Boot-test job timeout
+   raised 20→40 min and install-test 70→90 min after a run where apt alone
+   exceeded 20 minutes on slow mirrors; test dependencies are now installed
+   with `--no-install-recommends`.
+3. `0294a9d` — Calamares 3.3 refuses to start without a `qml/` subdirectory in
+   its app-data dir when the branding ships a QML slideshow ("explicitly
+   configured application data directory is missing qml/"). Shipped an empty
+   `etc/calamares/qml/` and pinned both launchers to `-c /etc/calamares`.
+4. `073990b` — the exec sequence referenced the custom shellprocess instances
+   by bare id, which Calamares reads as the implicit instance
+   `<id>@<id>` — a module type that does not exist → "Calamares Initialization
+   Failed" listing all three. Fixed to `shellprocess@kaadzos-exec-marker`,
+   `shellprocess@kaadzos-cleanup`, `shellprocess@kaadzos-finalize` in both
+   `settings.conf` files. Also anchored the `KAADZOS_INSTALLER_WINDOW` grep in
+   the test so `KAADZOS_INSTALLER_WINDOW_TIMEOUT` no longer triggers the
+   window screenshot.
+
+### Current failure, exactly
+
+Run 40430355063's `bios-failure.png` shows the Calamares **Welcome page fully
+rendered** (Night palette, KAADZOS branding, Next enabled). Calamares works;
+the wizard is open. The driver still reports
+`KAADZOS_INSTALLER_WINDOW_TIMEOUT` because `wait_for_window` polls
+`swaymsg -t get_tree | grep '"app_id": "calamares"'` and the real window's
+app_id is **not** `calamares`. The same wrong app_id is used by the Sway
+fullscreen rule (`for_window [app_id="calamares"]` in the generated Sway
+config / `theme/generate.sh`), which also never matches.
+
+### Next steps (in order)
+
+1. In `kaadzos-ci-install`, on window-timeout dump a bounded
+   `swaymsg -t get_tree` to the serial console so the real app_id/title is
+   recorded — or simpler, grep for the window title instead (the title is
+   "Welcome to the KaadzOS trixie installer" on the welcome page, but it
+   changes per page; app_id is the stable key).
+2. Fix the app_id value in `kaadzos-ci-install` (wait + fullscreen call) and
+   the `for_window` rule in `theme/generate.sh` + the generated
+   `etc/skel/.config/sway/config` (keep them in sync).
+3. Re-run. After the window is detected the wizard automation is next:
+   welcome → locale → keyboard (40 s wait) → partition (verify the single
+   virtio disk is preselected, else Next stays disabled) → users (3 Tabs then
+   password, verify the tab order) → summary (Alt+I). The `KAADZOS_CI_STEP`
+   markers localize any hang.
+4. Then the installed-disk boot phase (already scripted): greetd autologin,
+   `KAADZOS_FIRSTBOOT_DONE`, `KAADZOS_LIVE_SUDOERS_ABSENT`,
+   `KAADZOS_CALAMARES_ABSENT`, screenshot.
+5. Only when all six jobs are green: update `AGENTS.md` Phase 5 with the
+   evidence run.
+
+### Debugging tips
+
+- `gh run download <run-id> -n install-bios -D <dir>` gives the serial log,
+  calamares tail, `bios-failure.png` and disk. The failure PNG is the fastest
+  way to see what the guest screen shows.
+- Job-level logs are often unavailable while a run is in progress; use the
+  artifact or `gh api repos/KaadzOS/KaadzOS/actions/jobs/<id>/logs` after
+  completion.
+- On this Windows checkout, shell files are CRLF on disk; run syntax checks
+  on an LF copy (`tr -d '\r' < f | dash -n /dev/stdin` via a temp file) — the
+  git index is LF, which is what CI uses.
+
+---
+
+Status: **in progress, not complete.** The sections below are the original
+handoff from the first Phase 5 session (base commit `029571c`, dated
+2026-10-26); `ci/test-install.sh` and the `install-test` jobs described as
+"not started" there have since been written and are being debugged via the
+continuation above. The installer design, module configs, CI profile and
+risk list remain accurate.
 
 Date: 2026-10-26
 Base commit before this handoff: `029571c` (Phase 4 complete)
