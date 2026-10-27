@@ -76,6 +76,7 @@ fi
 
 mark "KAADZOS_INSTALLER_WINDOW"
 swaymsg '[app_id="calamares"] fullscreen enable' >/dev/null 2>&1 || true
+swaymsg '[app_id="calamares"] focus' >/dev/null 2>&1 || true
 sleep 6
 
 # Navigation. Calamares uses mnemonics (&Next / &Install); each page below has

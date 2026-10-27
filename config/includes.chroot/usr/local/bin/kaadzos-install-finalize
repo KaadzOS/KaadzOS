@@ -12,6 +12,7 @@ rm -f /usr/local/bin/kaadzos-install \
       /usr/local/bin/kaadzos-ci-install \
       /usr/local/bin/kaadzos-install-live-cleanup \
       /usr/local/bin/kaadzos-install-finalize
+rm -f /usr/share/applications/kaadzos-install.desktop
 
 # greetd's displaymanager module writes vt = "next"; the installed system
 # wants a fixed VT so tty7 is consistently the graphical login.

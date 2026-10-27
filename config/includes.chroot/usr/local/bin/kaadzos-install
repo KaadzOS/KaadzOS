@@ -4,6 +4,15 @@
 # Wayland environment preserved (live sudoers grants SETENV for this).
 set -eu
 
+if [ ! -d /run/live/medium ] && [ ! -d /run/live/rootfs ]; then
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send "KaadzOS Installer" "The installer is only available in the live session." || true
+  else
+    echo "The installer is only available in the live session." >&2
+  fi
+  exit 1
+fi
+
 if [ "$(id -u)" -eq 0 ]; then
   exec /usr/bin/calamares -c /etc/calamares "$@"
 fi

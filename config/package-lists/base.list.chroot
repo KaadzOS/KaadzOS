@@ -1,6 +1,9 @@
 linux-image-amd64
 firmware-linux
 network-manager
+wpasupplicant
+wireless-regdb
+polkitd
 sway
 swaybg
 swaylock
@@ -13,6 +16,7 @@ xwayland
 fuzzel
 mako-notifier
 grim
+xdg-utils
 breeze-cursor-theme
 adwaita-icon-theme
 fonts-dejavu-core
@@ -27,6 +31,12 @@ sudo
 dbus
 libpam-systemd
 libgl1-mesa-dri
+pipewire-audio
+alsa-ucm-conf
+dbus-user-session
+rtkit
+pavucontrol
+qt6ct
 curl
 ca-certificates
 gnupg
@@ -47,6 +57,8 @@ dosfstools
 mtools
 cryptsetup
 cryptsetup-initramfs
+initramfs-tools
+zstd
 grub-common
 grub2-common
 grub-efi-amd64-bin

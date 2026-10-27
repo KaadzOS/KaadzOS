@@ -41,6 +41,7 @@ for_window [app_id="calamares"] fullscreen enable
 exec waybar >/tmp/waybar.log 2>&1
 exec mako >/tmp/mako.log 2>&1
 exec sh -c 'if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Terminal"; fi'
+exec /usr/local/bin/kaadzos-sway-keyboard
 exec sh /usr/local/bin/kaadzos-session-ready
 # Unattended install driver: only fires in the CI VM with the CI Calamares
 # configuration and no installed marker.

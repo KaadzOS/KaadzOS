@@ -1,0 +1,32 @@
+#!/bin/sh
+# Apply the keyboard layout written by the Calamares keyboard module to the
+# running Sway session. Sway does not read /etc/default/keyboard itself.
+set -eu
+
+[ -r /etc/default/keyboard ] || exit 0
+
+# shellcheck disable=SC1091
+. /etc/default/keyboard
+
+layout=${XKBLAYOUT:-us}
+variant=${XKBVARIANT:-}
+options=${XKBOPTIONS:-}
+
+attempt=0
+while [ "$attempt" -lt 30 ]; do
+  if swaymsg -t get_version >/dev/null 2>&1; then
+    break
+  fi
+  attempt=$((attempt + 1))
+  sleep 1
+done
+
+swaymsg input type:keyboard xkb_layout "$layout" >/dev/null 2>&1 || true
+if [ -n "$variant" ]; then
+  swaymsg input type:keyboard xkb_variant "$variant" >/dev/null 2>&1 || true
+fi
+if [ -n "$options" ]; then
+  swaymsg input type:keyboard xkb_options "$options" >/dev/null 2>&1 || true
+fi
+
+exit 0

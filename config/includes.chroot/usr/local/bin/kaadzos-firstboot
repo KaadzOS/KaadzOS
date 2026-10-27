@@ -16,12 +16,16 @@ if dpkg-query -W -f='${Status}' calamares 2>/dev/null | grep -q 'install ok inst
   dpkg --purge calamares
 fi
 
-rm -rf /etc/calamares /etc/calamares-ci /etc/live /usr/share/kaadzos/ci
-rm -f /etc/sudoers.d/kaadzos-live \
+rm -rf /etc/calamares /etc/calamares-ci /etc/live /var/lib/live /usr/share/kaadzos/ci
+rm -f /etc/sudoers.d/kaadzos-live /etc/sudoers.d/live \
       /usr/local/bin/kaadzos-ci-install \
       /usr/local/bin/kaadzos-install \
       /usr/local/bin/kaadzos-install-finalize \
-      /usr/local/bin/kaadzos-install-live-cleanup
+      /usr/local/bin/kaadzos-install-live-cleanup \
+      /usr/share/applications/kaadzos-install.desktop
+rm -rf /etc/systemd/system/getty@tty1.service.d \
+       /etc/systemd/system/getty@ttyS0.service.d \
+       /etc/systemd/system/serial-getty@ttyS0.service.d
 
 mkdir -p /etc/kaadzos
 date -u +%Y-%m-%dT%H:%M:%SZ > /etc/kaadzos/firstboot-done

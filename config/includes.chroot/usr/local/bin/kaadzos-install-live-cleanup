@@ -21,9 +21,14 @@ else
   echo "kaadzos-install-live-cleanup: no live packages installed"
 fi
 
-# The live boot/config resources and the passwordless live sudoers rule.
-rm -rf /etc/live
-rm -f /etc/sudoers.d/kaadzos-live
+# The live boot/config resources, passwordless sudo and autologin drop-ins.
+rm -rf /etc/live /var/lib/live
+rm -f /etc/sudoers.d/kaadzos-live /etc/sudoers.d/live
+rm -f /etc/live/config.conf.d/kaadzos.conf
+rm -rf /etc/systemd/system/getty@tty1.service.d \
+       /etc/systemd/system/getty@ttyS0.service.d \
+       /etc/systemd/system/serial-getty@ttyS0.service.d
+rm -f /etc/systemd/system/autologin@.service
 
 # Make sure the installed system still has the initramfs generator after the
 # live packages are gone (it is a dependency of the kernel, but be explicit).
