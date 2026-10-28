@@ -36,6 +36,7 @@ fi
 : > /tmp/kaadzos-ci-install.started || true
 
 mark "KAADZOS_INSTALLER_START"
+mark "KAADZOS_TOOLS rsync=$(command -v rsync 2>/dev/null || echo missing) unsquashfs=$(command -v unsquashfs 2>/dev/null || echo missing) zstd=$(command -v zstd 2>/dev/null || echo missing)"
 
 # Give the live session a moment to settle, then get the welcome terminal out
 # of the way so Calamares owns the output.
@@ -92,7 +93,7 @@ if ! wait_for_window; then
   wait "$cal_pid" 2>/dev/null
   mark "KAADZOS_INSTALL_EXIT rc=$?"
   mark "KAADZOS_CI_LOG_BEGIN"
-  tail -n 80 "$log" > "$serial" 2>&1 || true
+  tail -n 400 "$log" > "$serial" 2>&1 || true
   mark "KAADZOS_CI_LOG_END"
   sudo -n poweroff -f 2>/dev/null || true
   exit 1
@@ -165,7 +166,7 @@ rc=$?
 
 mark "KAADZOS_INSTALL_EXIT rc=$rc"
 mark "KAADZOS_CI_LOG_BEGIN"
-tail -n 120 "$log" > "$serial" 2>&1 || true
+tail -n 400 "$log" > "$serial" 2>&1 || true
 mark "KAADZOS_CI_LOG_END"
 
 sync
