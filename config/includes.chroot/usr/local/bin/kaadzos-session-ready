@@ -76,7 +76,10 @@ if ps -eo args 2>/dev/null | grep -q '[s]waynag'; then
   printf 'KAADZOS_SWAY_CONFIG_WARNINGS\n' > "$serial"
 fi
 
-# Dump layout and logs between markers so the runner can parse them.
+# Dump layout and logs between markers so the runner can parse them. The
+# installed system intentionally lacks Calamares and the live logs, so do not
+# let a missing path abort the block before the end marker is written.
+set +e
 {
   printf 'KAADZOS_DIAG_BEGIN\n'
   echo "=== mode ==="
@@ -99,5 +102,6 @@ fi
   done
   printf 'KAADZOS_DIAG_END\n'
 } > "$serial" 2>&1
+set -e
 
 exit 0
