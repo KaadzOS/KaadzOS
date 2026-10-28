@@ -210,6 +210,7 @@ while (( SECONDS < deadline )); do
   if grep -q 'KAADZOS_INSTALL_EXIT rc=' "$install_serial" 2>/dev/null; then
     rc_line=$(grep 'KAADZOS_INSTALL_EXIT rc=' "$install_serial" | tail -1)
     rc=${rc_line##*rc=}
+    rc=${rc%$'\r'}
     sleep 10 # let the driver finish its log tail before we cut it out
     extract_calamares_tail
     if [[ "$rc" != "0" ]]; then
