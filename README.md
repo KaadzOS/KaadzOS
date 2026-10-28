@@ -70,7 +70,7 @@ Phase 5 adds a Calamares installer. It does not debootstrap: it unpacks the live
 
 `install-test` runs the whole thing unattended in QEMU: it creates a sparse 12 GB disk, drives Calamares with `wtype`, powers off, then boots the installed disk *without* the ISO and asserts the markers that matter — `KAADZOS_MODE installed`, `KAADZOS_FIRSTBOOT_DONE`, `KAADZOS_LIVE_SUDOERS_ABSENT`, `KAADZOS_CALAMARES_ABSENT` — plus the same `swaynag` gate as the live boot.
 
-The installer is landing now; see the status table.
+The installer is verified end to end in CI on both BIOS and UEFI.
 
 ## What actually broke
 
@@ -126,7 +126,7 @@ ci/test-packs.sh             pack resolution and CLI behaviour tests
 | 2 — automated BIOS/UEFI boot testing | done |
 | 3 — session and theming | done |
 | 4 — pack manager and on-demand packs | done |
-| 5 — installer (Calamares, install to disk) | **in progress** — wizard runs; unattended driver being debugged |
+| 5 — installer (Calamares, install to disk) | done |
 | 6 — boot polish and identity | not started |
 | 7 — releases and hosting | not started |
 | 8 — optional APT repository | not started |
