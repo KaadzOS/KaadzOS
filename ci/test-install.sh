@@ -183,7 +183,7 @@ while (( SECONDS < deadline )); do
   # Progress screenshots, one attempt each. The window marker is anchored so
   # the WINDOW_TIMEOUT line does not match it.
   if [[ ! -f "$install_window_png" ]] \
-    && grep -q '^KAADZOS_INSTALLER_WINDOW$' "$install_serial" 2>/dev/null; then
+    && tr -d '\r' < "$install_serial" | grep -qx 'KAADZOS_INSTALLER_WINDOW'; then
     sleep 8
     screendump "$install_monitor" "$install_window_ppm" "$install_window_png"
   fi
