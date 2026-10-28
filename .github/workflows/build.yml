@@ -212,7 +212,10 @@ jobs:
           sudo apt-get install --no-install-recommends --yes qemu-system-x86 qemu-utils ovmf socat netpbm
 
       - name: Install KaadzOS with ${{ matrix.firmware }} firmware
-        run: bash ci/test-install.sh "${{ matrix.firmware }}" artifacts/KaadzOS-trixie-amd64.iso install-results
+        run: |
+          mkdir -p install-results
+          set -o pipefail
+          bash ci/test-install.sh "${{ matrix.firmware }}" artifacts/KaadzOS-trixie-amd64.iso install-results 2>&1 | tee install-results/test.log
 
       - name: Upload ${{ matrix.firmware }} install diagnostics
         if: always()
