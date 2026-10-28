@@ -232,6 +232,9 @@ jobs:
             exit 0
           fi
           cd install-results
+          # Keep the diagnostics branch small enough for GitHub to accept it;
+          # the disk image is large and not needed to read the failure.
+          rm -f ./*.qcow2 ./*.fd ./*.ppm
           git init -q
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
