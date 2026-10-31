@@ -1,0 +1,114 @@
+[2J[001;001H[=3h[2J[001;001H[2J[001;001H[8;042;160t[2J[001;001H[2J[001;001H[8;056;240t[2J[001;001HBdsDxe: loading Boot0009 "KaadzOS" from HD(1,GPT,5FEA0037-96B2-4BA6-852C-E96333775C0D,0x1000,0x100000)/\EFI\KaadzOS\shimx64.efi
+BdsDxe: starting Boot0009 "KaadzOS" from HD(1,GPT,5FEA0037-96B2-4BA6-852C-E96333775C0D,0x1000,0x100000)/\EFI\KaadzOS\shimx64.efi
+EFI stub: Loaded initrd from LINUX_EFI_INITRD_MEDIA_GUID device path
+KAADZOS_FIRSTBOOT_DONE
+KAADZOS_MODE installed
+KAADZOS_SWAY_WAIT
+KAADZOS_SWAY_READY
+KAADZOS_CFG /home/kaadzos/.config/sway/config bytes=5173
+KAADZOS_CFG /home/kaadzos/.config/waybar/style.css bytes=910
+KAADZOS_CFG /home/kaadzos/.config/foot/foot.ini bytes=380
+KAADZOS_LIVE_SUDOERS_ABSENT
+KAADZOS_CALAMARES_ABSENT
+KAADZOS_FIRSTBOOT_DONE
+KAADZOS_DIAG_BEGIN
+=== mode ===
+installed
+=== outputs ===
+Output Virtual-1 'Red Hat, Inc. QEMU Monitor Unknown' (focused)
+  Current mode: 1280x800 @ 74.994 Hz
+  Power: on
+  Position: 0,0
+  Scale factor: 1.000000
+  Scale filter: nearest
+  Subpixel hinting: unknown
+  Transform: normal
+  Workspace: 1
+  Max render time: off
+  Adaptive sync: disabled
+  Allow tearing: no
+  Available modes:
+    1280x800 @ 74.994 Hz
+    5120x2160 @ 50.000 Hz (64:27)
+    4096x2160 @ 50.000 Hz (256:135)
+    3840x2160 @ 60.000 Hz (16:9)
+    3840x2160 @ 59.940 Hz (16:9)
+    3840x2160 @ 50.000 Hz (16:9)
+    1920x1440 @ 60.000 Hz
+    2560x1080 @ 50.000 Hz (64:27)
+    1856x1392 @ 59.995 Hz
+    1792x1344 @ 60.000 Hz
+    2048x1152 @ 60.000 Hz
+    1920x1200 @ 59.885 Hz
+    1920x1080 @ 60.000 Hz
+    1920x1080 @ 50.000 Hz (16:9)
+    1600x1200 @ 60.000 Hz
+    1680x1050 @ 59.954 Hz
+    1400x1050 @ 59.978 Hz
+    1280x1024 @ 60.020 Hz
+    1440x900 @ 59.887 Hz
+    1280x960 @ 60.000 Hz
+    1360x768 @ 60.015 Hz
+    1280x768 @ 59.870 Hz
+    1024x768 @ 60.004 Hz
+    800x600 @ 60.317 Hz
+    640x480 @ 60.000 Hz (4:3)
+    640x480 @ 59.940 Hz
+
+=== tree ===
+#1: root "root"
+  #2147483647: output "__i3"
+    #2147483646: workspace "__i3_scratch"
+  #3: output "Virtual-1"
+    #4: workspace "1"
+=== processes ===
+    857 greetd
+    859 /usr/sbin/greetd --session-worker 11
+    893 /bin/sh /usr/local/bin/kaadzos-sway-session
+    903 dbus-run-session -- sway
+    905 sway
+    923 swaybg -o * -i /usr/share/backgrounds/kaadzos/wallpaper.png -m fill
+    948 sh -c swayidle -w timeout 600 'swaylock -f' lock 'swaylock -f' before-sleep 'swaylock -f'
+    950 swayidle -w timeout 600 swaylock -f lock swaylock -f before-sleep swaylock -f
+    952 sh -c waybar >/tmp/waybar.log 2>&1
+    954 waybar
+    955 sh -c mako >/tmp/mako.log 2>&1
+    958 mako
+=== installer ===
+total 8
+-rw-r--r-- 1 root root 21 Oct 31 10:05 firstboot-done
+-rw-r--r-- 1 root root 48 Oct 31 10:04 installed
+2026-10-31T14:05:55Z
+ls: cannot access '/etc/calamares': No such file or directory
+ls: cannot access '/etc/calamares-ci': No such file or directory
+ls: cannot access '/etc/live': No such file or directory
+=== /tmp/sway.log ===
+2026-10-31 10:06:07 - [main.c:282] Found config * for output Virtual-1 (Red Hat, Inc. QEMU Monitor)
+=== /tmp/waybar.log ===
+
+(waybar:954): dbind-WARNING **: 10:06:08.026: AT-SPI: Error retrieving accessibility bus address: org.freedesktop.DBus.Error.ServiceUnknown: The name org.a11y.Bus was not provided by any .service files
+[2026-10-31 10:06:08.389] [info] Using configuration file /home/kaadzos/.config/waybar/config
+[2026-10-31 10:06:08.434] [info] Unable to receive desktop appearance: GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.portal.Desktop was not provided by any .service files
+[2026-10-31 10:06:08.435] [info] Using CSS file /home/kaadzos/.config/waybar/style.css
+[2026-10-31 10:06:09.435] [warning] No batteries.
+[2026-10-31 10:06:09.838] [info] Bar configured (width: 1280, height: 34) for output: Virtual-1
+=== /tmp/mako.log ===
+=== /tmp/calamares-ci.log ===
+cat: /tmp/calamares-ci.log: No such file or directory
+=== memory ===
+               total        used        free      shared  buff/cache   available
+Mem:            1965         281        1585          17         257        1683
+Swap:            982           0         982
+=== swaps ===
+Filename				Type		Size		Used		Priority
+/dev/zram0                              partition	1006416		0		100
+=== zram ===
+NAME       ALGORITHM DISKSIZE DATA COMPR TOTAL STREAMS MOUNTPOINT
+/dev/zram0 zstd        982.8M   4K   59B   20K       2 [SWAP]
+=== vm tuning ===
+swappiness=180 page-cluster=0
+=== boot timing ===
+Startup finished in 18.071s (kernel) + 28.422s (userspace) = 46.494s 
+graphical.target reached after 28.418s in userspace.
+KAADZOS_IDLE_RAM used=281 total=1965 zram_devices=1 zram_size_kb=1006416
+KAADZOS_DIAG_END
