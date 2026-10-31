@@ -1,0 +1,176 @@
+[0;21;33mmtrr: your CPUs had inconsistent fixed MTRR settings[0m
+[0;21;33mmtrr: your CPUs had inconsistent variable MTRR settings[0m
+[0;21;33mmtrr: your CPUs had inconsistent MTRRdefType settings[0m
+[0;21;33mamd_pstate: the _CPC object is not present in SBIOS or ACPI disabled[0m
+[0;21;33mata3.00: LPM support broken, forcing max_power[0m
+[0;21;33mata1.00: LPM support broken, forcing max_power[0m
+[0;21;33mata3.00: LPM support broken, forcing max_power[0m
+[0;21;33mata1.00: LPM support broken, forcing max_power[0m
+[!p]104[?7h[[0;32m  OK  [0m] Finished [0;1;39mplymouth-read-write.servi…[0mPlymouth To Write Out Runtime Data.
+         Mounting [0;1;39mproc-sys-fs-binfmt_misc.m…[0mcutable File Formats File System...
+[[0;32m  OK  [0m] Started [0;1;39msystemd-udevd.service[0m - Ru…anager for Device Events and Files.
+         Starting [0;1;39mplymouth-start.service[0m - Show Plymouth Boot Screen...
+[[0;32m  OK  [0m] Mounted [0;1;39mproc-sys-fs-binfmt_misc.mo…[0mxecutable File Formats File System.
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup.se…[0mreate System Files and Directories.
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-binfmt.service[0m - Set Up Additional Binary Formats.
+         Starting [0;1;39mldconfig.service[0m - Rebuild Dynamic Linker Cache...
+         Starting [0;1;39mlive-config.service[0m - liv…e boot process (late userspace)....
+         Starting [0;1;39msystemd-journal-catalog-u…ervice[0m - Rebuild Journal Catalog...
+[[0;32m  OK  [0m] Started [0;1;39mplymouth-start.service[0m - Show Plymouth Boot Screen.
+[[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-plymo…[0mquests to Plymouth Directory Watch.
+[[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+         Starting [0;1;39mkaadzos-quit-plymouth.ser…[0m the KaadzOS Plymouth bootsplash...
+[!p]104[?7h[6n[32766;32766H[6n[!p]104[?7h[6n[32766;32766H[6n
+KaadzOS 0.1 (trixie) kaadzos on ttyS0
+
+kaadzos login: KAADZOS_MODE live
+KAADZOS_SWAY_WAIT
+KAADZOS_INSTALLER_START
+KAADZOS_SWAY_READY
+KAADZOS_CFG /home/kaadzos/.config/sway/config bytes=5173
+KAADZOS_TOOLS rsync=/usr/bin/rsync unsquashfs=/usr/bin/unsquashfs zstd=/usr/bin/zstd
+KAADZOS_CFG /home/kaadzos/.config/waybar/style.css bytes=910
+KAADZOS_CFG /home/kaadzos/.config/foot/foot.ini bytes=380
+KAADZOS_DIAG_BEGIN
+=== mode ===
+live
+=== outputs ===
+Output Virtual-1 'Red Hat, Inc. QEMU Monitor Unknown' (focused)
+  Current mode: 1280x800 @ 74.994 Hz
+  Power: on
+  Position: 0,0
+  Scale factor: 1.000000
+  Scale filter: nearest
+  Subpixel hinting: unknown
+  Transform: normal
+  Workspace: 1
+  Max render time: off
+  Adaptive sync: disabled
+  Allow tearing: no
+  Available modes:
+    1280x800 @ 74.994 Hz
+    5120x2160 @ 50.000 Hz (64:27)
+    4096x2160 @ 50.000 Hz (256:135)
+    3840x2160 @ 60.000 Hz (16:9)
+    3840x2160 @ 59.940 Hz (16:9)
+    3840x2160 @ 50.000 Hz (16:9)
+    1920x1440 @ 60.000 Hz
+    2560x1080 @ 50.000 Hz (64:27)
+    1856x1392 @ 59.995 Hz
+    1792x1344 @ 60.000 Hz
+    2048x1152 @ 60.000 Hz
+    1920x1200 @ 59.885 Hz
+    1920x1080 @ 60.000 Hz
+    1920x1080 @ 50.000 Hz (16:9)
+    1600x1200 @ 60.000 Hz
+    1680x1050 @ 59.954 Hz
+    1400x1050 @ 59.978 Hz
+    1280x1024 @ 60.020 Hz
+    1440x900 @ 59.887 Hz
+    1280x960 @ 60.000 Hz
+    1360x768 @ 60.015 Hz
+    1280x768 @ 59.870 Hz
+    1024x768 @ 60.004 Hz
+    800x600 @ 60.317 Hz
+    640x480 @ 60.000 Hz (4:3)
+    640x480 @ 59.940 Hz
+
+=== tree ===
+#1: root "root"
+  #2147483647: output "__i3"
+    #2147483646: workspace "__i3_scratch"
+  #3: output "Virtual-1"
+    #4: workspace "1"
+      #5: floating_con "KaadzOS Terminal" (xdg_shell, pid: 1348, app_id: "foot")
+=== processes ===
+   1275 /bin/sh /usr/local/bin/kaadzos-sway-session
+   1286 dbus-run-session -- sway
+   1288 sway
+   1307 swaybg -o * -i /usr/share/backgrounds/kaadzos/wallpaper.png -m fill
+   1333 sh -c swayidle -w timeout 600 'swaylock -f' lock 'swaylock -f' before-sleep 'swaylock -f'
+   1335 swayidle -w timeout 600 swaylock -f lock swaylock -f before-sleep swaylock -f
+   1336 sh -c waybar >/tmp/waybar.log 2>&1
+   1338 sh -c mako >/tmp/mako.log 2>&1
+   1339 waybar
+   1341 sh -c sh -c 'if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Terminal"; fi'
+   1343 mako
+   1345 sh -c if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Terminal"; fi
+   1348 foot --title KaadzOS Terminal
+=== installer ===
+=== /tmp/sway.log ===
+2026-10-31 13:50:38 - [main.c:282] Found config * for output Virtual-1 (Red Hat, Inc. QEMU Monitor)
+warn: wayland.c:1734: compositor does not implement the XDG toplevel icon protocol
+warn: render.c:3079: compositor is not releasing buffers immediately; expect lower rendering performance
+=== /tmp/waybar.log ===
+
+(waybar:1339): dbind-WARNING **: 13:50:39.350: AT-SPI: Error retrieving accessibility bus address: org.freedesktop.DBus.Error.ServiceUnknown: The name org.a11y.Bus was not provided by any .service files
+[2026-10-31 13:50:39.643] [info] Using configuration file /home/kaadzos/.config/waybar/config
+[2026-10-31 13:50:39.688] [info] Unable to receive desktop appearance: GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.portal.Desktop was not provided by any .service files
+[2026-10-31 13:50:39.689] [info] Using CSS file /home/kaadzos/.config/waybar/style.css
+[2026-10-31 13:50:40.383] [warning] No batteries.
+[2026-10-31 13:50:40.701] [info] Bar configured (width: 1280, height: 34) for output: Virtual-1
+=== /tmp/mako.log ===
+=== /tmp/calamares-ci.log ===
+cat: /tmp/calamares-ci.log: No such file or directory
+=== memory ===
+               total        used        free      shared  buff/cache   available
+Mem:            3919         417        3278          46         482        3502
+Swap:           1959           0        1959
+=== swaps ===
+Filename				Type		Size		Used		Priority
+/dev/zram0                              partition	2006968		0		100
+=== zram ===
+NAME       ALGORITHM DISKSIZE DATA COMPR TOTAL STREAMS MOUNTPOINT
+/dev/zram0 zstd          1.9G   4K   59B   20K       2 [SWAP]
+=== vm tuning ===
+swappiness=180 page-cluster=0
+=== boot timing ===
+Startup finished in 14.068s (kernel) + 37.719s (userspace) = 51.787s 
+graphical.target reached after 37.714s in userspace.
+KAADZOS_IDLE_RAM used=418 total=3919 zram_devices=1 zram_size_kb=2006968
+KAADZOS_DIAG_END
+KAADZOS_INSTALLER_WINDOW
+KAADZOS_CI_STEP welcome
+KAADZOS_CI_STEP locale
+KAADZOS_CI_STEP keyboard
+KAADZOS_CI_STEP partition
+KAADZOS_CI_STEP users
+KAADZOS_CI_STEP summary
+KAADZOS_INSTALL_EXEC_BEGIN
+KAADZOS_INSTALL_EXIT rc=0
+KAADZOS_CI_LOG_BEGIN
+QFont::fromString: Invalid description '(empty)'
+QFont::fromString: Invalid description '(empty)'
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::SystemPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::ToolButtonPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::ButtonPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::CheckBoxPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::RadioButtonPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::HeaderPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::ItemViewPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::MessageBoxLabelPelette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::TabBarPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::LabelPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::GroupBoxPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::MenuPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::MenuBarPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::TextEditPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::TextEditPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::TextLineEditPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::ToolTipPalette
+virtual QVariant Qt6CTPlatformTheme::themeHint(QPlatformTheme::ThemeHint) const
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::SystemPalette
+Authorization required, but no authorization protocol specified
+
+Cannot open display ":0"
+chcon: failed to get security context of '/': No data available
+chcon: failed to get security context of '/dev': No data available
+chcon: failed to get security context of '/dev/pts': Operation not supported
+chcon: failed to get security context of '/proc': Operation not supported
+chcon: failed to get security context of '/run': No data available
+chcon: failed to get security context of '/run/udev': No data available
+chcon: failed to get security context of '/sys': No data available
+/usr/lib/x86_64-linux-gnu/calamares/modules/bootloader/main.py:392: SyntaxWarning: invalid escape sequence '\$'
+  prefix, generator_name = re.match("(.*)\${([^}]*)}$", name).groups()
+KAADZOS_CI_LOG_END
+[  663.213131] reboot: Power down
