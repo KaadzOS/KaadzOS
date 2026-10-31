@@ -49,7 +49,7 @@ haven't checked.
 3. **Release title:** `v0.1.0 — first bootable image`
 4. **Description:** paste the body below.
 5. Attach `KaadzOS-trixie-amd64.iso` and `KaadzOS-trixie-amd64.iso.sha256`.
-6. Wait for both uploads to finish (the ISO is ~1 GB; GitHub's per-file limit is
+6. Wait for both uploads to finish (the ISO is ~1.4 GB; GitHub's per-file limit is
    2 GB, so it fits).
 7. **Publish release.**
 
@@ -72,13 +72,14 @@ with a direct link to the release, and update the Status table row for phase 7.
 ## Release body
 
 ```markdown
-First bootable image. Not a finished operating system — the installer is still
-in progress — but this is a real Debian 13 (trixie) live image that boots to a
-working Sway/Wayland desktop on BIOS and UEFI, verified by CI on every push.
+First bootable image. Not a finished operating system, but this is a real
+Debian 13 (trixie) live image that boots to a working Sway/Wayland desktop,
+installs to disk with the bundled Calamares installer, and is verified by CI on
+every push.
 
 ## Download
 
-- `KaadzOS-trixie-amd64.iso` (~1 GB, hybrid ISO)
+- `KaadzOS-trixie-amd64.iso` (~1.4 GB, hybrid ISO)
 - `KaadzOS-trixie-amd64.iso.sha256`
 
 Verify before writing to a USB stick:
@@ -99,34 +100,43 @@ The image is hybrid: the same file boots from a USB stick under BIOS or UEFI.
 
 - Debian 13 live session, built from the archive with `--apt-recommends false`
 - Sway/Wayland desktop: Waybar, foot, fuzzel, mako, swaylock
-- Theme rendered from a single palette file into Sway, Waybar, foot, fuzzel,
-  mako, swaylock, GTK3/4, Qt6ct, the wallpaper, the console palette, and the
-  installer branding
+- Theme rendered from a single palette file into the bootsplash, boot menus
+  (ISOLINUX/GRUB), Sway, Waybar, foot, fuzzel, mako, swaylock, GTK3/4, Qt6ct,
+  the wallpaper, the console palette, and the installer branding
+- Plymouth bootsplash and a KaadzOS identity (`os-release`, `issue`, `motd`)
+- Calamares installer that unpacks the live system to disk and boots the
+  installed system through greetd — verified unattended in CI for BIOS and UEFI
+- Lean default apps: GNOME Web (Epiphany), Thunar, Mousepad, imv, zathura
+- Screenshots (Print/Shift+Print) and screen recording to MP4 (`$mod+Print`)
 - Eight on-demand packs (`ai`, `android`, `cloudflare`, `creative`, `dev`,
   `gaming`, `privacy`, `windows`) via `kaadzos add <pack>`, with `--dry-run`
 - `$mod+a` opens the pack list as a fuzzel menu
+- zram swap (zstd, half of RAM) with a swappiness tuned for compressed swap
+- The installed system boots with Secure Boot enabled (Debian's signed shim and
+  GRUB are shipped); the live image still requires Secure Boot off
 
 ## What does not work yet
 
-- **The installer is in progress.** Calamares launches and renders, but the
-  unattended install path is still being debugged; see the phase 5 handoff in
-  `docs/`. Do not use this image to install over a disk you care about.
-- No persistence, no release signing, no APT repository.
+- No persistence, no published release channel beyond Actions artifacts, no
+  release signing, no APT repository (phases 7–8).
 
 ## How this build is verified
 
 Every push builds the ISO and then boots that exact ISO twice in QEMU — once
 under Syslinux/BIOS and once under GRUB/OVMF UEFI. The boot test waits for
 `KAADZOS_SWAY_READY` on the serial console (emitted only after a successful
-`swaymsg` IPC query), dumps the framebuffer, and **fails the run if `swaynag` is
-running**, because a red warning bar means the Sway config emitted an error.
+`swaymsg` IPC query), dumps the framebuffer, **fails the run if `swaynag` is
+running** (a red warning bar means the Sway config emitted an error), and
+reports idle RAM with the zram state. A third job drives the Calamares
+installer unattended on a blank disk and boots the installed system, for both
+firmwares.
 
-The screenshots committed to the `ci-artifacts` branch are produced by that job,
-not by hand.
+The screenshots committed to the `ci-artifacts` branch are produced by those
+jobs, not by hand.
 
 ## Known limitations
 
-- Builds take ~6 minutes and require ~10 GB of disk.
+- Builds take ~7 minutes and require ~10 GB of disk.
 - The pack manager is POSIX `sh` by design; the base image ships no runtime.
 - AMD64 only.
 ```

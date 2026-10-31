@@ -127,7 +127,7 @@ ci/test-packs.sh             pack resolution and CLI behaviour tests
 | 3 — session and theming | done |
 | 4 — pack manager and on-demand packs | done |
 | 5 — installer (Calamares, install to disk) | done |
-| 6 — boot polish and identity | not started |
+| 6 — boot polish and identity | done |
 | 7 — releases and hosting | not started |
 | 8 — optional APT repository | not started |
 
