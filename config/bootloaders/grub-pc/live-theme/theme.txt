@@ -1,0 +1,54 @@
+# KaadzOS Night GRUB theme (override of live-build's live-theme/theme.txt).
+# The splash artwork keeps its upper third clear; the boot menu lives in the
+# lower half where GRUB overlays it. Fonts are the unicode.pf2 Unifont that
+# live-build's config.cfg already loads before sourcing theme.cfg.
+desktop-image: "../splash.png"
+title-color: "#94a3b8"
+title-font: "Unifont Regular 16"
+title-text: ""
+message-font: "Unifont Regular 16"
+terminal-font: "Unifont Regular 16"
+
+# Boot menu
++ boot_menu {
+        left = 10%
+        width = 80%
+        top = 54%
+        height = 40%
+        item_color = "#94a3b8"
+        selected_item_color = "#38bdf8"
+        item_height = 18
+        item_padding = 0
+        item_spacing = 6
+        icon_width = 0
+        icon_height = 0
+        item_icon_space = 0
+}
+
+# Countdown bar (timeout text is intentionally empty)
++ progress_bar {
+        id = "__timeout__"
+        left = 10%
+        top = 100%-74
+        width = 80%
+        height = 12
+        font = "Unifont Regular 16"
+        text_color = "#e2e8f0"
+        fg_color = "#38bdf8"
+        bg_color = "#131a24"
+        border_color = "#2a3547"
+        text = ""
+}
+
+# Bottom key hints (the template's @KEYMAP_SHORT@ placeholder is never
+# substituted by live-build for theme files, so hardcode the hints)
++ label {
+        top = 100%-46
+        left = 0
+        width = 100%
+        height = 20
+        text = "Enter: boot   ·   E: edit entry   ·   U: utilities"
+        align = "center"
+        color = "#64748b"
+        font = "Unifont Regular 16"
+}

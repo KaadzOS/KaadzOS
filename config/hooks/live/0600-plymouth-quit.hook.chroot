@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+# Enable the splash handoff unit before the gettys: the live autologin on
+# tty1 (and greetd on the installed system, ordered through its drop-in) must
+# not race plymouthd for the DRM master. The unit is a no-op when no splash
+# is running (see its ConditionPathExists).
+mkdir -p /etc/systemd/system/multi-user.target.wants
+ln -sf /etc/systemd/system/kaadzos-quit-plymouth.service \
+  /etc/systemd/system/multi-user.target.wants/kaadzos-quit-plymouth.service

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- KaadzOS boot menu splash (Night palette).
+     live-build renders this to 640x480 for ISOLINUX and 800x600 for GRUB;
+     keep the composition inside the 640x480 box and leave the lower half
+     relatively quiet, because the boot menu overlays there. @PROJECT@-style
+     placeholders are substituted by live-build from the chroot os-release. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480">
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1219"/>
+      <stop offset="1" stop-color="#0a0e14"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.74" cy="0.16" r="0.72">
+      <stop offset="0" stop-color="#38bdf8" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="480" fill="url(#base)"/>
+  <rect width="640" height="480" fill="url(#glow)"/>
+  <path d="M0 340 L170 295 L350 325 L540 265 L640 290" fill="none" stroke="#2a3547" stroke-width="1.6" stroke-opacity="0.55"/>
+  <path d="M0 382 L170 338 L350 368 L540 307 L640 332" fill="none" stroke="#2a3547" stroke-width="1" stroke-opacity="0.30"/>
+  <circle cx="454" cy="128" r="3" fill="#38bdf8" fill-opacity="0.9"/>
+  <circle cx="454" cy="128" r="24" fill="#38bdf8" fill-opacity="0.10"/>
+  <text x="54" y="106" font-family="DejaVu Sans" font-weight="bold" font-size="58" letter-spacing="1" fill="#e2e8f0">Kaadz<tspan fill="#38bdf8">OS</tspan></text>
+  <rect x="56" y="126" width="150" height="4" fill="#38bdf8" fill-opacity="0.9"/>
+  <text x="56" y="164" font-family="DejaVu Sans" font-size="17" fill="#94a3b8">@VERSION@ (@DISTRIBUTION@) · @ARCHITECTURE@</text>
+  <text x="56" y="190" font-family="DejaVu Sans" font-size="13" fill="#64748b">linux @LINUX_VERSIONS@ · built @YEAR@-@MONTH@-@DAY@</text>
+</svg>

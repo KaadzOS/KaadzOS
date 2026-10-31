@@ -1,0 +1,23 @@
+[Default Applications]
+inode/directory=thunar.desktop
+text/plain=mousepad.desktop
+application/pdf=zathura.desktop
+image/png=imv-dir.desktop
+image/jpeg=imv-dir.desktop
+image/gif=imv-dir.desktop
+image/webp=imv-dir.desktop
+image/bmp=imv-dir.desktop
+x-scheme-handler/http=org.gnome.Epiphany.desktop
+x-scheme-handler/https=org.gnome.Epiphany.desktop
+text/html=org.gnome.Epiphany.desktop
+
+[Added Associations]
+inode/directory=thunar.desktop
+text/plain=mousepad.desktop
+application/pdf=zathura.desktop
+image/png=imv-dir.desktop
+image/jpeg=imv-dir.desktop
+image/gif=imv-dir.desktop
+image/webp=imv-dir.desktop
+image/bmp=imv-dir.desktop
+text/html=org.gnome.Epiphany.desktop

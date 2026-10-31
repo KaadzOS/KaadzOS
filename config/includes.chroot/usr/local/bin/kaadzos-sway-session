@@ -18,6 +18,11 @@ if grep -qi qemu /sys/class/dmi/id/product_name /sys/class/dmi/id/sys_vendor 2>/
 fi
 
 log=/tmp/sway.log
+
+# If Plymouth still owns the display (e.g. the quit unit was skipped), hand it
+# back before Sway tries to take the DRM master. No-op when there is no splash.
+plymouth quit 2>/dev/null || true
+
 if command -v dbus-run-session >/dev/null 2>&1; then
   dbus-run-session -- sway >"$log" 2>&1
 else

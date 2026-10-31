@@ -21,7 +21,8 @@ mkdir -p \
   "$cfg/sway" "$cfg/waybar" "$cfg/foot" "$cfg/fuzzel" "$cfg/mako" \
   "$cfg/swaylock" "$cfg/qt6ct" "$sys/qt6ct/colors" \
   "$sys/gtk-3.0" "$sys/gtk-4.0" "$sys/systemd/system" \
-  "$wall_dir" "$cal_brand" "$chroot/usr/local/share/kaadzos"
+  "$wall_dir" "$cal_brand" "$chroot/usr/local/share/kaadzos" \
+  "$chroot/usr/share/plymouth/themes/kaadzos"
 
 # foot/swaylock want RRGGBB without a leading '#'; the rest want '#RRGGBB'.
 strip() { printf '%s' "${1#\#}"; }
@@ -173,6 +174,9 @@ bindsym \$mod+Shift+Tab workspace prev
 # Screenshots
 bindsym Print exec kaadzos-screenshot full
 bindsym Shift+Print exec kaadzos-screenshot region
+# Recording is a toggle: the helper starts or stops wf-recorder and saves MP4s
+# in ~/Videos.
+bindsym \$mod+Print exec kaadzos-record
 
 # Media keys
 bindsym XF86AudioRaiseVolume exec wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+
@@ -687,6 +691,65 @@ ExecStart=/usr/bin/setvtrgb /etc/vtrgb
 [Install]
 WantedBy=sysinit.target
 SVC
+
+# -------------------------------------------------------------------- plymouth
+# Script-based bootsplash. The script plugin ships in the core plymouth
+# package and the palette logo tile doubles as the splash mark, so the palette
+# stays the single source of truth. A chroot hook selects the theme and
+# rebuilds the initramfs so the theme assets are packed into the initrd.
+ply_dir="$chroot/usr/share/plymouth/themes/kaadzos"
+mkdir -p "$ply_dir"
+
+# Palette colours as 0..1 RGB floats for the splash script.
+component() {
+  d=$(( (16#"${1}" * 10000 + 127) / 255 ))
+  [ "$d" -ge 10000 ] && d=10000
+  if [ "$d" -eq 10000 ]; then printf '1.0000'; else printf '0.%.4d' "$d"; fi
+}
+rgbfloat() {
+  hex=$(strip "$1")
+  printf '%s, %s, %s' \
+    "$(component "${hex:0:2}")" "$(component "${hex:2:2}")" "$(component "${hex:4:2}")"
+}
+splash_bg=$(rgbfloat "$KAADZ_BG")
+splash_bg_alt=$(rgbfloat "$KAADZ_BG_ALT")
+
+cat > "$ply_dir/kaadzos.plymouth" <<PLY
+[Plymouth Theme]
+Name=KaadzOS
+Description=KaadzOS Night boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/kaadzos
+ScriptFile=/usr/share/plymouth/themes/kaadzos/kaadzos.script
+PLY
+
+cat > "$ply_dir/kaadzos.script" <<PSCRIPT
+# KaadzOS Night boot splash (generated from theme/palette by theme/generate.sh).
+Window.SetBackgroundTopColor($splash_bg);
+Window.SetBackgroundBottomColor($splash_bg_alt);
+
+win_w = Window.GetWidth();
+win_h = Window.GetHeight();
+
+logo_image = Image("logo.png");
+logo_w = logo_image.GetWidth();
+logo_h = logo_image.GetHeight();
+max_w = win_w * 0.34;
+if (logo_w > max_w) {
+    ratio = max_w / logo_w;
+    logo_image = logo_image.Scale(max_w, logo_h * ratio);
+}
+
+logo_sprite = Sprite(logo_image);
+logo_sprite.SetPosition((win_w - logo_image.GetWidth()) / 2,
+                        (win_h - logo_image.GetHeight()) / 2,
+                        1);
+PSCRIPT
+
+# The committed logo tile (rendered by theme/render-artwork.py) is the mark.
+cp "$cal_brand/logo.png" "$ply_dir/logo.png"
 
 # ---------------------------------------------------------------- PNG artwork
 # The wallpaper raster and the Calamares artwork all come from the same

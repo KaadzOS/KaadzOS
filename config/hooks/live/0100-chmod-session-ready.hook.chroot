@@ -10,6 +10,7 @@ for script in \
   /usr/local/bin/kaadzos-install-live-cleanup \
   /usr/local/bin/kaadzos-install-finalize \
   /usr/local/bin/kaadzos-firstboot \
+  /usr/local/bin/kaadzos-record \
   /usr/local/bin/kaadzos-session-ready \
   /usr/local/bin/kaadzos-sway-session \
   /usr/local/bin/kaadzos-sway-keyboard; do

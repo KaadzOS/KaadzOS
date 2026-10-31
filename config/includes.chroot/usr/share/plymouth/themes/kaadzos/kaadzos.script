@@ -1,0 +1,20 @@
+# KaadzOS Night boot splash (generated from theme/palette by theme/generate.sh).
+Window.SetBackgroundTopColor(0.0392, 0.0549, 0.0784);
+Window.SetBackgroundBottomColor(0.0510, 0.0706, 0.0980);
+
+win_w = Window.GetWidth();
+win_h = Window.GetHeight();
+
+logo_image = Image("logo.png");
+logo_w = logo_image.GetWidth();
+logo_h = logo_image.GetHeight();
+max_w = win_w * 0.34;
+if (logo_w > max_w) {
+    ratio = max_w / logo_w;
+    logo_image = logo_image.Scale(max_w, logo_h * ratio);
+}
+
+logo_sprite = Sprite(logo_image);
+logo_sprite.SetPosition((win_w - logo_image.GetWidth()) / 2,
+                        (win_h - logo_image.GetHeight()) / 2,
+                        1);

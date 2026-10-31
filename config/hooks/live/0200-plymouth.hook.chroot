@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+
+# Select the KaadzOS bootsplash and pack its assets into the initramfs. This
+# runs after the packages are installed and the chroot includes staged, so the
+# theme directory and /etc/plymouth/plymouthd.conf both exist. plymouth-themes'
+# own postinst has already built an initramfs with the distribution default
+# theme; this pass switches it to ours.
+if [ ! -f /usr/share/plymouth/themes/kaadzos/kaadzos.plymouth ]; then
+  echo "plymouth: kaadzos theme missing, skipping theme selection" >&2
+  exit 0
+fi
+
+if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+  plymouth-set-default-theme kaadzos
+elif [ -x /usr/sbin/plymouth-set-default-theme ]; then
+  /usr/sbin/plymouth-set-default-theme kaadzos
+fi
+
+if command -v update-initramfs >/dev/null 2>&1; then
+  update-initramfs -u
+fi

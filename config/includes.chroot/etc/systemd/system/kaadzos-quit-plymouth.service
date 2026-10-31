@@ -1,0 +1,17 @@
+[Unit]
+Description=Quit the KaadzOS Plymouth bootsplash
+# Runs before the gettys so the live autologin (and greetd on the installed
+# system) never contend with plymouthd for the DRM master. The condition makes
+# this a no-op when no splash is running.
+DefaultDependencies=no
+After=plymouth-start.service
+Before=getty.target
+ConditionPathExists=/run/plymouth/pid
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/plymouth quit
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

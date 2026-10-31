@@ -1,0 +1,4 @@
+# KaadzOS swap: zstd-compressed zram sized to half of physical RAM.
+# zram-tools creates /dev/zram0 at boot via zramswap.service.
+ALGO=zstd
+PERCENT=50

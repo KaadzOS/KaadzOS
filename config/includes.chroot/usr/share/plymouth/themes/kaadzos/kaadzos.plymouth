@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=KaadzOS
+Description=KaadzOS Night boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/kaadzos
+ScriptFile=/usr/share/plymouth/themes/kaadzos/kaadzos.script

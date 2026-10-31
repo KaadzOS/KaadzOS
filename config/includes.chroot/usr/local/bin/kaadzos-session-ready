@@ -100,6 +100,23 @@ set +e
     echo "=== $log ==="
     cat "$log" 2>&1
   done
+  echo '=== memory ==='
+  free -m 2>/dev/null || true
+  echo '=== swaps ==='
+  cat /proc/swaps 2>/dev/null || true
+  echo '=== zram ==='
+  zramctl 2>/dev/null | head -n 6 || true
+  echo '=== vm tuning ==='
+  printf 'swappiness=%s page-cluster=%s\n' \
+    "$(cat /proc/sys/vm/swappiness 2>/dev/null || echo '?')" \
+    "$(cat /proc/sys/vm/page-cluster 2>/dev/null || echo '?')"
+  echo '=== boot timing ==='
+  systemd-analyze 2>/dev/null || true
+  used=$(free -m 2>/dev/null | awk '/^Mem:/ {print $3; exit}')
+  total=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2; exit}')
+  zram_devices=$(grep -c '^zram' /proc/swaps 2>/dev/null || true)
+  printf 'KAADZOS_IDLE_RAM used=%s total=%s zram_devices=%s\n' \
+    "${used:--}" "${total:--}" "${zram_devices:-0}"
   printf 'KAADZOS_DIAG_END\n'
 } > "$serial" 2>&1
 set -e

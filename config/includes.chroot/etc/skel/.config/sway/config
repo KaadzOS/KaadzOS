@@ -35,6 +35,9 @@ smart_gaps on
 # The welcome terminal floats centred so the wallpaper stays visible. It is a
 # live-session affordance only; installed systems boot straight to Waybar.
 for_window [app_id="foot" title="KaadzOS Terminal"] floating enable, resize set 1100 690, move position center
+# Calamares runs on Wayland (app_id, sometimes reverse-DNS) or under XWayland
+# (class only), so match both. Sway criteria are regex, so a bare "calamares"
+# also matches io.calamares.calamares.
 for_window [app_id="calamares"] fullscreen enable
 for_window [class="calamares"] fullscreen enable
 
@@ -112,6 +115,9 @@ bindsym $mod+Shift+Tab workspace prev
 # Screenshots
 bindsym Print exec kaadzos-screenshot full
 bindsym Shift+Print exec kaadzos-screenshot region
+# Recording is a toggle: the helper starts or stops wf-recorder and saves MP4s
+# in ~/Videos.
+bindsym $mod+Print exec kaadzos-record
 
 # Media keys
 bindsym XF86AudioRaiseVolume exec wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+

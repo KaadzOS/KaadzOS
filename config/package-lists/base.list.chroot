@@ -74,3 +74,34 @@ keyboard-configuration
 greetd
 tuigreet
 wtype
+
+# Phase 6: lean default applications. GNOME Web (Epiphany) is the browser:
+# WebKitGTK renders natively on Wayland and it is the smallest full-featured
+# browser in trixie (no bundled engine stack of its own). The rest follow the
+# same lean-first rule: Thunar (files), Mousepad (text), imv (images),
+# zathura+poppler (PDF). xdg-user-dirs gives the standard ~/Videos etc.
+epiphany-browser
+thunar
+mousepad
+imv
+zathura
+zathura-pdf-poppler
+wf-recorder
+xdg-user-dirs
+
+# Phase 6: bootsplash. The script plugin ships in plymouth core; plymouth-themes
+# is still installed for the two-step fallback machinery and the label plugins
+# come from plymouth-label. The Night theme lives in theme/generate.sh output.
+plymouth
+plymouth-themes
+plymouth-label
+
+# Phase 6: compressed swap in RAM + graceful memory tuning.
+zram-tools
+
+# Phase 6: Secure Boot support for the INSTALLED system. Debian's grub-install
+# prefers the signed GRUB images and shim when these packages are present, so
+# a Calamares install boots with Secure Boot enabled. The live ISO's own GRUB
+# stays unsigned; the live image booted with Secure Boot disabled on purpose.
+shim-signed
+grub-efi-amd64-signed

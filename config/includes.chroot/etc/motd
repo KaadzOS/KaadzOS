@@ -1,0 +1,10 @@
+Welcome to KaadzOS 0.1 (trixie)
+
+  Desktop   Sway + Waybar + foot ("Night" palette). Super is the modifier.
+  Launcher  Super+d menu  ·  terminal Super+Return  ·  lock Super+Shift+x
+  Packs     kaadzos list | kaadzos add dev   (Super+a opens the pack menu)
+  Media     Print full shot  ·  Shift+Print region  ·  Super+Print record MP4
+  Apps      GNOME Web, Thunar, Mousepad, imv, zathura
+  Install   Super+i launches the Calamares installer
+
+  https://github.com/KaadzOS/KaadzOS

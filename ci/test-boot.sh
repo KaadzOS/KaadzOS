@@ -112,6 +112,21 @@ while (( SECONDS < deadline )); do
       exit 1
     fi
 
+    # Report the idle-RAM diagnostic the guest emitted (non-fatal report).
+    ram_line=$(grep 'KAADZOS_IDLE_RAM' "$serial_log" 2>/dev/null | tail -n 1 || true)
+    if [ -n "$ram_line" ]; then
+      echo "$ram_line"
+      if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+        {
+          echo ""
+          echo "### Idle RAM ($firmware)"
+          echo '```'
+          echo "$ram_line"
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY" || true
+      fi
+    fi
+
     echo "KaadzOS reached a running Sway session under $firmware"
     exit 0
   fi

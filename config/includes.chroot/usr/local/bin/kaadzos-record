@@ -1,0 +1,34 @@
+#!/bin/sh
+# Toggle screen recording with wf-recorder (bound to $mod+Print in Sway).
+# First call starts a session and writes its PID, the next call sends Ctrl-C
+# style termination and finalises the MP4 in ~/Videos. Audio capture is left
+# off by default: recording what you see without microphone surprises.
+set -eu
+
+pidfile=/tmp/kaadzos-recorder.pid
+log=/tmp/kaadzos-recorder.log
+dir="${HOME:-/root}/Videos"
+mkdir -p "$dir"
+
+pid=
+if [ -r "$pidfile" ]; then
+  pid=$(cat "$pidfile" 2>/dev/null || true)
+fi
+
+if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+  kill -INT "$pid" 2>/dev/null || true
+  for _ in 1 2 3; do
+    kill -0 "$pid" 2>/dev/null || break
+    sleep 1
+  done
+  kill "$pid" 2>/dev/null || true
+  rm -f "$pidfile"
+  notify-send 'Recording stopped' 'Saved in ~/Videos' 2>/dev/null || true
+  exit 0
+fi
+
+rm -f "$pidfile" "$log"
+target="$dir/KaadzOS-$(date +%s).mp4"
+nohup wf-recorder -f "$target" >"$log" 2>&1 &
+echo $! > "$pidfile"
+notify-send 'Recording started' "$(basename "$target")  (Super+Print to stop)" 2>/dev/null || true
