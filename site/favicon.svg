@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="KaadzOS">
+  <rect width="64" height="64" rx="14" fill="#0d1219"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" fill="none" stroke="#2a3547" stroke-width="3"/>
+  <path d="M20 15v34M43 15 26 32l17 17" fill="none" stroke="#38bdf8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
