@@ -4,6 +4,8 @@ A bootable Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop,
 
 [![Build ISO](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml/badge.svg)](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml)
 
+**Download:** [latest release](https://github.com/kaadzos/kaadzos/releases/latest) · **Website:** [kaadzos.pages.dev](https://kaadzos.pages.dev)
+
 ![KaadzOS live session, captured by CI](https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png)
 
 *This screenshot is not staged. It is captured from the QEMU framebuffer by the boot test on every push to `main`, and the run fails if the desktop shows a configuration warning.*
@@ -12,7 +14,7 @@ A bootable Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop,
 
 ## What it is
 
-KaadzOS is a minimal Debian derivative: kernel, firmware, NetworkManager, Sway, Waybar, foot, fuzzel, mako, and enough tooling to be a working desktop — roughly a 1 GB hybrid ISO that boots on BIOS and UEFI. Everything heavier (AI tooling, Android apps, Windows apps, dev toolchains) is installable afterwards from declarative "packs" instead of being baked into the image.
+KaadzOS is a minimal Debian derivative: kernel, firmware, NetworkManager, Sway, Waybar, foot, fuzzel, mako, and enough tooling to be a working desktop — roughly a 1.4 GB hybrid ISO that boots on BIOS and UEFI. Everything heavier (AI tooling, Android apps, Windows apps, dev toolchains) is installable afterwards from declarative "packs" instead of being baked into the image.
 
 It is an operating system I actually boot, not a config-file collection: the repository contains the live-build configuration, the theme generator, the pack manager, a Calamares installer, and the CI harness that proves the image reaches a running compositor and installs to disk.
 
@@ -23,7 +25,7 @@ Most of the interesting decisions here are forced by the environment, and that i
 - **No Hyprland.** It is not in Debian stable, and this image builds from the archive with `--apt-recommends false`. Sway is in trixie, so Sway is what the desktop is built around.
 - **The pack manager is POSIX `sh`, not Python or Go.** The base image ships no language runtime, and the CLI only orchestrates `apt`, `dpkg`, `curl`, and `systemctl`. A compiled binary or an interpreter would add payload to a 1 GB image to do work the shell already does.
 - **Nothing is assumed about the build machine.** The ISO cannot be built or booted on the development machine, so the build, the package-resolution test, the boot test, and the install test all run in GitHub Actions against `debian:trixie`.
-- **The theme has one source of truth.** `theme/palette` holds the colours; `theme/generate.sh` renders Sway, Waybar, foot, fuzzel, mako, swaylock, GTK3/4, Qt6ct, the wallpaper, the console palette, and the Calamares branding from it. Changing a colour is a one-file edit.
+- **The theme has one source of truth.** `theme/palette` holds the colours; `theme/generate.sh` renders Sway, Waybar, foot, fuzzel, mako, swaylock, GTK3/4, Qt6ct, the wallpaper, the console palette, the Plymouth splash, the boot-menus artwork, the Calamares branding, and the website stylesheet from it. Changing a colour is a one-file edit.
 - **Third-party software is opt-in and signed.** The Android pack adds Waydroid's repository and key; the Cloudflare pack fetches an architecture-matched static binary. Neither is in the base image.
 
 ## How the image is verified
@@ -98,7 +100,9 @@ bash ci/test-boot.sh bios KaadzOS-trixie-amd64.iso boot-results
 bash ci/test-boot.sh uefi KaadzOS-trixie-amd64.iso boot-results
 ```
 
-The latest ISO and both boot screenshots are on the [Actions](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml) run page as artifacts.
+The latest ISO and its SHA-256 are published on the [Releases](https://github.com/kaadzos/kaadzos/releases/latest) page by CI, and every run also keeps the ISO, both boot screenshots and both install logs as [Actions](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml) artifacts.
+
+Pushing a `v*` tag reruns the whole matrix for that commit and only then publishes the ISO, so a release cannot contain an image that was not booted and installed. The website is a static `site/` directory on Cloudflare Pages, themed from the same palette.
 
 ## Layout
 
@@ -128,10 +132,10 @@ ci/test-packs.sh             pack resolution and CLI behaviour tests
 | 4 — pack manager and on-demand packs | done |
 | 5 — installer (Calamares, install to disk) | done |
 | 6 — boot polish and identity | done |
-| 7 — releases and hosting | not started |
+| 7 — releases and hosting | done |
 | 8 — optional APT repository | not started |
 
-There is no published release yet, so the ISO currently lives on the Actions run page. That is the next thing to fix: a tag, an ISO asset, and a checksum a stranger can verify.
+The first release, [v0.1.0](https://github.com/kaadzos/kaadzos/releases/tag/v0.1.0), ships the ISO and its checksum as GitHub release assets and mirrors them to Cloudflare R2 when publishing credentials are configured. Releases are cut by pushing a `v*` tag; see [`docs/hosting.md`](docs/hosting.md) for the tag flow and the Cloudflare setup.
 
 ## Licence
 
