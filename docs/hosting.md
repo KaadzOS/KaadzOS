@@ -55,9 +55,15 @@ gh release delete v0.1.0 --yes
 | --- | --- |
 | Project | `kaadzos` |
 | Production branch | `main` |
-| URL | https://kaadzos.pages.dev |
+| URL | https://kaadzos-7z2.pages.dev |
 | Workflow | `.github/workflows/site.yml` |
 | Source | `site/` (static, no build step) |
+
+The project is named `kaadzos` in the account selected by
+`CLOUDFLARE_ACCOUNT_ID`. Because `kaadzos.pages.dev` is still owned by the
+original project in the previous account, Cloudflare assigned the suffixed
+`kaadzos-7z2.pages.dev`. The original project is left untouched; attach a
+custom domain or decommission it separately once the new one is established.
 
 The site is intentionally a separate design system rather than a palette
 render: pure black and white, oversized fluid typography, a self-hosted Inter
@@ -68,17 +74,17 @@ Content-Security-Policy (`default-src 'none'`, styles and fonts from self,
 images from self plus the CI screenshot host) along with `nosniff`,
 `no-referrer` and frame denial.
 
-The deploy workflow is a green no-op until both secrets exist:
+The deploy workflow is a green no-op when either secret is missing:
 
 ```sh
 gh secret set CLOUDFLARE_API_TOKEN
 gh secret set CLOUDFLARE_ACCOUNT_ID
 ```
 
-Create the token in the Cloudflare dashboard under **My Profile → API Tokens →
-Create Token**, with the **Cloudflare Pages: Edit** permission scoped to the
-account. The account ID is shown on the right-hand side of the dashboard
-overview.
+Create an account-owned token under **Manage Account → API Tokens → Create
+Token**, with the **Cloudflare Pages: Edit** permission scoped to the account;
+account tokens are preferable to personal tokens for CI. The account ID is
+under **Workers & Pages → Account details**.
 
 The workflow creates the Pages project if it is missing, then runs
 `wrangler pages deploy site --project-name kaadzos --branch main`. Pushes that
@@ -135,14 +141,16 @@ full archive layout, key generation and verification steps are in
 
 ## Current state
 
-- Pages project `kaadzos` exists; the first production deployment of `site/`
-  is live at https://kaadzos.pages.dev (pushed from the maintainer's `wrangler`
-  login, not yet from CI).
+- Pages project `kaadzos` exists in the active account; the site is live at
+  https://kaadzos-7z2.pages.dev, deployed from `main` by CI run
+  [42020337756](https://github.com/KaadzOS/KaadzOS/actions/runs/42020337756)
+  using the configured `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`
+  secrets. The original `kaadzos.pages.dev` project still exists in the
+  previous account and is left untouched.
 - GitHub Releases: `v0.1.0`, published by CI from tag `v0.1.0` in run
   [41322925498](https://github.com/KaadzOS/KaadzOS/actions/runs/41322925498)
   — ISO 1,431,568,384 bytes plus its 91-byte checksum.
-- Pending user action: enable R2, add the R2 credentials, add a Pages API
-  token (`CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`) so future website
-  changes deploy from CI automatically, and add the signing key plus
-  `R2_PUBLIC_URL` so the optional APT archive can publish. The checklist is in
+- Pending user action: enable R2 in the active account, add the R2 S3
+  credentials, and add the signing key plus `R2_PUBLIC_URL` so the ISO mirror
+  and optional APT archive can publish. The checklist is in
   [`apt-repository.md`](apt-repository.md#what-you-need-to-provide).
