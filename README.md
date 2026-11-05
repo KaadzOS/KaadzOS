@@ -74,6 +74,20 @@ Phase 5 adds a Calamares installer. It does not debootstrap: it unpacks the live
 
 The installer is verified end to end in CI on both BIOS and UEFI.
 
+## The optional archive
+
+Phase 8 adds a signed APT repository on Cloudflare R2, published by CI for
+`v*` tags. It carries `kaadzos-pack-defs`, the canonical pack definitions and
+their hooks, so an installed system can receive new packs with `apt upgrade`
+instead of a new ISO. The base image does not need it: publishing is a green
+no-op until the owner adds the R2 credentials and a dedicated GPG key, and the
+ISO only enables the archive when those inputs exist at build time.
+
+The repository is built and consumed by `repo-test` on every push with an
+ephemeral key, so the signing path is tested even without Cloudflare. The
+setup checklist and the user-facing source stanza are in
+[`docs/apt-repository.md`](docs/apt-repository.md).
+
 ## What actually broke
 
 The boot test was written because the first themed image passed every check and still looked wrong. Two Sway bindings both claimed `$mod+Shift+l` — `lock` was shadowed by `move right` — so `swaynag` painted a red error bar across an otherwise finished desktop, and nothing in the build output mentioned it.
@@ -120,6 +134,8 @@ theme/                       Night palette + generators for every themed surface
 ci/test-boot.sh              QEMU boot validation (BIOS + UEFI)
 ci/test-install.sh           unattended install + installed-disk boot validation
 ci/test-packs.sh             pack resolution and CLI behaviour tests
+ci/build-apt-repo.sh         signed APT repository builder (Phase 8)
+ci/test-apt-repo.sh          apt consumes a throwaway signed repository
 ```
 
 ## Status
@@ -133,9 +149,9 @@ ci/test-packs.sh             pack resolution and CLI behaviour tests
 | 5 — installer (Calamares, install to disk) | done |
 | 6 — boot polish and identity | done |
 | 7 — releases and hosting | done |
-| 8 — optional APT repository | not started |
+| 8 — optional APT repository | in progress (credential-gated) |
 
-The first release, [v0.1.0](https://github.com/kaadzos/kaadzos/releases/tag/v0.1.0), ships the ISO and its checksum as GitHub release assets and mirrors them to Cloudflare R2 when publishing credentials are configured. Releases are cut by pushing a `v*` tag; see [`docs/hosting.md`](docs/hosting.md) for the tag flow and the Cloudflare setup.
+The first release, [v0.1.0](https://github.com/kaadzos/kaadzos/releases/tag/v0.1.0), ships the ISO and its checksum as GitHub release assets and mirrors them to Cloudflare R2 when publishing credentials are configured. Releases are cut by pushing a `v*` tag; see [`docs/hosting.md`](docs/hosting.md) for the tag flow and the Cloudflare setup, and [`docs/apt-repository.md`](docs/apt-repository.md) for the optional signed package archive.
 
 ## Licence
 

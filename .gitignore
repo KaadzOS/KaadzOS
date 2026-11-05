@@ -9,6 +9,13 @@ boot-logs-*/
 # Packs are canonical in packs/; CI copies them into the image before build.
 config/includes.chroot/usr/share/kaadzos/packs/
 
+# Phase 8: generated APT trust material. The public key is exported from the
+# signing secret at build time, and the source stanza is written by a generated
+# chroot hook after package installation. The private key never touches the tree.
+config/includes.chroot/usr/share/keyrings/kaadzos-archive-keyring.gpg
+config/hooks/live/0700-kaadzos-archive.hook.chroot
+build/
+
 # Python bytecode from theme/render-artwork.py (generated locally, not shipped).
 __pycache__/
 *.pyc

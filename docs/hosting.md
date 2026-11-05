@@ -2,8 +2,8 @@
 
 KaadzOS has no servers. GitHub Actions builds and validates the image, GitHub
 Releases carries the canonical ISO assets, Cloudflare Pages serves the website,
-and Cloudflare R2 mirrors release assets (and will host the APT repository in
-phase 8).
+and Cloudflare R2 mirrors release assets and hosts the optional signed APT
+archive under `apt/`.
 
 ---
 
@@ -86,7 +86,7 @@ touch `site/` redeploy automatically; `workflow_dispatch` deploys on demand.
 
 ---
 
-## Cloudflare R2 (ISO mirror)
+## Cloudflare R2 (ISO mirror and APT archive)
 
 R2 has to be enabled once per account: **Workers & Pages → R2 → Enable R2**.
 
@@ -94,7 +94,7 @@ R2 has to be enabled once per account: **Workers & Pages → R2 → Enable R2**.
    repository variable).
 2. Expose it through a custom domain — **bucket → Settings → Custom Domains**,
    for example `iso.kaadzos.dev`. The shared `r2.dev` URL is rate-limited and
-   meant for development only.
+   meant for development only. Store the origin as `R2_PUBLIC_URL`.
 3. Create upload credentials under **R2 → Manage R2 API Tokens → Create API
    Token**, with **Object Read & Write** limited to the bucket. It returns an
    Access Key ID and a Secret Access Key.
@@ -104,7 +104,8 @@ R2 has to be enabled once per account: **Workers & Pages → R2 → Enable R2**.
    gh secret set CLOUDFLARE_ACCOUNT_ID
    gh secret set R2_ACCESS_KEY_ID
    gh secret set R2_SECRET_ACCESS_KEY
-   gh variable set R2_BUCKET --body kaadzos   # optional
+   gh variable set R2_BUCKET --body kaadzos              # optional
+   gh variable set R2_PUBLIC_URL --body https://iso.kaadzos.dev
    ```
 
 The release job then uploads, over the S3-compatible endpoint
@@ -113,12 +114,22 @@ The release job then uploads, over the S3-compatible endpoint
 ```
 releases/<tag>/KaadzOS-trixie-amd64.iso
 releases/<tag>/KaadzOS-trixie-amd64.iso.sha256
+releases/<tag>/KaadzOS-trixie-amd64.iso.sha256.asc   # when signing is enabled
+releases/<tag>/kaadzos-archive-keyring.asc           # when signing is enabled
 ```
 
-Without those secrets the mirror step logs a notice and exits cleanly, so
-releases still publish to GitHub while R2 is being set up.
+The tag-only `apt-repo` job writes the signed archive to `apt/` in the same
+bucket. It also needs a dedicated GPG signing key:
 
-Phase 8 will add the APT repository under `apt/` in the same bucket.
+```sh
+gh secret set APT_GPG_PRIVATE_KEY < kaadzos-archive-private.asc
+gh secret set APT_GPG_PASSPHRASE
+```
+
+Without those secrets the mirror and archive steps log a notice and exit
+cleanly, so releases still publish to GitHub while R2 is being set up. The
+full archive layout, key generation and verification steps are in
+[`apt-repository.md`](apt-repository.md).
 
 ---
 
@@ -130,6 +141,8 @@ Phase 8 will add the APT repository under `apt/` in the same bucket.
 - GitHub Releases: `v0.1.0`, published by CI from tag `v0.1.0` in run
   [41322925498](https://github.com/KaadzOS/KaadzOS/actions/runs/41322925498)
   — ISO 1,431,568,384 bytes plus its 91-byte checksum.
-- Pending user action: enable R2, add the R2 credentials, and add a Pages API
+- Pending user action: enable R2, add the R2 credentials, add a Pages API
   token (`CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`) so future website
-  changes deploy from CI automatically.
+  changes deploy from CI automatically, and add the signing key plus
+  `R2_PUBLIC_URL` so the optional APT archive can publish. The checklist is in
+  [`apt-repository.md`](apt-repository.md#what-you-need-to-provide).

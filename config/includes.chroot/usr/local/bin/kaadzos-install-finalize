@@ -38,9 +38,9 @@ systemctl enable greetd.service >/dev/null 2>&1 || true
 systemctl enable kaadzos-firstboot.service >/dev/null 2>&1 || true
 
 # Installed systems get useful Debian sources if the squashfs carried none.
-if [ ! -s /etc/apt/sources.list ] && \
-   ! ls /etc/apt/sources.list.d/*.sources >/dev/null 2>&1 && \
-   ! ls /etc/apt/sources.list.d/*.list >/dev/null 2>&1; then
+# Check for a Debian mirror explicitly: the optional KaadzOS archive is also a
+# .sources file, but it is not a substitute for the distribution archive.
+if ! grep -qs 'debian\.org' /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; then
   cat > /etc/apt/sources.list <<'EOF'
 deb http://deb.debian.org/debian trixie main contrib non-free-firmware
 deb http://deb.debian.org/debian trixie-updates main contrib non-free-firmware
