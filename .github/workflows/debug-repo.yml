@@ -1,0 +1,47 @@
+name: Debug repo test
+
+on:
+  push:
+    branches:
+      - debug/repo-test
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:trixie
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install repository tools
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            dpkg-dev apt-utils gnupg gzip xz-utils ca-certificates
+
+      - name: Show tool availability
+        run: |
+          for c in bash awk gpg gpgconf gpgv dpkg-deb dpkg-scanpackages \
+                   apt-ftparchive gzip xz curl; do
+            if command -v "$c" >/dev/null 2>&1; then
+              echo "::notice::$c -> $(command -v "$c")"
+            else
+              echo "::error::$c is missing"
+            fi
+          done
+
+      - name: Run repo test with tracing
+        run: |
+          set +e
+          bash -x ci/test-apt-repo.sh > /tmp/repo-test.log 2>&1
+          status=$?
+          if [ "$status" -ne 0 ]; then
+            tail -40 /tmp/repo-test.log | while IFS= read -r line; do
+              echo "::error::$line"
+            done
+            exit "$status"
+          fi
+          tail -20 /tmp/repo-test.log
