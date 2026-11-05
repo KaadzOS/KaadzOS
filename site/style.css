@@ -51,8 +51,39 @@ html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
   scroll-padding-top: 64px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.28) var(--black);
+}
+
+/* A hairline scrollbar: a 4px visible rule inside a 10px draggable strip,
+   black track, white on hover. The WebKit pseudo-elements carry Blink and
+   WebKit; Firefox gets the standard properties below. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background: var(--black);
+}
+
+::-webkit-scrollbar-track { background: var(--black); }
+
+::-webkit-scrollbar-thumb {
+  background: #5c5c5c;
+  border: 3px solid var(--black);
+}
+
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active { background: var(--white); }
+
+::-webkit-scrollbar-corner { background: var(--black); }
+
+/* Code blocks get a slimmer horizontal version of the same hairline. */
+pre::-webkit-scrollbar { height: 6px; }
+
+pre::-webkit-scrollbar-thumb { border-width: 1px; }
+
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #5c5c5c var(--black);
+  }
 }
 
 body {
