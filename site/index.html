@@ -3,167 +3,249 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>KaadzOS — a Debian 13 desktop you can verify</title>
-  <meta name="description" content="A minimal Debian 13 (trixie) live image with a Sway/Wayland desktop, a palette-derived theme, an on-demand pack system, and a Calamares installer. Built, booted and installed in CI on every push.">
-  <meta name="theme-color" content="#0a0e14">
+  <meta name="color-scheme" content="dark">
+  <title>KaadzOS — An operating system that proves itself</title>
+  <meta name="description" content="A minimal Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop, a palette-derived theme, an on-demand pack system, and an installer. Built, booted on BIOS and UEFI, and installed unattended in CI before every release.">
+  <meta name="theme-color" content="#000000">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="KaadzOS — a Debian 13 desktop you can verify">
-  <meta property="og:description" content="A minimal Debian 13 live image with a Sway/Wayland desktop, verified end to end in CI: booted on BIOS and UEFI, installed unattended, screenshotted by the build itself.">
+  <meta property="og:title" content="KaadzOS — An operating system that proves itself">
+  <meta property="og:description" content="A minimal Debian 13 live image with a Sway/Wayland desktop. Built, booted on both firmwares and installed unattended in CI before anything ships.">
   <meta property="og:image" content="https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/inter-tight-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="hero">
-  <div class="wrap">
-    <div class="brand">
-      <img src="favicon.svg" alt="" width="40" height="40">
-      <span class="name">Kaadz<span class="accent">OS</span></span>
-      <span class="badge">v0.1</span>
-    </div>
+<a class="skip" href="#main">Skip to content</a>
 
-    <h1>A Debian-based desktop<br><span class="accent">you can verify.</span></h1>
-
-    <p class="lead">
-      KaadzOS is a minimal Debian 13 (trixie) live image with a hand-built
-      Sway/Wayland desktop, a theme rendered from a single palette, an
-      on-demand package system, and a Calamares installer. Every push is
-      built, booted on BIOS and UEFI, and installed unattended in CI before
-      anything ships.
-    </p>
-
-    <div class="cta">
-      <a class="btn primary" href="https://github.com/kaadzos/kaadzos/releases/latest">Download the ISO</a>
-      <a class="btn ghost" href="https://github.com/kaadzos/kaadzos/actions/workflows/build.yml">Watch the build</a>
-    </div>
-    <p class="note">~1.4 GB hybrid ISO · BIOS + UEFI · SHA-256 alongside · live or install to disk</p>
-
-    <figure class="screenshot">
-      <img src="https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png"
-           alt="The KaadzOS live session: Sway with Waybar, a floating terminal and the Night wallpaper"
-           width="1280" height="800">
-      <figcaption>Captured from the QEMU framebuffer by the boot test on every push — not staged. The run fails if the desktop shows a configuration warning.</figcaption>
-    </figure>
+<header class="masthead">
+  <div class="shell masthead-row">
+    <a class="wordmark" href="/">KAADZOS</a>
+    <p class="mono masthead-meta">Debian 13 · Trixie · amd64</p>
+    <nav class="mono masthead-nav" aria-label="Primary">
+      <a href="https://github.com/kaadzos/kaadzos/releases/latest">Download</a>
+      <a href="https://github.com/kaadzos/kaadzos">Source</a>
+      <a href="https://github.com/kaadzos/kaadzos/actions/workflows/build.yml">CI</a>
+    </nav>
   </div>
 </header>
 
-<main>
-  <section id="inside">
-    <div class="wrap">
-      <h2>What's inside</h2>
-      <p class="section-lead">
-        Small by design: the base image has no language runtime, no recommends,
-        and only the packages a working Wayland desktop needs. Heavy tools are
-        installed afterwards from declarative packs.
-      </p>
-      <div class="cards">
-        <article class="card">
-          <h3><span class="dot">●</span> Sway and Wayland</h3>
-          <p>Waybar, foot, fuzzel, mako and swaylock, themed together and driven
-          from the Super key. No X session required.</p>
-        </article>
-        <article class="card">
-          <h3><span class="dot">●</span> One palette, every surface</h3>
-          <p>The boot splash, boot menus, Sway, Waybar, foot, GTK/Qt, the
-          console colours and the wallpaper all render from
-          <code>theme/palette</code>.</p>
-        </article>
-        <article class="card">
-          <h3><span class="dot">●</span> Installer included</h3>
-          <p>Calamares unpacks the live squashfs onto disk and repairs it in
-          place. The installed system boots through greetd into the same
-          themed Sway session.</p>
-        </article>
-        <article class="card">
-          <h3><span class="dot">●</span> Packs on demand</h3>
-          <p>Eight declarative packs — dev, ai, android, windows, gaming,
-          creative, privacy, cloudflare — installable with
-          <code>kaadzos add dev</code> or from a fuzzel menu.</p>
-        </article>
-        <article class="card">
-          <h3><span class="dot">●</span> Proven by CI</h3>
-          <p>Pack resolution, both firmware boots, the <code>swaynag</code>
-          gate, an idle-RAM report, and an unattended install-and-boot on both
-          BIOS and UEFI run on every push.</p>
-        </article>
-        <article class="card">
-          <h3><span class="dot">●</span> Secure Boot on disk</h3>
-          <p>The installed system ships Debian's signed shim and GRUB, so it
-          boots with Secure Boot enabled. The live ISO itself still needs
-          Secure Boot switched off.</p>
-        </article>
+<main id="main">
+
+  <div class="shell">
+    <section class="hero" aria-labelledby="hero-title">
+      <p class="mono kicker">Live · Installable · Verified</p>
+      <h1 id="hero-title">An operating<br>system that<br><span class="serif">proves itself.</span></h1>
+
+      <div class="hero-foot">
+        <p class="lede">
+          KaadzOS is a minimal Debian 13 image with a hand-built Sway
+          desktop, a theme rendered from one palette, and an on-demand pack
+          system. Every push is built, booted on BIOS and UEFI, and installed
+          to disk before anything ships.
+        </p>
+        <div class="actions">
+          <a class="btn" href="https://github.com/kaadzos/kaadzos/releases/latest">Download the ISO</a>
+          <a class="arrow-link mono" href="https://github.com/kaadzos/kaadzos">Read the source <span aria-hidden="true">→</span></a>
+        </div>
       </div>
 
-      <ul class="packlist" aria-label="Available packs">
-        <li>ai</li><li>android</li><li>cloudflare</li><li>creative</li>
-        <li>dev</li><li>gaming</li><li>privacy</li><li>windows</li>
+      <ul class="ticker mono" aria-label="Release facts">
+        <li>Release 0.1.0</li>
+        <li>6 / 6 jobs passed</li>
+        <li>ISO 1.4 GB</li>
+        <li>SHA-256 verified</li>
       </ul>
-    </div>
-  </section>
+    </section>
+  </div>
 
-  <section id="verify">
-    <div class="wrap">
-      <h2>Download and verify</h2>
-      <p class="section-lead">
-        The ISO is published as a GitHub release asset with a sibling SHA-256
-        file, and mirrored to Cloudflare R2 when credentials are configured.
-      </p>
-      <div class="download-grid">
-        <div>
-          <p><a class="btn primary" href="https://github.com/kaadzos/kaadzos/releases/latest">Download from GitHub Releases</a></p>
-          <pre><code><span class="hl">sha256sum --check</span> KaadzOS-trixie-amd64.iso.sha256</code></pre>
-          <p class="note">Write the image in DD mode — it is a hybrid ISO that
-          boots from the same file on BIOS or UEFI.</p>
+  <figure class="shot">
+    <img src="https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png"
+         alt="The KaadzOS live session: Sway with Waybar, a floating terminal and the Night wallpaper"
+         width="1280" height="800">
+    <figcaption class="mono shell">Fig. 01 — KaadzOS live session, captured from the QEMU framebuffer by CI. Not staged. The run fails on any Sway warning.</figcaption>
+  </figure>
+
+  <div class="shell">
+
+    <section class="chapter" id="image" aria-labelledby="image-title">
+      <p class="mono chapter-index">01 / The image</p>
+      <div class="chapter-body">
+        <h2 id="image-title" class="statement">
+          Small by design. No language runtime, no recommends, nothing it
+          cannot justify — a working Wayland desktop, and room for what you
+          add later.
+        </h2>
+        <div class="cols">
+          <p>
+            The base image is Debian trixie built from the archive with
+            <code>--apt-recommends false</code>: kernel, firmware,
+            NetworkManager, Sway, Waybar, foot, fuzzel, mako and the lean
+            defaults. Everything heavier is opt-in.
+          </p>
+          <p>
+            Eight declarative packs add AI tooling, Android apps, Windows apps,
+            dev chains, gaming, creative apps, privacy tools or Cloudflare's
+            client — through one idempotent command, from a terminal or the
+            <code>$mod+a</code> menu.
+          </p>
         </div>
-        <div>
-          <pre><code><span class="hl"># Linux / macOS — replace sdX, this erases it</span>
+      </div>
+    </section>
+
+    <section class="chapter" id="desktop" aria-labelledby="desktop-title">
+      <p class="mono chapter-index">02 / The desktop</p>
+      <div class="chapter-body">
+        <h2 id="desktop-title">Sway, themed<br>down to the console.</h2>
+
+        <dl class="spec">
+          <div class="spec-row">
+            <dt class="mono">Session</dt>
+            <dd>Sway on Wayland. Waybar, foot, fuzzel, mako and swaylock, driven from the Super key.</dd>
+          </div>
+          <div class="spec-row">
+            <dt class="mono">Theme</dt>
+            <dd>One file, <code>theme/palette</code>, renders the boot splash, boot menus, Sway, Waybar, foot, fuzzel, mako, swaylock, GTK3/4, Qt6ct, the wallpaper and the console colours.</dd>
+          </div>
+          <div class="spec-row">
+            <dt class="mono">Installer</dt>
+            <dd>Calamares unpacks the live squashfs onto disk and repairs the copy in place. The installed system boots through greetd into the same session.</dd>
+          </div>
+          <div class="spec-row">
+            <dt class="mono">Defaults</dt>
+            <dd>GNOME Web, Thunar, Mousepad, imv and zathura. Screen recording with wf-recorder on <code>$mod+Print</code>.</dd>
+          </div>
+          <div class="spec-row">
+            <dt class="mono">Memory</dt>
+            <dd>zram swap (zstd) sized at half of RAM with swappiness 180. The boot test reports idle RAM on every run.</dd>
+          </div>
+          <div class="spec-row">
+            <dt class="mono">Secure Boot</dt>
+            <dd>Debian's signed shim and GRUB ship in the image, so the installed system boots with Secure Boot enabled. The live USB still needs it off.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="chapter" id="packs" aria-labelledby="packs-title">
+      <p class="mono chapter-index">03 / The packs</p>
+      <div class="chapter-body">
+        <h2 id="packs-title">Eight packs,<br>one command.</h2>
+
+        <ul class="packs" aria-label="Available packs">
+          <li>ai</li>
+          <li>android</li>
+          <li>cloudflare</li>
+          <li>creative</li>
+          <li>dev</li>
+          <li>gaming</li>
+          <li>privacy</li>
+          <li>windows</li>
+        </ul>
+
+        <p class="afternote">
+          <code>kaadzos add &lt;pack&gt;</code> — idempotent, gated on
+          requirements, with a dry-run that prints every command. State lives
+          in <code>/var/lib/kaadzos</code>.
+        </p>
+      </div>
+    </section>
+
+    <section class="chapter" id="proof" aria-labelledby="proof-title">
+      <p class="mono chapter-index">04 / The proof</p>
+      <div class="chapter-body">
+        <h2 id="proof-title">Nothing ships<br>unproven.</h2>
+
+        <div class="stats">
+          <div class="stat"><b>06</b><span class="mono">Jobs per push</span></div>
+          <div class="stat"><b>02</b><span class="mono">Firmwares booted</span></div>
+          <div class="stat"><b>02</b><span class="mono">Installs driven</span></div>
+          <div class="stat"><b>00</b><span class="mono">Warnings tolerated</span></div>
+        </div>
+
+        <p class="afternote">
+          The boot test waits for a real <code>swaymsg</code> IPC reply on the
+          serial console, dumps the framebuffer and fails if <code>swaynag</code>
+          is running — a red bar means the config emitted an error. The install
+          test drives Calamares with <code>wtype</code> on a blank disk, then
+          boots the installed system without the ISO.
+        </p>
+      </div>
+    </section>
+
+    <section class="chapter download" id="download" aria-labelledby="download-title">
+      <p class="mono chapter-index">05 / Download</p>
+      <div class="chapter-body">
+        <h2 id="download-title">Take it<br>for a drive.</h2>
+
+        <div class="actions download-actions">
+          <a class="btn" href="https://github.com/kaadzos/kaadzos/releases/latest">Download the ISO</a>
+          <a class="arrow-link mono" href="https://github.com/kaadzos/kaadzos/releases/tag/v0.1.0">Release notes <span aria-hidden="true">→</span></a>
+        </div>
+
+        <div class="codes">
+          <div>
+            <p class="mono code-label">Verify</p>
+            <pre><code>sha256sum --check \
+  KaadzOS-trixie-amd64.iso.sha256
+
+KaadzOS-trixie-amd64.iso: OK</code></pre>
+          </div>
+          <div>
+            <p class="mono code-label">Write</p>
+            <pre><code># replace sdX — this erases it
 sudo dd if=KaadzOS-trixie-amd64.iso \
-  of=/dev/sdX bs=4M status=progress oflag=sync</code></pre>
-          <p class="note">On Windows use Rufus or balenaEtcher in DD mode.
-          Boot the live session with Secure Boot disabled; an installed
-          KaadzOS boots with it enabled.</p>
+  of=/dev/sdX bs=4M status=progress \
+  oflag=sync</code></pre>
+          </div>
         </div>
-      </div>
-    </div>
-  </section>
 
-  <section id="public">
-    <div class="wrap">
-      <h2>Built in public</h2>
-      <p class="section-lead">
-        The repository contains the live-build configuration, the theme
-        generator, the pack manager, the installer glue and the CI harness —
-        nothing is hidden behind a binary blob or a build machine.
-      </p>
-      <div class="cards">
-        <article class="card">
-          <h3><span class="dot">●</span> Source</h3>
-          <p><a href="https://github.com/kaadzos/kaadzos">github.com/kaadzos/kaadzos</a>
-          — MIT licensed configuration; Debian components keep their own licences.</p>
-        </article>
-        <article class="card">
-          <h3><span class="dot">●</span> Every run</h3>
-          <p><a href="https://github.com/kaadzos/kaadzos/actions/workflows/build.yml">Actions runs</a>
-          keep the ISO, both boot screenshots and both install logs as artifacts.</p>
-        </article>
-        <article class="card">
-          <h3><span class="dot">●</span> The palette</h3>
-          <p><a href="https://github.com/kaadzos/kaadzos/blob/main/theme/palette">theme/palette</a>
-          is the single source of truth for every colour shown here.</p>
-        </article>
+        <p class="afternote">
+          Hybrid image: the same file boots from a USB stick under BIOS or
+          UEFI. On Windows, write it with Rufus or balenaEtcher in DD mode.
+        </p>
       </div>
-    </div>
-  </section>
+    </section>
+
+  </div>
 </main>
 
-<footer>
-  <div class="wrap">
-    <p>KaadzOS — Debian 13 (trixie) · amd64 · Sway/Wayland ·
-      <a href="https://github.com/kaadzos/kaadzos/releases/latest">Releases</a> ·
-      <a href="https://github.com/kaadzos/kaadzos">Source</a></p>
-    <p>Debian components retain their own licences. The build configuration,
-       theme generator, pack manager and CI harness in this repository are MIT.</p>
+<footer class="footer">
+  <div class="shell">
+    <p class="footer-mark">KAADZOS</p>
+    <div class="footer-grid">
+      <div>
+        <p class="mono footer-label">Project</p>
+        <ul>
+          <li><a href="https://github.com/kaadzos/kaadzos/releases/latest">Releases</a></li>
+          <li><a href="https://github.com/kaadzos/kaadzos">Source</a></li>
+          <li><a href="https://github.com/kaadzos/kaadzos/actions/workflows/build.yml">Actions</a></li>
+          <li><a href="https://github.com/kaadzos/kaadzos/blob/main/theme/palette">Palette</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="mono footer-label">Index</p>
+        <ul>
+          <li><a href="#image">The image</a></li>
+          <li><a href="#desktop">The desktop</a></li>
+          <li><a href="#packs">The packs</a></li>
+          <li><a href="#proof">The proof</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="mono footer-label">Elsewhere</p>
+        <ul>
+          <li><a href="https://www.debian.org/">Debian</a></li>
+          <li><a href="https://github.com/kaadzos/kaadzos/blob/main/docs/hosting.md">Hosting notes</a></li>
+          <li><a href="https://github.com/kaadzos/kaadzos/blob/main/docs/release-notes/v0.1.0.md">Release v0.1.0</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="colophon mono">
+      <span>Set in Inter Tight · Built and tested in GitHub Actions · Hosted on Cloudflare Pages</span>
+      <span>MIT · Debian components keep their licences</span>
+    </p>
   </div>
 </footer>
 

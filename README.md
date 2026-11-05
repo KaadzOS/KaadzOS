@@ -25,7 +25,7 @@ Most of the interesting decisions here are forced by the environment, and that i
 - **No Hyprland.** It is not in Debian stable, and this image builds from the archive with `--apt-recommends false`. Sway is in trixie, so Sway is what the desktop is built around.
 - **The pack manager is POSIX `sh`, not Python or Go.** The base image ships no language runtime, and the CLI only orchestrates `apt`, `dpkg`, `curl`, and `systemctl`. A compiled binary or an interpreter would add payload to a 1 GB image to do work the shell already does.
 - **Nothing is assumed about the build machine.** The ISO cannot be built or booted on the development machine, so the build, the package-resolution test, the boot test, and the install test all run in GitHub Actions against `debian:trixie`.
-- **The theme has one source of truth.** `theme/palette` holds the colours; `theme/generate.sh` renders Sway, Waybar, foot, fuzzel, mako, swaylock, GTK3/4, Qt6ct, the wallpaper, the console palette, the Plymouth splash, the boot-menus artwork, the Calamares branding, and the website stylesheet from it. Changing a colour is a one-file edit.
+- **The theme has one source of truth.** `theme/palette` holds the colours; `theme/generate.sh` renders Sway, Waybar, foot, fuzzel, mako, swaylock, GTK3/4, Qt6ct, the wallpaper, the console palette, the Plymouth splash, the boot-menus artwork, and the Calamares branding from it. Changing a colour is a one-file edit. (The website is the deliberate exception: it has its own black-and-white editorial design.)
 - **Third-party software is opt-in and signed.** The Android pack adds Waydroid's repository and key; the Cloudflare pack fetches an architecture-matched static binary. Neither is in the base image.
 
 ## How the image is verified
@@ -102,7 +102,7 @@ bash ci/test-boot.sh uefi KaadzOS-trixie-amd64.iso boot-results
 
 The latest ISO and its SHA-256 are published on the [Releases](https://github.com/kaadzos/kaadzos/releases/latest) page by CI, and every run also keeps the ISO, both boot screenshots and both install logs as [Actions](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml) artifacts.
 
-Pushing a `v*` tag reruns the whole matrix for that commit and only then publishes the ISO, so a release cannot contain an image that was not booted and installed. The website is a static `site/` directory on Cloudflare Pages, themed from the same palette.
+Pushing a `v*` tag reruns the whole matrix for that commit and only then publishes the ISO, so a release cannot contain an image that was not booted and installed. The website is a static `site/` directory on Cloudflare Pages.
 
 ## Layout
 

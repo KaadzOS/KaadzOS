@@ -59,11 +59,14 @@ gh release delete v0.1.0 --yes
 | Workflow | `.github/workflows/site.yml` |
 | Source | `site/` (static, no build step) |
 
-`site/style.css` and `site/favicon.svg` are rendered from `theme/palette` by
-`theme/generate.sh`, so the website can never drift from the desktop theme.
-`site/index.html` contains no colour values. `site/_headers` sets a strict
-Content-Security-Policy (no scripts at all) plus `nosniff`, `no-referrer` and
-frame denial.
+The site is intentionally a separate design system rather than a palette
+render: pure black and white, oversized fluid typography, a self-hosted Inter
+Tight variable font (`site/fonts/`, SIL OFL), hand-authored `site/style.css`,
+and no JavaScript at all. `site/index.html` carries the content; the palette
+governs the OS surfaces, not the website. `site/_headers` sets a strict
+Content-Security-Policy (`default-src 'none'`, styles and fonts from self,
+images from self plus the CI screenshot host) along with `nosniff`,
+`no-referrer` and frame denial.
 
 The deploy workflow is a green no-op until both secrets exist:
 
