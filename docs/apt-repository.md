@@ -215,7 +215,7 @@ To run it locally in a container:
 ```sh
 docker run --rm -v "$PWD:/src" -w /src debian:trixie sh -c '
   apt-get update &&
-  apt-get install -y --no-install-recommends dpkg-dev apt-utils gnupg gzip xz-utils &&
+  apt-get install -y --no-install-recommends dpkg-dev apt-utils gnupg gpgv gzip xz-utils &&
   bash ci/test-apt-repo.sh
 '
 ```
