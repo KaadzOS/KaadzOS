@@ -33,6 +33,16 @@
   --section: clamp(56px, 8vw, 128px);
 }
 
+@media (prefers-contrast: more) {
+  :root {
+    --ink: #fff;
+    --grey: #d0d0d0;
+    --grey-dim: #b8b8b8;
+    --line: rgba(255, 255, 255, 0.34);
+    --line-strong: rgba(255, 255, 255, 0.6);
+  }
+}
+
 * { box-sizing: border-box; }
 
 html {
@@ -41,6 +51,8 @@ html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
   scroll-padding-top: 64px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) var(--black);
 }
 
 body {
@@ -134,7 +146,9 @@ img { max-width: 100%; }
 
 .masthead-nav a {
   position: relative;
-  padding-bottom: 3px;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 0;
   transition: color 0.2s ease;
 }
 
