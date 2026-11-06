@@ -55,15 +55,17 @@ gh release delete v0.1.0 --yes
 | --- | --- |
 | Project | `kaadzos` |
 | Production branch | `main` |
-| URL | https://kaadzos-7z2.pages.dev |
+| URL | https://kaadzos.pages.dev |
 | Workflow | `.github/workflows/site.yml` |
 | Source | `site/` (static, no build step) |
 
-The project is named `kaadzos` in the account selected by
-`CLOUDFLARE_ACCOUNT_ID`. Because `kaadzos.pages.dev` is still owned by the
-original project in the previous account, Cloudflare assigned the suffixed
-`kaadzos-7z2.pages.dev`. The original project is left untouched; attach a
-custom domain or decommission it separately once the new one is established.
+Cloudflare assigns the `pages.dev` subdomain when a project is created and does
+not support renaming it. The active project is named `kaadzos` in the account
+selected by `CLOUDFLARE_ACCOUNT_ID` and now owns https://kaadzos.pages.dev. The
+temporary suffixed subdomain existed only because the previous account's
+`kaadzos` project still held the name; after that project was deleted, the
+active project was deleted and recreated under the same name to claim the
+unsuffixed URL. No custom domain is required.
 
 The site is intentionally a separate design system rather than a palette
 render: pure black and white, oversized fluid typography, a self-hosted Inter
@@ -142,11 +144,12 @@ full archive layout, key generation and verification steps are in
 ## Current state
 
 - Pages project `kaadzos` exists in the active account; the site is live at
-  https://kaadzos-7z2.pages.dev, deployed from `main` by CI run
-  [42020337756](https://github.com/KaadzOS/KaadzOS/actions/runs/42020337756)
+  https://kaadzos.pages.dev, deployed from `main` by CI run
+  [42216150188](https://github.com/KaadzOS/KaadzOS/actions/runs/42216150188)
   using the configured `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`
-  secrets. The original `kaadzos.pages.dev` project still exists in the
-  previous account and is left untouched.
+  secrets. The project was deleted and recreated under the exact `kaadzos` name
+  after the previous account's project was deleted, so the temporary
+  `kaadzos-7z2.pages.dev` URL no longer serves the site.
 - GitHub Releases: `v0.1.0`, published by CI from tag `v0.1.0` in run
   [41322925498](https://github.com/KaadzOS/KaadzOS/actions/runs/41322925498)
   — ISO 1,431,568,384 bytes plus its 91-byte checksum.

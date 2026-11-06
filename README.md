@@ -4,7 +4,7 @@ A bootable Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop,
 
 [![Build ISO](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml/badge.svg)](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml)
 
-**Download:** [latest release](https://github.com/kaadzos/kaadzos/releases/latest) · **Website:** [kaadzos-7z2.pages.dev](https://kaadzos-7z2.pages.dev)
+**Download:** [latest release](https://github.com/kaadzos/kaadzos/releases/latest) · **Website:** [kaadzos.pages.dev](https://kaadzos.pages.dev)
 
 ![KaadzOS live session, captured by CI](https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png)
 
