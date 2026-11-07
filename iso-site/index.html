@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>KaadzOS downloads</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 2rem;
+      background: #05070a;
+      color: #f2f5f7;
+      font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    main { width: min(42rem, 100%); }
+    .eyebrow {
+      margin: 0 0 1.5rem;
+      color: #55d7ff;
+      font: 600 0.75rem/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0 0 1rem;
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+    p { margin: 0 0 1rem; color: #aab4bd; }
+    a { color: #f2f5f7; text-underline-offset: 0.2em; }
+    a:hover { color: #55d7ff; }
+    .links { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; }
+    .note {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid #1d252d;
+      color: #74808b;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">KaadzOS</p>
+    <h1>Downloads</h1>
+    <p>The ISO mirror and the optional APT archive are served from Cloudflare R2.</p>
+    <div class="links">
+      <a href="https://github.com/KaadzOS/KaadzOS/releases/latest">Latest release on GitHub</a>
+      <a href="/releases/">Release mirror</a>
+      <a href="/apt/">APT archive</a>
+    </div>
+    <p class="note">The mirror paths return 404 until a release or the archive has been published.</p>
+  </main>
+</body>
+</html>
