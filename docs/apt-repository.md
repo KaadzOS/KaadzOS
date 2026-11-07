@@ -6,8 +6,9 @@ repository built by GitHub Actions and published to Cloudflare R2 under
 ISO; the first one is `kaadzos-pack-defs`, the canonical pack definitions and
 their hooks.
 
-The base image does not need the archive. Publishing is a green no-op until
-the repository owner has configured R2 and a signing key, and the image only
+The base image does not need the archive. The archive is live at
+https://iso.kaadzos.pages.dev/apt. Publishing is credential-gated: without the
+R2 credentials and signing key the jobs are a green no-op. The image only
 enables the archive when the signing key, the R2 credentials and the public
 URL are present at build time **and** the published archive is reachable. The
 source stanza is written by a chroot hook after package installation, so the
@@ -34,9 +35,11 @@ The suite is `trixie`, the component is `main`, and the architecture is
 
 ## What you need to provide
 
-Everything below is a one-time setup on the repository owner's side. Until it
-exists, `repo-test` still proves the build and signature path in CI, and the
-publishing jobs skip cleanly.
+Everything below documents the one-time setup. It is already configured for
+the KaadzOS account, so the archive is published by every `v*` tag; the
+`repo-test` job still proves the build and signature path in CI without
+credentials, and the publishing jobs skip cleanly if the credentials are
+removed.
 
 ### Cloudflare
 
@@ -253,7 +256,7 @@ last image that shipped it is out of support.
 | `apt-repo` skipped | All five secrets/variables above are present |
 | R2 `403` / `AccessDenied` | The R2 token has Object Read & Write on the bucket |
 | `apt update` 404 | `R2_PUBLIC_URL` points at `https://iso.kaadzos.pages.dev`, and the tag's `apt-repo` job succeeded |
-| `iso` host 404 | The object has not been uploaded; the bucket is empty until a release or APT publish writes it |
+| `iso` host 404 | The object/path is wrong, or the release/APT publish has not run; check the tag's `release` and `apt-repo` jobs |
 | `iso` host 503 / `R2 binding is not configured` | The Pages project's `R2_BUCKET` binding is missing, or the `iso` branch deployment failed |
 | `NO_PUBKEY` | The keyring is installed at the path in `Signed-By` |
 | `Release` signature invalid | The published key and the `InRelease` file come from the same run; re-run the tag |

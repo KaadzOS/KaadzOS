@@ -195,14 +195,22 @@ verification steps are in
   branch alias of the same project. The project has an `R2_BUCKET` binding to
   the `kaadzos` bucket for both production and preview; `iso-site/_worker.js`
   serves `/` from static assets, `/health` from the Worker, and every other
-  path from R2. R2 Public Access is disabled. The bucket is empty, so object
-  paths return 404 until a release or APT publish writes objects.
-- GitHub Releases: `v0.1.0`, published by CI from tag `v0.1.0` in run
-  [41322925498](https://github.com/KaadzOS/KaadzOS/actions/runs/41322925498)
-  — ISO 1,431,568,384 bytes plus its 91-byte checksum.
-- Pending user action: create an R2 API token with **Object Read & Write** on
-  `kaadzos` and add `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`; generate the
-  dedicated APT signing key and add `APT_GPG_PRIVATE_KEY` /
-  `APT_GPG_PASSPHRASE`. `R2_PUBLIC_URL` is already set to
-  https://iso.kaadzos.pages.dev, and the bucket/host are live. The checklist is
-  in [`apt-repository.md`](apt-repository.md#what-you-need-to-provide).
+  path from R2. R2 Public Access is disabled.
+- GitHub Releases: `v0.2.0`, published by CI from tag `v0.2.0` in run
+  [42368854133](https://github.com/KaadzOS/KaadzOS/actions/runs/42368854133)
+  (attempt 2; the first attempt published the GitHub release but hit a
+  transient R2 multipart `InvalidPart` while mirroring the ISO, and the failed
+  job succeeded on re-run). Assets: ISO 1,432,977,408 bytes, its 91-byte
+  checksum, an 833-byte detached signature, and the 1,664-byte public keyring.
+  The ISO is mirrored under `releases/v0.2.0/`.
+- The `v0.1.0` release is still available; its later re-run
+  [42366299998](https://github.com/KaadzOS/KaadzOS/actions/runs/42366299998)
+  replaced the original 1,431,568,384-byte ISO with the same 1,432,977,408-byte
+  build and mirrored it under `releases/v0.1.0/`.
+- The optional APT archive is live at https://iso.kaadzos.pages.dev/apt for
+  `trixie main amd64`. The first package is `kaadzos-pack-defs` 0.2.0; its
+  `Packages` SHA-256 matches the published `.deb`, and the `InRelease` signature
+  verifies against the archive key (fingerprint
+  `7FC3 1B27 E931 570B 2D8C 3E42 9A4F 8D9E 9D5B 0C7A`). The keyring, source
+  stanza, and package are all served by the Worker; no user action remains for
+  publishing.
