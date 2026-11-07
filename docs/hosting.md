@@ -24,12 +24,18 @@ git push origin v0.1.0
 | `build` | The ISO builds from scratch and the checksum file matches |
 | `boot-test (bios)` / `boot-test (uefi)` | The exact ISO boots to a working Sway session under Syslinux and GRUB/OVMF, with no `swaynag` warning |
 | `install-test (bios)` / `install-test (uefi)` | Calamares installs that ISO unattended and the installed disk boots |
+| `repo-test` | A throwaway signed APT repository builds and apt installs from it in a trixie container |
+| `apt-repo` | (tags only) The real signed archive is built from the tagged pack definitions and published to R2 |
 
-Only when all of those pass does the `release` job run. It verifies the
-checksum again, publishes the ISO and its SHA-256 as a GitHub release, and
-mirrors them to R2 if R2 credentials are configured. If the release already
-exists, assets are replaced (`--clobber`) and the notes are refreshed, so
-re-running a tag is safe.
+Only when the ISO, pack and repository tests pass does the `release` job run.
+It verifies the checksum again, publishes the ISO, its SHA-256, the signed
+checksum and the public key as a GitHub release, and mirrors them to R2 if R2
+credentials are configured. If the release already exists, assets are replaced
+(`--clobber`) and the notes are refreshed, so re-running a tag is safe.
+
+A re-run uses the workflow file from the tag's commit. It does not pick up jobs
+added later on `main`; to publish a new job such as `apt-repo`, cut a new tag
+from current `main`. Moving an existing release tag is not supported.
 
 Release notes come from `docs/release-notes/<tag>.md`. A tag without a matching
 notes file falls back to GitHub's generated notes.
@@ -37,14 +43,20 @@ notes file falls back to GitHub's generated notes.
 Useful commands:
 
 ```sh
-# Re-run the whole matrix (including the release job) for a tag
+# Cut a new release from current main (required to pick up new jobs)
+tag=v0.2.0
+git switch main && git pull --ff-only
+git tag -a "$tag" -m "KaadzOS ${tag#v}"
+git push origin "$tag"
+
+# Re-run the whole matrix using the workflow from a tag's commit
 gh workflow run build.yml --ref v0.1.0
 
 # Inspect the published release
-gh release view v0.1.0 --json url,assets
+gh release view "$tag" --json url,assets
 
 # Withdraw a bad release (the git tag is kept)
-gh release delete v0.1.0 --yes
+gh release delete "$tag" --yes
 ```
 
 ---
