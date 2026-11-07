@@ -8,10 +8,12 @@ on:
       # Version tags publish a GitHub release after the full validation matrix
       # (build, pack-test, boot-test, install-test) passes for that commit.
       - 'v*'
-    # Website and documentation edits cannot change the ISO. Path filters are
-    # not evaluated for tag pushes, so releases still run every job.
+    # Website, ISO-host and documentation edits cannot change the ISO. Path
+    # filters are not evaluated for tag pushes, so releases still run every job.
     paths-ignore:
       - 'site/**'
+      - 'iso-site/**'
+      - '.github/workflows/site.yml'
       - 'docs/**'
       - '**/*.md'
   workflow_dispatch:

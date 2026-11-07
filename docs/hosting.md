@@ -1,9 +1,9 @@
 # Releases and hosting
 
 KaadzOS has no servers. GitHub Actions builds and validates the image, GitHub
-Releases carries the canonical ISO assets, Cloudflare Pages serves the website,
-and Cloudflare R2 mirrors release assets and hosts the optional signed APT
-archive under `apt/`.
+Releases carries the canonical ISO assets, Cloudflare Pages serves the website
+and the `iso.kaadzos.pages.dev` download host, and Cloudflare R2 mirrors release
+assets and hosts the optional signed APT archive under `apt/`.
 
 ---
 
@@ -56,8 +56,9 @@ gh release delete v0.1.0 --yes
 | Project | `kaadzos` |
 | Production branch | `main` |
 | URL | https://kaadzos.pages.dev |
+| ISO host | https://iso.kaadzos.pages.dev (preview branch `iso`) |
 | Workflow | `.github/workflows/site.yml` |
-| Source | `site/` (static, no build step) |
+| Source | `site/` (static) and `iso-site/` (advanced-mode Worker) |
 
 Cloudflare assigns the `pages.dev` subdomain when a project is created and does
 not support renaming it. The active project is named `kaadzos` in the account
@@ -66,6 +67,18 @@ temporary suffixed subdomain existed only because the previous account's
 `kaadzos` project still held the name; after that project was deleted, the
 active project was deleted and recreated under the same name to claim the
 unsuffixed URL. No custom domain is required.
+
+The same Pages project exposes the exact hostname
+**https://iso.kaadzos.pages.dev** as a preview **branch alias** on branch `iso`
+(Cloudflare preview aliases use the form
+`<branch>.<project>.pages.dev`). `site.yml` deploys `iso-site/` with
+`--branch iso`; that directory contains a static landing page and
+`iso-site/_worker.js`. Pages runs the file in advanced mode, so the Worker
+handles every request on this hostname: `/` serves the static landing page,
+`/health` reports whether the R2 binding is present, and every other path maps
+directly to an R2 key (`/releases/<tag>/...`, `/apt/...`). The production
+`site/` has no `_worker.js` and no `functions/`, so
+https://kaadzos.pages.dev stays purely static and Worker-free.
 
 The site is intentionally a separate design system rather than a palette
 render: pure black and white, oversized fluid typography, a self-hosted Inter
@@ -89,8 +102,10 @@ account tokens are preferable to personal tokens for CI. The account ID is
 under **Workers & Pages → Account details**.
 
 The workflow creates the Pages project if it is missing, then runs
-`wrangler pages deploy site --project-name kaadzos --branch main`. Pushes that
-touch `site/` redeploy automatically; `workflow_dispatch` deploys on demand.
+`wrangler pages deploy site --project-name kaadzos --branch main` and
+`wrangler pages deploy iso-site --project-name kaadzos --branch iso`. Pushes
+that touch `site/` or `iso-site/` redeploy automatically; `workflow_dispatch`
+deploys both on demand.
 
 ---
 
@@ -100,9 +115,12 @@ R2 has to be enabled once per account: **Workers & Pages → R2 → Enable R2**.
 
 1. Create the bucket (default name `kaadzos`; override with the `R2_BUCKET`
    repository variable).
-2. Expose it through a custom domain — **bucket → Settings → Custom Domains**,
-   for example `iso.kaadzos.dev`. The shared `r2.dev` URL is rate-limited and
-   meant for development only. Store the origin as `R2_PUBLIC_URL`.
+2. Expose it at **https://iso.kaadzos.pages.dev** without a custom domain. The
+   `iso` preview branch of the Pages project runs `iso-site/_worker.js` in
+   advanced mode, and the project has an `R2_BUCKET` binding to this bucket.
+   Keep **Public Access** disabled and do not attach an R2 custom domain; the
+   Worker reads the private bucket through the binding. Store the origin as
+   `R2_PUBLIC_URL`.
 3. Create upload credentials under **R2 → Manage R2 API Tokens → Create API
    Token**, with **Object Read & Write** limited to the bucket. It returns an
    Access Key ID and a Secret Access Key.
@@ -113,8 +131,17 @@ R2 has to be enabled once per account: **Workers & Pages → R2 → Enable R2**.
    gh secret set R2_ACCESS_KEY_ID
    gh secret set R2_SECRET_ACCESS_KEY
    gh variable set R2_BUCKET --body kaadzos              # optional
-   gh variable set R2_PUBLIC_URL --body https://iso.kaadzos.dev
+   gh variable set R2_PUBLIC_URL --body https://iso.kaadzos.pages.dev
    ```
+
+`R2_PUBLIC_URL` is the base for both the release mirror and the APT archive:
+the workflows append `/releases/<tag>/` and `/apt/`. The mirror host is a
+preview deployment, so Pages adds `x-robots-tag: noindex`; downloads are
+unaffected. The Worker streams `GET`, `HEAD` and range requests, and R2 Public
+Access stays disabled. The Workers free plan allows 100,000 requests/day, and
+the CDN cache limit is 512 MB, so the 1.4 GB ISO is streamed rather than
+edge-cached; a custom R2 domain can replace this path later if download volume
+outgrows it.
 
 The release job then uploads, over the S3-compatible endpoint
 `https://<account-id>.r2.cloudflarestorage.com`:
@@ -135,8 +162,9 @@ gh secret set APT_GPG_PASSPHRASE
 ```
 
 Without those secrets the mirror and archive steps log a notice and exit
-cleanly, so releases still publish to GitHub while R2 is being set up. The
-full archive layout, key generation and verification steps are in
+cleanly, so releases still publish to GitHub while the R2 credentials and
+signing key are being added. The full archive layout, key generation and
+verification steps are in
 [`apt-repository.md`](apt-repository.md).
 
 ---
@@ -144,16 +172,25 @@ full archive layout, key generation and verification steps are in
 ## Current state
 
 - Pages project `kaadzos` exists in the active account; the site is live at
-  https://kaadzos.pages.dev, deployed from `main` by CI run
-  [42216150188](https://github.com/KaadzOS/KaadzOS/actions/runs/42216150188)
+  https://kaadzos.pages.dev, deployed from `main` by
+  `.github/workflows/site.yml` (latest run
+  [42364155141](https://github.com/KaadzOS/KaadzOS/actions/runs/42364155141))
   using the configured `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`
   secrets. The project was deleted and recreated under the exact `kaadzos` name
   after the previous account's project was deleted, so the temporary
   `kaadzos-7z2.pages.dev` URL no longer serves the site.
+- The ISO host https://iso.kaadzos.pages.dev is live as the `iso` preview
+  branch alias of the same project. The project has an `R2_BUCKET` binding to
+  the `kaadzos` bucket for both production and preview; `iso-site/_worker.js`
+  serves `/` from static assets, `/health` from the Worker, and every other
+  path from R2. R2 Public Access is disabled. The bucket is empty, so object
+  paths return 404 until a release or APT publish writes objects.
 - GitHub Releases: `v0.1.0`, published by CI from tag `v0.1.0` in run
   [41322925498](https://github.com/KaadzOS/KaadzOS/actions/runs/41322925498)
   — ISO 1,431,568,384 bytes plus its 91-byte checksum.
-- Pending user action: enable R2 in the active account, add the R2 S3
-  credentials, and add the signing key plus `R2_PUBLIC_URL` so the ISO mirror
-  and optional APT archive can publish. The checklist is in
-  [`apt-repository.md`](apt-repository.md#what-you-need-to-provide).
+- Pending user action: create an R2 API token with **Object Read & Write** on
+  `kaadzos` and add `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`; generate the
+  dedicated APT signing key and add `APT_GPG_PRIVATE_KEY` /
+  `APT_GPG_PASSPHRASE`. `R2_PUBLIC_URL` is already set to
+  https://iso.kaadzos.pages.dev, and the bucket/host are live. The checklist is
+  in [`apt-repository.md`](apt-repository.md#what-you-need-to-provide).

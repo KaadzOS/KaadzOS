@@ -4,7 +4,7 @@ A bootable Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop,
 
 [![Build ISO](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml/badge.svg)](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml)
 
-**Download:** [latest release](https://github.com/kaadzos/kaadzos/releases/latest) · **Website:** [kaadzos.pages.dev](https://kaadzos.pages.dev)
+**Download:** [latest release](https://github.com/kaadzos/kaadzos/releases/latest) · **Website:** [kaadzos.pages.dev](https://kaadzos.pages.dev) · **ISO mirror:** [iso.kaadzos.pages.dev](https://iso.kaadzos.pages.dev)
 
 ![KaadzOS live session, captured by CI](https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png)
 
@@ -116,7 +116,7 @@ bash ci/test-boot.sh uefi KaadzOS-trixie-amd64.iso boot-results
 
 The latest ISO and its SHA-256 are published on the [Releases](https://github.com/kaadzos/kaadzos/releases/latest) page by CI, and every run also keeps the ISO, both boot screenshots and both install logs as [Actions](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml) artifacts.
 
-Pushing a `v*` tag reruns the whole matrix for that commit and only then publishes the ISO, so a release cannot contain an image that was not booted and installed. The website is a static `site/` directory on Cloudflare Pages.
+Pushing a `v*` tag reruns the whole matrix for that commit and only then publishes the ISO, so a release cannot contain an image that was not booted and installed. The website is a static `site/` directory on Cloudflare Pages, and the ISO mirror host is a Pages branch alias that streams the private R2 bucket.
 
 ## Layout
 
@@ -131,6 +131,8 @@ config/includes.chroot/      everything that lands in the image
 config/hooks/live/           build-time hooks (permissions, CI profile, session readiness)
 packs/                       declarative pack definitions and their hooks
 theme/                       Night palette + generators for every themed surface and artwork
+site/                        black-and-white static website
+iso-site/                    advanced-mode Pages Worker for iso.kaadzos.pages.dev
 ci/test-boot.sh              QEMU boot validation (BIOS + UEFI)
 ci/test-install.sh           unattended install + installed-disk boot validation
 ci/test-packs.sh             pack resolution and CLI behaviour tests
@@ -151,7 +153,7 @@ ci/test-apt-repo.sh          apt consumes a throwaway signed repository
 | 7 — releases and hosting | done |
 | 8 — optional APT repository | in progress (credential-gated) |
 
-The first release, [v0.1.0](https://github.com/kaadzos/kaadzos/releases/tag/v0.1.0), ships the ISO and its checksum as GitHub release assets and mirrors them to Cloudflare R2 when publishing credentials are configured. Releases are cut by pushing a `v*` tag; see [`docs/hosting.md`](docs/hosting.md) for the tag flow and the Cloudflare setup, and [`docs/apt-repository.md`](docs/apt-repository.md) for the optional signed package archive.
+The first release, [v0.1.0](https://github.com/kaadzos/kaadzos/releases/tag/v0.1.0), ships the ISO and its checksum as GitHub release assets and mirrors them to Cloudflare R2 when publishing credentials are configured. The `kaadzos` R2 bucket and the https://iso.kaadzos.pages.dev mirror host are live; the mirror and archive stay empty until the R2 S3 credentials and the APT signing key are added. Releases are cut by pushing a `v*` tag; see [`docs/hosting.md`](docs/hosting.md) for the tag flow and the Cloudflare setup, and [`docs/apt-repository.md`](docs/apt-repository.md) for the optional signed package archive.
 
 ## Licence
 

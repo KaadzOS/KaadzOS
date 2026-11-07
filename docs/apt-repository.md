@@ -47,12 +47,15 @@ publishing jobs skip cleanly.
 | `R2_ACCESS_KEY_ID` | secret | R2 API token Access Key ID |
 | `R2_SECRET_ACCESS_KEY` | secret | R2 API token Secret Access Key |
 | `R2_BUCKET` | variable | Bucket name; defaults to `kaadzos` |
-| `R2_PUBLIC_URL` | variable | Public bucket origin, for example `https://iso.example.com` |
+| `R2_PUBLIC_URL` | variable | Public bucket origin: `https://iso.kaadzos.pages.dev` |
 
 `CLOUDFLARE_API_TOKEN` is for Pages and is not used by the APT job; R2 uses
-the S3-compatible access key pair. `R2_PUBLIC_URL` must be the bucket's
-**custom domain**, not the shared `r2.dev` URL: `r2.dev` is rate-limited and
-is not suitable for an apt repository.
+the S3-compatible access key pair. `R2_PUBLIC_URL` is the public origin that
+serves the bucket. For KaadzOS it is the Pages preview branch alias
+`https://iso.kaadzos.pages.dev`, backed by `iso-site/_worker.js` and the
+project's `R2_BUCKET` binding; R2 Public Access stays disabled. Do not use the
+shared `r2.dev` URL: it is rate-limited and is not suitable for an apt
+repository.
 
 ### Signing
 
@@ -91,8 +94,11 @@ working copy after the secret is stored.
 
 1. **Workers & Pages → R2 → Enable R2** (one-time per account).
 2. Create a bucket, for example `kaadzos`.
-3. Attach a custom domain: **bucket → Settings → Custom Domains**, for
-   example `iso.example.com`. Set `R2_PUBLIC_URL` to `https://iso.example.com`.
+3. Expose the bucket at `https://iso.kaadzos.pages.dev`: the `kaadzos` Pages
+   project has an `iso` preview branch running `iso-site/_worker.js`, with an
+   `R2_BUCKET` binding to this bucket. This is already configured; keep
+   **Public Access** disabled and do not attach an R2 custom domain. If the
+   bucket is recreated, update the Pages binding.
 4. Create upload credentials: **R2 → Manage R2 API Tokens → Create API
    Token**, with **Object Read & Write** limited to the bucket. Store the
    Access Key ID and Secret Access Key as the two R2 secrets above.
@@ -100,11 +106,13 @@ working copy after the secret is stored.
 
    ```sh
    gh variable set R2_BUCKET --body kaadzos
-   gh variable set R2_PUBLIC_URL --body https://iso.example.com
+   gh variable set R2_PUBLIC_URL --body https://iso.kaadzos.pages.dev
    ```
 
 The same bucket can hold the ISO mirror (`releases/<tag>/`) and the archive
-(`apt/`). The paths do not collide.
+(`apt/`). The paths do not collide. The `iso` branch is deployed by
+`site.yml`; the Worker serves `/apt/...` and `/releases/...` from this bucket
+with Public Access disabled.
 
 ---
 
@@ -143,10 +151,10 @@ On an installed KaadzOS system, install the public key and source:
 
 ```sh
 sudo install -d /usr/share/keyrings
-curl -fsSL https://iso.example.com/apt/kaadzos-archive-keyring.asc |
+curl -fsSL https://iso.kaadzos.pages.dev/apt/kaadzos-archive-keyring.asc |
   sudo gpg --dearmor -o /usr/share/keyrings/kaadzos-archive-keyring.gpg
 
-sudo curl -fsSL https://iso.example.com/apt/kaadzos.sources \
+sudo curl -fsSL https://iso.kaadzos.pages.dev/apt/kaadzos.sources \
   -o /etc/apt/sources.list.d/kaadzos.sources
 
 sudo apt update
@@ -156,7 +164,7 @@ sudo apt install kaadzos-pack-defs
 Or write the stanza by hand:
 
 ```sh
-echo 'deb [signed-by=/usr/share/keyrings/kaadzos-archive-keyring.gpg] https://iso.example.com/apt trixie main' |
+echo 'deb [signed-by=/usr/share/keyrings/kaadzos-archive-keyring.gpg] https://iso.kaadzos.pages.dev/apt trixie main' |
   sudo tee /etc/apt/sources.list.d/kaadzos.list
 ```
 
@@ -177,8 +185,8 @@ the source once `apt-repo` has published.
 Check the published metadata and signature:
 
 ```sh
-curl -fsSL https://iso.example.com/apt/dists/trixie/InRelease | head
-curl -fsSL https://iso.example.com/apt/kaadzos-archive-keyring.asc |
+curl -fsSL https://iso.kaadzos.pages.dev/apt/dists/trixie/InRelease | head
+curl -fsSL https://iso.kaadzos.pages.dev/apt/kaadzos-archive-keyring.asc |
   gpg --show-keys
 ```
 
@@ -244,7 +252,8 @@ last image that shipped it is out of support.
 | --- | --- |
 | `apt-repo` skipped | All five secrets/variables above are present |
 | R2 `403` / `AccessDenied` | The R2 token has Object Read & Write on the bucket |
-| `apt update` 404 | `R2_PUBLIC_URL` points at the bucket custom domain, and the tag's `apt-repo` job succeeded |
+| `apt update` 404 | `R2_PUBLIC_URL` points at `https://iso.kaadzos.pages.dev`, and the tag's `apt-repo` job succeeded |
+| `iso` host 404 | The object has not been uploaded; the bucket is empty until a release or APT publish writes it |
+| `iso` host 503 / `R2 binding is not configured` | The Pages project's `R2_BUCKET` binding is missing, or the `iso` branch deployment failed |
 | `NO_PUBKEY` | The keyring is installed at the path in `Signed-By` |
 | `Release` signature invalid | The published key and the `InRelease` file come from the same run; re-run the tag |
-| `r2.dev` rate limits | Use a custom domain for `R2_PUBLIC_URL` |
