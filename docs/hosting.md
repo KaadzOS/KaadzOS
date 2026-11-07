@@ -205,8 +205,8 @@ verification steps are in
   The ISO is mirrored under `releases/v0.2.0/`.
 - The `v0.1.0` release is still available; its later re-run
   [42366299998](https://github.com/KaadzOS/KaadzOS/actions/runs/42366299998)
-  replaced the original 1,431,568,384-byte ISO with the same 1,432,977,408-byte
-  build and mirrored it under `releases/v0.1.0/`.
+  replaced the original 1,431,568,384-byte ISO with a 1,432,977,408-byte build
+  and mirrored it under `releases/v0.1.0/`.
 - The optional APT archive is live at https://iso.kaadzos.pages.dev/apt for
   `trixie main amd64`. The first package is `kaadzos-pack-defs` 0.2.0; its
   `Packages` SHA-256 matches the published `.deb`, and the `InRelease` signature
