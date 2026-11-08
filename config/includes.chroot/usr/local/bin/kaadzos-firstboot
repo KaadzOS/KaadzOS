@@ -22,6 +22,7 @@ rm -f /etc/sudoers.d/kaadzos-live /etc/sudoers.d/live \
       /usr/local/bin/kaadzos-install \
       /usr/local/bin/kaadzos-install-finalize \
       /usr/local/bin/kaadzos-install-live-cleanup \
+      /usr/local/bin/kaadzos-welcome-terminal \
       /usr/share/applications/kaadzos-install.desktop
 rm -rf /etc/systemd/system/getty@tty1.service.d \
        /etc/systemd/system/getty@ttyS0.service.d \

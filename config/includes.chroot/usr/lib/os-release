@@ -1,10 +1,10 @@
 NAME="KaadzOS"
-VERSION="0.1 (trixie)"
-VERSION_ID="0.1"
+VERSION="0.2 (trixie)"
+VERSION_ID="0.2"
 VERSION_CODENAME="trixie"
 ID=kaadzos
 ID_LIKE=debian
-PRETTY_NAME="KaadzOS 0.1 (trixie)"
+PRETTY_NAME="KaadzOS 0.2 (trixie)"
 ANSI_COLOR="0;36"
 HOME_URL="https://github.com/KaadzOS"
 SUPPORT_URL="https://github.com/KaadzOS/KaadzOS"

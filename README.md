@@ -70,6 +70,8 @@ kaadzos --dry-run add ai  # print every command without running it
 
 Phase 5 adds a Calamares installer. It does not debootstrap: it unpacks the live squashfs onto the target, then repairs the copy in place. The ordering is the hard part — `live-config` diverts `update-initramfs`, so the live-only packages have to be purged *before* the initramfs is generated, and live-only NOPASSWD sudo has to be removed before the installed system boots.
 
+On the live desktop, launch it from the **Install** button in Waybar, with `$mod+i`, or by running `kaadzos-install` in a terminal. Do not run the raw `calamares` binary: it refuses to run as a normal user, and `sudo calamares` bypasses the wrapper that supplies `-c /etc/calamares` and preserves the Wayland environment.
+
 `install-test` runs the whole thing unattended in QEMU: it creates a sparse 12 GB disk, drives Calamares with `wtype`, powers off, then boots the installed disk *without* the ISO and asserts the markers that matter — `KAADZOS_MODE installed`, `KAADZOS_FIRSTBOOT_DONE`, `KAADZOS_LIVE_SUDOERS_ABSENT`, `KAADZOS_CALAMARES_ABSENT` — plus the same `swaynag` gate as the live boot.
 
 The installer is verified end to end in CI on both BIOS and UEFI.

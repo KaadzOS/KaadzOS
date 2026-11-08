@@ -103,7 +103,10 @@ for_window [class="calamares"] fullscreen enable
 # Autostart (logs go to /tmp; /run/hostshare only exists in the QEMU boot test)
 exec waybar >/tmp/waybar.log 2>&1
 exec mako >/tmp/mako.log 2>&1
-exec sh -c 'if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Terminal"; fi'
+exec sh -c 'if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Terminal" /usr/local/bin/kaadzos-welcome-terminal; fi'
+# The bar button and Super+I are persistent; this catches the first look at a
+# desktop with no icons.
+exec sh -c 'if [ ! -e /etc/kaadzos/installed ]; then sleep 8; notify-send -a KaadzOS -u normal "Install KaadzOS" "Click Install in the bar or press Super+I."; fi'
 exec /usr/local/bin/kaadzos-sway-keyboard
 exec sh /usr/local/bin/kaadzos-session-ready
 # Unattended install driver: only fires in the CI VM with the CI Calamares
@@ -207,13 +210,22 @@ cat > "$cfg/waybar/config" <<WBAR
     "spacing": 0,
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["clock"],
-    "modules-right": ["network", "pulseaudio", "battery", "tray"],
+    "modules-right": ["custom/install", "network", "pulseaudio", "battery", "tray"],
     "sway/workspaces": {
         "format": "{name}",
         "all-outputs": true,
         "persistent-workspaces": { "1": [], "2": [], "3": [], "4": [], "5": [] }
     },
     "sway/mode": { "format": " {} " },
+    "custom/install": {
+        "format": "{}",
+        "exec": "test -e /etc/kaadzos/installed || printf ' Install '",
+        "hide-empty-text": true,
+        "interval": 5,
+        "on-click": "kaadzos-install",
+        "tooltip": true,
+        "tooltip-format": "Install KaadzOS to disk"
+    },
     "clock": {
         "format": "{:%a %d %b  %H:%M}",
         "tooltip-format": "<tt>{calendar}</tt>",
@@ -273,6 +285,14 @@ window#waybar {
     background: ${KAADZ_ACCENT_ALT};
     color: ${KAADZ_URGENT_FG};
     padding: 0 10px;
+}
+#custom-install {
+    background: ${KAADZ_ACCENT};
+    color: ${KAADZ_BG};
+    padding: 0 12px;
+    margin: 0 4px;
+    border-radius: 6px;
+    font-weight: 600;
 }
 #clock, #network, #pulseaudio, #battery, #tray {
     padding: 0 12px;

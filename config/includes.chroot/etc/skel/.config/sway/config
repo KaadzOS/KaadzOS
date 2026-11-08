@@ -44,7 +44,10 @@ for_window [class="calamares"] fullscreen enable
 # Autostart (logs go to /tmp; /run/hostshare only exists in the QEMU boot test)
 exec waybar >/tmp/waybar.log 2>&1
 exec mako >/tmp/mako.log 2>&1
-exec sh -c 'if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Terminal"; fi'
+exec sh -c 'if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Terminal" /usr/local/bin/kaadzos-welcome-terminal; fi'
+# The bar button and Super+I are persistent; this catches the first look at a
+# desktop with no icons.
+exec sh -c 'if [ ! -e /etc/kaadzos/installed ]; then sleep 8; notify-send -a KaadzOS -u normal "Install KaadzOS" "Click Install in the bar or press Super+I."; fi'
 exec /usr/local/bin/kaadzos-sway-keyboard
 exec sh /usr/local/bin/kaadzos-session-ready
 # Unattended install driver: only fires in the CI VM with the CI Calamares

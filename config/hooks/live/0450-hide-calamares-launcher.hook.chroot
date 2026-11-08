@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+
+# Debian's calamares package ships a generic "Install System" launcher whose
+# Exec is `sh -c "pkexec calamares"`. That path cannot work in the KaadzOS live
+# session: it does not pass /etc/calamares and it does not preserve the Wayland
+# environment. Hide it so fuzzel only offers the supported "Install KaadzOS"
+# entry, which runs kaadzos-install (sudo -E + -c /etc/calamares).
+desktop=/usr/share/applications/calamares.desktop
+if [ -f "$desktop" ] && ! grep -q '^NoDisplay=true$' "$desktop"; then
+  printf '\nNoDisplay=true\n' >> "$desktop"
+fi

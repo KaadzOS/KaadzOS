@@ -5,13 +5,22 @@
     "spacing": 0,
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["clock"],
-    "modules-right": ["network", "pulseaudio", "battery", "tray"],
+    "modules-right": ["custom/install", "network", "pulseaudio", "battery", "tray"],
     "sway/workspaces": {
         "format": "{name}",
         "all-outputs": true,
         "persistent-workspaces": { "1": [], "2": [], "3": [], "4": [], "5": [] }
     },
     "sway/mode": { "format": " {} " },
+    "custom/install": {
+        "format": "{}",
+        "exec": "test -e /etc/kaadzos/installed || printf ' Install '",
+        "hide-empty-text": true,
+        "interval": 5,
+        "on-click": "kaadzos-install",
+        "tooltip": true,
+        "tooltip-format": "Install KaadzOS to disk"
+    },
     "clock": {
         "format": "{:%a %d %b  %H:%M}",
         "tooltip-format": "<tt>{calendar}</tt>",
