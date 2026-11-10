@@ -554,10 +554,13 @@ QMainWindow, QDialog {
     background-color: ${KAADZ_BG};
 }
 
-/* The Calamares slideshow is a QQuickWidget; the QML root paints the real
-   background, but this keeps the widget black before the scene has rendered. */
+/* The Calamares slideshow is a QQuickWidget; its default clear colour is
+   opaque white, so set it to the palette background both via the Qt property
+   (qproperty-clearColor) and the widget background. The QML root paints the
+   real background once the scene has rendered. */
 QQuickWidget {
     background-color: ${KAADZ_BG};
+    qproperty-clearColor: ${KAADZ_BG};
 }
 
 #sidebarApp {
