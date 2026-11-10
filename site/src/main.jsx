@@ -7,7 +7,7 @@ const asciiMount = document.getElementById('ascii-hero');
 if (asciiMount) {
   createRoot(asciiMount).render(
     <GradientASCII
-      colors={['#1e3fd8', '#f6f8ff', '#a5d8ff', '#38bdf8']}
+      colors={['#000000', '#ffffff', '#ffffff', '#000000']}
       shape="horizon"
       characters=" =+xX0S8#@"
       cellSize={18}

@@ -205,6 +205,11 @@ img { max-width: 100%; }
 .masthead-nav a:focus-visible { color: var(--white); }
 
 /* ------------------------------------------------------------- ascii hero */
+.ascii-stage {
+  position: relative;
+  width: 100%;
+}
+
 .ascii-hero {
   position: relative;
   width: 100%;
@@ -219,8 +224,28 @@ img { max-width: 100%; }
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 90% 60% at 50% 68%, rgba(30, 63, 216, 0.22), transparent 70%),
-    radial-gradient(ellipse 55% 38% at 50% 78%, rgba(56, 189, 248, 0.12), transparent 72%);
+    radial-gradient(ellipse 90% 60% at 50% 68%, rgba(255, 255, 255, 0.18), transparent 70%),
+    radial-gradient(ellipse 55% 38% at 50% 78%, rgba(255, 255, 255, 0.08), transparent 72%);
+}
+
+/* A large identity wordmark layered over the ASCII field. mix-blend-mode keeps
+   it legible against both the black and white parts of the gradient. */
+.ascii-wordmark {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  font-size: clamp(4rem, 18vw, 14rem);
+  font-weight: 800;
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  color: var(--white);
+  mix-blend-mode: difference;
+  pointer-events: none;
+  text-align: center;
+  user-select: none;
 }
 
 /* ------------------------------------------------------------------ hero */
@@ -684,6 +709,7 @@ pre code {
 @media print {
   .masthead { position: static; }
   .ascii-hero { display: none; }
+  .ascii-wordmark { display: none; }
   .footer-tech { height: 180px; }
   .masthead::after { display: none; }
   .kicker, h1 .line, .lede, .hero-foot .actions, .ticker, .reveal {
