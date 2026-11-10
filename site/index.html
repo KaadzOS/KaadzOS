@@ -11,9 +11,10 @@
   <meta property="og:title" content="KaadzOS — An operating system that proves itself">
   <meta property="og:description" content="A minimal Debian 13 live image with a Sway/Wayland desktop. Built, booted on both firmwares and installed unattended in CI before anything ships.">
   <meta property="og:image" content="https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png">
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="fonts/inter-tight-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/fonts/inter-tight-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/src/main.jsx"></script>
 </head>
 <body>
 
@@ -30,6 +31,10 @@
     </nav>
   </div>
 </header>
+
+<div class="ascii-hero" id="ascii-hero" aria-hidden="true">
+  <div class="ascii-fallback"></div>
+</div>
 
 <main id="main">
 
@@ -222,7 +227,9 @@ sudo dd if=KaadzOS-trixie-amd64.iso \
 
 <footer class="footer">
   <div class="shell">
-    <p class="footer-mark reveal">KAADZOS</p>
+    <div class="footer-tech" id="footer-tech">
+      <p class="footer-mark">KAADZOS</p>
+    </div>
     <div class="footer-grid">
       <div>
         <p class="mono footer-label">Project</p>

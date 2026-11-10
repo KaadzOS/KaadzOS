@@ -121,7 +121,7 @@ bash ci/test-boot.sh uefi KaadzOS-trixie-amd64.iso boot-results
 
 The latest ISO and its SHA-256 are published on the [Releases](https://github.com/kaadzos/kaadzos/releases/latest) page by CI, and every run also keeps the ISO, both boot screenshots and both install logs as [Actions](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml) artifacts.
 
-Pushing a `v*` tag reruns the whole matrix for that commit and only then publishes the ISO, so a release cannot contain an image that was not booted and installed. The website is a static `site/` directory on Cloudflare Pages, and the ISO mirror host is a Pages branch alias that streams the private R2 bucket.
+Pushing a `v*` tag reruns the whole matrix for that commit and only then publishes the ISO, so a release cannot contain an image that was not booted and installed. The website is a small React/Vite build in `site/` (published from `site/dist/`) on Cloudflare Pages, and the ISO mirror host is a Pages branch alias that streams the private R2 bucket.
 
 ## Layout
 
@@ -136,7 +136,7 @@ config/includes.chroot/      everything that lands in the image
 config/hooks/live/           build-time hooks (permissions, CI profile, session readiness)
 packs/                       declarative pack definitions and their hooks
 theme/                       AMOLED palette + generators for every themed surface and artwork
-site/                        black-and-white static website
+site/                        black-and-white editorial site (React/Vite, builds to site/dist)
 iso-site/                    advanced-mode Pages Worker for iso.kaadzos.pages.dev
 ci/test-boot.sh              QEMU boot validation (BIOS + UEFI)
 ci/test-install.sh           unattended install + installed-disk boot validation

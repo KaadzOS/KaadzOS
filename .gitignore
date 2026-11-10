@@ -6,6 +6,11 @@ boot-logs-*/
 *.iso
 *.img
 
+# Website dependencies and build output. CI installs with npm ci and deploys
+# site/dist; neither directory is committed.
+site/node_modules/
+site/dist/
+
 # Packs are canonical in packs/; CI copies them into the image before build.
 config/includes.chroot/usr/share/kaadzos/packs/
 

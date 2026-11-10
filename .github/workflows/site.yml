@@ -15,14 +15,32 @@ permissions:
 
 jobs:
   deploy:
-    # Cloudflare Pages is the only hosting for the website. The job is a
-    # no-op until CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID exist as
-    # repository secrets, so the workflow stays green before hosting is set up.
+    # Cloudflare Pages is the only hosting for the website. The site is built
+    # on every run; the deploy steps are skipped until CLOUDFLARE_API_TOKEN and
+    # CLOUDFLARE_ACCOUNT_ID exist as repository secrets, so the workflow stays
+    # green before hosting is set up.
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.23.4'
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      # Build even without Cloudflare credentials so a broken site fails CI
+      # before it can reach Pages.
+      - name: Install site dependencies
+        working-directory: site
+        run: npm ci
+
+      - name: Build site
+        working-directory: site
+        run: npm run build
 
       - name: Check Cloudflare credentials
         id: gate
@@ -53,19 +71,13 @@ jobs:
             --data '{"name":"kaadzos","production_branch":"main"}' \
             -o /dev/null -w 'Pages project ensure: HTTP %{http_code}\n' || true
 
-      - name: Set up Node
-        if: steps.gate.outputs.enabled == '1'
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-
       - name: Deploy to Cloudflare Pages
         if: steps.gate.outputs.enabled == '1'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          npx --yes wrangler@4 pages deploy site \
+          npx --yes wrangler@4 pages deploy site/dist \
             --project-name kaadzos \
             --branch main
 

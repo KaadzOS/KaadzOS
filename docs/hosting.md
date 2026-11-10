@@ -70,7 +70,7 @@ gh release delete "$tag" --yes
 | URL | https://kaadzos.pages.dev |
 | ISO host | https://iso.kaadzos.pages.dev (preview branch `iso`) |
 | Workflow | `.github/workflows/site.yml` |
-| Source | `site/` (static) and `iso-site/` (advanced-mode Worker) |
+| Source | `site/` (React/Vite, builds to `site/dist/`) and `iso-site/` (advanced-mode Worker) |
 
 Cloudflare assigns the `pages.dev` subdomain when a project is created and does
 not support renaming it. The active project is named `kaadzos` in the account
@@ -94,12 +94,31 @@ https://kaadzos.pages.dev stays purely static and Worker-free.
 
 The site is intentionally a separate design system rather than a palette
 render: pure black and white, oversized fluid typography, a self-hosted Inter
-Tight variable font (`site/fonts/`, SIL OFL), hand-authored `site/style.css`,
-and no JavaScript at all. `site/index.html` carries the content; the palette
-governs the OS surfaces, not the website. `site/_headers` sets a strict
-Content-Security-Policy (`default-src 'none'`, styles and fonts from self,
-images from self plus the CI screenshot host) along with `nosniff`,
-`no-referrer` and frame denial.
+Tight variable font (`site/public/fonts/`, SIL OFL), and hand-authored
+`site/style.css`. `site/index.html` carries the editorial content; the palette
+governs the OS surfaces, not the website.
+
+Two React Bits accents are layered on top as progressive enhancements:
+`GradientASCII` (an interactive ASCII horizon) sits below the masthead, and
+`TechText` (a dashed-path `KAADZOS` wordmark) sits above the footer. The
+component sources are vendored under `site/src/components/` (MIT + Commons
+Clause, Copyright (c) 2026 David Haz; see the licence file there) and mounted by
+`site/src/main.jsx`. Both mount points keep static fallback markup, so the page
+still reads with JavaScript disabled. The build is plain React 19 + Vite:
+
+```sh
+cd site
+npm ci
+npm run build      # writes site/dist/
+```
+
+`site/public/` holds the files that must land at the deployment root:
+`_headers`, `favicon.svg` and `fonts/`. `site/public/_headers` sets
+`default-src 'none'`, `script-src 'self'`, `style-src 'self' 'unsafe-inline'`
+(the components set inline styles), `font-src 'self'` and images from self plus
+the CI screenshot host, along with `nosniff`, `no-referrer` and frame denial.
+The repository ignores `site/node_modules/` and `site/dist/`; the workflow
+builds on every run and deploys only the generated directory.
 
 The deploy workflow is a green no-op when either secret is missing:
 
@@ -113,8 +132,10 @@ Token**, with the **Cloudflare Pages: Edit** permission scoped to the account;
 account tokens are preferable to personal tokens for CI. The account ID is
 under **Workers & Pages → Account details**.
 
-The workflow creates the Pages project if it is missing, then runs
-`wrangler pages deploy site --project-name kaadzos --branch main` and
+The workflow runs `npm ci` and `npm run build` in `site/` on every run, even
+when the credentials are absent, so a broken build fails CI. With credentials
+present it creates the Pages project if it is missing, then runs
+`wrangler pages deploy site/dist --project-name kaadzos --branch main` and
 `wrangler pages deploy iso-site --project-name kaadzos --branch iso`. Pushes
 that touch `site/` or `iso-site/` redeploy automatically; `workflow_dispatch`
 deploys both on demand.
