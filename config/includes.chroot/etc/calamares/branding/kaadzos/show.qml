@@ -7,7 +7,7 @@ Presentation
 {
     id: presentation
 
-    textColor: "#e2e8f0"
+    textColor: "#ffffff"
     fontFamily: "Inter"
 
     Timer {
@@ -30,7 +30,7 @@ Presentation
             width: parent.width * 0.86
             horizontalAlignment: Text.Center
             wrapMode: Text.WordWrap
-            color: "#e2e8f0"
+            color: "#ffffff"
             font.family: "Inter"
             font.pixelSize: 26
             font.bold: true
@@ -45,7 +45,7 @@ Presentation
     }
 
     Slide {
-        centeredText: qsTr("The Night theme, Sway session and Waybar carry over\n" +
+        centeredText: qsTr("The AMOLED theme, Sway session and Waybar carry over\n" +
                            "unchanged. The installer removes itself on the first\n" +
                            "boot, leaving a clean installed system.")
     }

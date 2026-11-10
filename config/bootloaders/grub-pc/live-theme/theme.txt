@@ -1,9 +1,9 @@
-# KaadzOS Night GRUB theme (override of live-build's live-theme/theme.txt).
+# KaadzOS AMOLED GRUB theme (override of live-build's live-theme/theme.txt).
 # The splash artwork keeps its upper third clear; the boot menu lives in the
 # lower half where GRUB overlays it. Fonts are the unicode.pf2 Unifont that
 # live-build's config.cfg already loads before sourcing theme.cfg.
 desktop-image: "../splash.png"
-title-color: "#94a3b8"
+title-color: "#9c9c9c"
 title-font: "Unifont Regular 16"
 title-text: ""
 message-font: "Unifont Regular 16"
@@ -15,8 +15,8 @@ terminal-font: "Unifont Regular 16"
         width = 80%
         top = 54%
         height = 40%
-        item_color = "#94a3b8"
-        selected_item_color = "#38bdf8"
+        item_color = "#9c9c9c"
+        selected_item_color = "#ffffff"
         item_height = 18
         item_padding = 0
         item_spacing = 6
@@ -33,10 +33,10 @@ terminal-font: "Unifont Regular 16"
         width = 80%
         height = 12
         font = "Unifont Regular 16"
-        text_color = "#e2e8f0"
-        fg_color = "#38bdf8"
-        bg_color = "#131a24"
-        border_color = "#2a3547"
+        text_color = "#ffffff"
+        fg_color = "#ffffff"
+        bg_color = "#0a0a0a"
+        border_color = "#292929"
         text = ""
 }
 
@@ -49,6 +49,6 @@ terminal-font: "Unifont Regular 16"
         height = 20
         text = "Enter: boot   ·   E: edit entry   ·   U: utilities"
         align = "center"
-        color = "#64748b"
+        color = "#8a8a8a"
         font = "Unifont Regular 16"
 }

@@ -1,6 +1,6 @@
-# KaadzOS Night boot splash (generated from theme/palette by theme/generate.sh).
-Window.SetBackgroundTopColor(0.0392, 0.0549, 0.0784);
-Window.SetBackgroundBottomColor(0.0510, 0.0706, 0.0980);
+# KaadzOS AMOLED boot splash (generated from theme/palette by theme/generate.sh).
+Window.SetBackgroundTopColor(0.0000, 0.0000, 0.0000);
+Window.SetBackgroundBottomColor(0.0196, 0.0196, 0.0196);
 
 win_w = Window.GetWidth();
 win_h = Window.GetHeight();

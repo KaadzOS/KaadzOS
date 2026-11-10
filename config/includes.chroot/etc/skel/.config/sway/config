@@ -21,11 +21,11 @@ input type:touchpad {
 }
 
 # Appearance
-client.focused          #38bdf8 #131a24 #e2e8f0 #38bdf8 #38bdf8
-client.focused_inactive #2a3547 #0d1219 #64748b #2a3547 #2a3547
-client.unfocused        #2a3547 #0a0e14 #64748b #2a3547 #2a3547
-client.urgent           #f87171 #f87171 #0a0e14 #f87171 #f87171
-client.placeholder      #0a0e14 #0a0e14 #e2e8f0 #0a0e14 #0a0e14
+client.focused          #ffffff #0a0a0a #ffffff #ffffff #ffffff
+client.focused_inactive #292929 #050505 #8a8a8a #292929 #292929
+client.unfocused        #292929 #000000 #8a8a8a #292929 #292929
+client.urgent           #ff5c5c #ff5c5c #000000 #ff5c5c #ff5c5c
+client.placeholder      #000000 #000000 #ffffff #000000 #000000
 default_border pixel 2
 default_floating_border pixel 2
 gaps inner 6

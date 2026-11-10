@@ -19,7 +19,8 @@ cal_brand="$chroot/etc/calamares/branding/kaadzos"
 
 mkdir -p \
   "$cfg/sway" "$cfg/waybar" "$cfg/foot" "$cfg/fuzzel" "$cfg/mako" \
-  "$cfg/swaylock" "$cfg/qt6ct" "$sys/qt6ct/colors" \
+  "$cfg/swaylock" "$cfg/qt6ct" "$cfg/gtk-3.0" "$cfg/gtk-4.0" \
+  "$sys/qt6ct/colors" \
   "$sys/gtk-3.0" "$sys/gtk-4.0" "$sys/systemd/system" \
   "$wall_dir" "$cal_brand" "$chroot/usr/local/share/kaadzos" \
   "$chroot/usr/share/plymouth/themes/kaadzos"
@@ -33,8 +34,8 @@ cat > "$wall_dir/wallpaper.svg" <<SVG
 <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
   <defs>
     <radialGradient id="glow" cx="72%" cy="28%" r="90%">
-      <stop offset="0%" stop-color="${KAADZ_ACCENT}" stop-opacity="0.30"/>
-      <stop offset="45%" stop-color="${KAADZ_ACCENT_ALT}" stop-opacity="0.10"/>
+      <stop offset="0%" stop-color="${KAADZ_ACCENT}" stop-opacity="0.06"/>
+      <stop offset="45%" stop-color="${KAADZ_ACCENT_ALT}" stop-opacity="0.02"/>
       <stop offset="100%" stop-color="${KAADZ_BG}" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="base" x1="0" y1="0" x2="0" y2="1">
@@ -421,12 +422,61 @@ gtk-cursor-theme-size=24
 gtk-application-prefer-dark-theme=1
 gtk-decoration-layout=menu
 GTK
+
+# Adwaita still ships a blue accent and selection colour. User CSS loads after
+# the theme, so these definitions turn GTK3 and GTK4/libadwaita surfaces back
+# into the website's black/white/grey palette without replacing the theme.
+cat > "$cfg/gtk-$ver/gtk.css" <<GTKCSS
+/* KaadzOS AMOLED GTK overrides (generated from theme/palette). */
+@define-color theme_bg_color ${KAADZ_BG};
+@define-color theme_fg_color ${KAADZ_FG};
+@define-color theme_base_color ${KAADZ_SURFACE};
+@define-color theme_text_color ${KAADZ_FG};
+@define-color theme_selected_bg_color ${KAADZ_ACCENT};
+@define-color theme_selected_fg_color ${KAADZ_URGENT_FG};
+@define-color backdrop_selected_bg_color ${KAADZ_BORDER};
+@define-color backdrop_selected_fg_color ${KAADZ_FG};
+@define-color insensitive_bg_color ${KAADZ_BG_ALT};
+@define-color insensitive_fg_color ${KAADZ_FG_MUTED};
+@define-color borders ${KAADZ_BORDER};
+@define-color unfocused_borders ${KAADZ_BORDER};
+@define-color link_color ${KAADZ_FG};
+@define-color visited_link_color ${KAADZ_FG_ALT};
+@define-color warning_color ${KAADZ_WARNING};
+@define-color error_color ${KAADZ_URGENT};
+@define-color success_color ${KAADZ_SUCCESS};
+@define-color accent_color ${KAADZ_ACCENT};
+@define-color accent_bg_color ${KAADZ_ACCENT};
+@define-color accent_fg_color ${KAADZ_URGENT_FG};
+@define-color destructive_color ${KAADZ_URGENT};
+@define-color destructive_bg_color ${KAADZ_URGENT};
+@define-color destructive_fg_color ${KAADZ_URGENT_FG};
+@define-color window_bg_color ${KAADZ_BG};
+@define-color window_fg_color ${KAADZ_FG};
+@define-color view_bg_color ${KAADZ_SURFACE};
+@define-color view_fg_color ${KAADZ_FG};
+@define-color headerbar_bg_color ${KAADZ_BG_ALT};
+@define-color headerbar_fg_color ${KAADZ_FG};
+@define-color headerbar_border_color ${KAADZ_BORDER};
+@define-color card_bg_color ${KAADZ_SURFACE};
+@define-color card_fg_color ${KAADZ_FG};
+@define-color dialog_bg_color ${KAADZ_SURFACE};
+@define-color dialog_fg_color ${KAADZ_FG};
+@define-color popover_bg_color ${KAADZ_SURFACE};
+@define-color popover_fg_color ${KAADZ_FG};
+@define-color sidebar_bg_color ${KAADZ_BG_ALT};
+@define-color sidebar_fg_color ${KAADZ_FG};
+@define-color secondary_sidebar_bg_color ${KAADZ_BG};
+@define-color secondary_sidebar_fg_color ${KAADZ_FG_ALT};
+@define-color shade_color rgba(255, 255, 255, 0.08);
+@define-color scrollbar_outline_color rgba(255, 255, 255, 0.16);
+GTKCSS
 done
 
 # ---------------------------------------------------------------------- Qt6ct
 cat > "$cfg/qt6ct/qt6ct.conf" <<QTC
 [Appearance]
-color_scheme_path=/etc/qt6ct/colors/KaadzNight.conf
+color_scheme_path=/etc/qt6ct/colors/KaadzAMOLED.conf
 standard_dialogs=gtk3
 icon_theme=Adwaita
 style=Fusion
@@ -436,7 +486,7 @@ font="${KAADZ_FONT_UI},${KAADZ_FONT_SIZE},-1,0,50,0,0,0,0,0"
 fixed="${KAADZ_FONT_MONO},${KAADZ_FONT_SIZE_TERM},-1,0,50,0,0,0,0,0"
 QTC
 
-cat > "$sys/qt6ct/colors/KaadzNight.conf" <<QSC
+cat > "$sys/qt6ct/colors/KaadzAMOLED.conf" <<QSC
 [ColorScheme]
 active_colors=#${KAADZ_FG#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_SURFACE#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG#\#}, #${KAADZ_FG#\#}, #${KAADZ_FG#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_BG#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_ACCENT#\#}, #${KAADZ_URGENT_FG#\#}, #${KAADZ_ACCENT#\#}, #${KAADZ_URGENT#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_FG_ALT#\#}, #${KAADZ_BG#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG#\#}, #${KAADZ_ACCENT_ALT#\#}
 disabled_colors=#${KAADZ_FG_MUTED#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_SURFACE#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_BG#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BORDER#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BG_ALT#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BG#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_FG_MUTED#\#}, #${KAADZ_BORDER#\#}
@@ -664,7 +714,7 @@ Presentation
     }
 
     Slide {
-        centeredText: qsTr("The Night theme, Sway session and Waybar carry over\n" +
+        centeredText: qsTr("The AMOLED theme, Sway session and Waybar carry over\n" +
                            "unchanged. The installer removes itself on the first\n" +
                            "boot, leaving a clean installed system.")
     }
@@ -737,7 +787,7 @@ splash_bg_alt=$(rgbfloat "$KAADZ_BG_ALT")
 cat > "$ply_dir/kaadzos.plymouth" <<PLY
 [Plymouth Theme]
 Name=KaadzOS
-Description=KaadzOS Night boot splash
+Description=KaadzOS AMOLED boot splash
 ModuleName=script
 
 [script]
@@ -746,7 +796,7 @@ ScriptFile=/usr/share/plymouth/themes/kaadzos/kaadzos.script
 PLY
 
 cat > "$ply_dir/kaadzos.script" <<PSCRIPT
-# KaadzOS Night boot splash (generated from theme/palette by theme/generate.sh).
+# KaadzOS AMOLED boot splash (generated from theme/palette by theme/generate.sh).
 Window.SetBackgroundTopColor($splash_bg);
 Window.SetBackgroundBottomColor($splash_bg_alt);
 

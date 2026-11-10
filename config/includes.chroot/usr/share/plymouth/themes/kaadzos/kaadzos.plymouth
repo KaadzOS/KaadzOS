@@ -1,6 +1,6 @@
 [Plymouth Theme]
 Name=KaadzOS
-Description=KaadzOS Night boot splash
+Description=KaadzOS AMOLED boot splash
 ModuleName=script
 
 [script]

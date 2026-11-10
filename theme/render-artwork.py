@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the KaadzOS raster artwork from the "Night" palette.
+"""Render the KaadzOS raster artwork from the "AMOLED" palette.
 
 Usage: render-artwork.py <wallpaper-dir> <calamares-brand-dir> <9 colours>
 
@@ -377,11 +377,11 @@ def rounded_rect_sd(px, py, x0, y0, x1, y1, radius):
 
 
 # ------------------------------------------------------------------- wallpaper
-# Matches wallpaper.svg: vertical base, cyan bloom toward the upper right, two
-# contour lines and a single waypoint dot.
+# Matches wallpaper.svg: vertical base, a faint white bloom toward the upper
+# right, two contour lines and a single waypoint dot.
 wall = Canvas(1920, 1080, 3, BG)
 vertical_gradient(wall, BG_ALT, BG)
-glow(wall, 1920 * 0.72, 1080 * 0.28, 1920 * 0.9, ACCENT, 0.30)
+glow(wall, 1920 * 0.72, 1080 * 0.28, 1920 * 0.9, ACCENT, 0.06)
 polyline(wall, [(0, 760), (520, 560), (1040, 700), (1560, 480), (1920, 600)],
          BORDER, 2.0, 0.35)
 polyline(wall, [(0, 860), (520, 660), (1040, 800), (1560, 580), (1920, 700)],
@@ -408,7 +408,7 @@ for y in range(S):
         if sd > 0.0:
             halo = max(0.0, 1.0 - sd / (S * 0.10))
             if halo > 0.0:
-                logo.put(x, y, ACCENT, 0.16 * halo * halo)
+                logo.put(x, y, ACCENT, 0.08 * halo * halo)
             continue
         logo.put(x, y, SURFACE, 1.0)
         ring = abs(sd + border / 2.0)
@@ -423,7 +423,7 @@ write_png(cal_brand + '/logo.png', logo)
 # --------------------------------------------------------------- welcome image
 welcome = Canvas(1600, 900, 3, BG)
 vertical_gradient(welcome, BG_ALT, BG)
-glow(welcome, 800, 330, 1050, ACCENT, 0.16)
+glow(welcome, 800, 330, 1050, ACCENT, 0.06)
 polyline(welcome, [(0, 634), (433, 467), (867, 583), (1300, 400), (1600, 500)],
          BORDER, 2.0, 0.30)
 polyline(welcome, [(0, 717), (433, 550), (867, 667), (1300, 483), (1600, 583)],
@@ -458,7 +458,7 @@ write_png(cal_brand + '/welcome.png', welcome)
 # Deliberately quiet: the slideshow paints its text on top at 35% opacity.
 slide = Canvas(1600, 900, 3, BG)
 vertical_gradient(slide, BG, BG_ALT)
-glow(slide, 1300, 210, 780, ACCENT_ALT, 0.13)
+glow(slide, 1300, 210, 780, ACCENT_ALT, 0.05)
 polyline(slide, [(0, 700), (430, 520), (860, 640), (1290, 470), (1600, 560)],
          BORDER, 2.0, 0.16)
 

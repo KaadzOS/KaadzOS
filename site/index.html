@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <title>KaadzOS — An operating system that proves itself</title>
-  <meta name="description" content="A minimal Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop, a palette-derived theme, an on-demand pack system, and an installer. Built, booted on BIOS and UEFI, and installed unattended in CI before every release.">
+  <meta name="description" content="A minimal Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop, a pure-black AMOLED theme, an on-demand pack system, and an installer. Built, booted on BIOS and UEFI, and installed unattended in CI before every release.">
   <meta name="theme-color" content="#000000">
   <meta property="og:type" content="website">
   <meta property="og:title" content="KaadzOS — An operating system that proves itself">
@@ -45,9 +45,9 @@
       <div class="hero-foot">
         <p class="lede">
           KaadzOS is a minimal Debian 13 image with a hand-built Sway
-          desktop, a theme rendered from one palette, and an on-demand pack
-          system. Every push is built, booted on BIOS and UEFI, and installed
-          to disk before anything ships.
+          desktop, a pure-black AMOLED theme rendered from one palette, and an
+          on-demand pack system. Every push is built, booted on BIOS and UEFI,
+          and installed to disk before anything ships.
         </p>
         <div class="actions">
           <a class="btn" href="https://github.com/kaadzos/kaadzos/releases/latest">Download the ISO</a>
@@ -66,7 +66,7 @@
 
   <figure class="shot">
     <img src="https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png"
-         alt="The KaadzOS live session: Sway with Waybar, a floating terminal and the Night wallpaper"
+         alt="The KaadzOS live session: Sway with Waybar, a floating terminal and the AMOLED black wallpaper"
          width="1280" height="800">
     <figcaption class="mono shell">Fig. 01 — KaadzOS live session, captured from the QEMU framebuffer by CI. Not staged. The run fails on any Sway warning.</figcaption>
   </figure>
@@ -110,7 +110,7 @@
           </div>
           <div class="spec-row">
             <dt class="mono">Theme</dt>
-            <dd>One file, <code>theme/palette</code>, renders the boot splash, boot menus, Sway, Waybar, foot, fuzzel, mako, swaylock, GTK3/4, Qt6ct, the wallpaper and the console colours.</dd>
+            <dd>One file, <code>theme/palette</code>, renders the boot splash, boot menus, Sway, Waybar, foot, fuzzel, mako, swaylock, GTK3/4, Qt6ct, the wallpaper and the console colours in the same pure-black, white and grey palette as this site.</dd>
           </div>
           <div class="spec-row">
             <dt class="mono">Installer</dt>

@@ -91,7 +91,7 @@ xdg-user-dirs
 
 # Phase 6: bootsplash. The script plugin ships in plymouth core; plymouth-themes
 # is still installed for the two-step fallback machinery and the label plugins
-# come from plymouth-label. The Night theme lives in theme/generate.sh output.
+# come from plymouth-label. The AMOLED theme lives in theme/generate.sh output.
 plymouth
 plymouth-themes
 plymouth-label

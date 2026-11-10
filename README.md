@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/kaadipranav/kaadipranav/refs/heads/main/assets/KaadzOS(1).png"/>
 </div>
 
-A bootable Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop, a palette-derived theme, and an on-demand package system — built and boot-tested entirely in CI, with no build machine involved.
+A bootable Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop, a pure-black AMOLED theme, and an on-demand package system — built and boot-tested entirely in CI, with no build machine involved.
 
 [![Build ISO](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml/badge.svg)](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml)
 
@@ -27,7 +27,7 @@ Most of the interesting decisions here are forced by the environment, and that i
 - **No Hyprland.** It is not in Debian stable, and this image builds from the archive with `--apt-recommends false`. Sway is in trixie, so Sway is what the desktop is built around.
 - **The pack manager is POSIX `sh`, not Python or Go.** The base image ships no language runtime, and the CLI only orchestrates `apt`, `dpkg`, `curl`, and `systemctl`. A compiled binary or an interpreter would add payload to a 1 GB image to do work the shell already does.
 - **Nothing is assumed about the build machine.** The ISO cannot be built or booted on the development machine, so the build, the package-resolution test, the boot test, and the install test all run in GitHub Actions against `debian:trixie`.
-- **The theme has one source of truth.** `theme/palette` holds the colours; `theme/generate.sh` renders Sway, Waybar, foot, fuzzel, mako, swaylock, GTK3/4, Qt6ct, the wallpaper, the console palette, the Plymouth splash, the boot-menus artwork, and the Calamares branding from it. Changing a colour is a one-file edit. (The website is the deliberate exception: it has its own black-and-white editorial design.)
+- **The theme has one source of truth.** `theme/palette` holds the colours; `theme/generate.sh` renders Sway, Waybar, foot, fuzzel, mako, swaylock, GTK3/4, Qt6ct, the wallpaper, the console palette, the Plymouth splash, the boot-menus artwork, and the Calamares branding from it. Changing a colour is a one-file edit. The OS uses a true-black AMOLED palette with a white accent, mirroring the website's black-and-white editorial design.
 - **Third-party software is opt-in and signed.** The Android pack adds Waydroid's repository and key; the Cloudflare pack fetches an architecture-matched static binary. Neither is in the base image.
 
 ## How the image is verified
@@ -135,7 +135,7 @@ config/includes.chroot/      everything that lands in the image
   etc/skel/.config/          Sway, Waybar, foot, fuzzel, mako, swaylock, Qt
 config/hooks/live/           build-time hooks (permissions, CI profile, session readiness)
 packs/                       declarative pack definitions and their hooks
-theme/                       Night palette + generators for every themed surface and artwork
+theme/                       AMOLED palette + generators for every themed surface and artwork
 site/                        black-and-white static website
 iso-site/                    advanced-mode Pages Worker for iso.kaadzos.pages.dev
 ci/test-boot.sh              QEMU boot validation (BIOS + UEFI)
