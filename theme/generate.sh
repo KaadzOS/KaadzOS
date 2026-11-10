@@ -554,6 +554,12 @@ QMainWindow, QDialog {
     background-color: ${KAADZ_BG};
 }
 
+/* The Calamares slideshow is a QQuickWidget; the QML root paints the real
+   background, but this keeps the widget black before the scene has rendered. */
+QQuickWidget {
+    background-color: ${KAADZ_BG};
+}
+
 #sidebarApp {
     background-color: ${KAADZ_BG_ALT};
 }
@@ -678,6 +684,16 @@ Presentation
 
     textColor: "${KAADZ_FG}"
     fontFamily: "${KAADZ_FONT_UI}"
+
+    // Presentation is a plain Item, so the QQuickWidget would otherwise show
+    // its default white clear colour before the first slide paints. Fill the
+    // whole scene with the palette background so the install page is AMOLED
+    // from the first frame.
+    Rectangle {
+        anchors.fill: parent
+        color: "${KAADZ_BG}"
+        z: -1
+    }
 
     Timer {
         interval: 12000

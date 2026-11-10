@@ -15,7 +15,9 @@ rm -f /usr/local/bin/kaadzos-install \
 rm -f /usr/share/applications/kaadzos-install.desktop
 
 # greetd's displaymanager module writes vt = "next"; the installed system
-# wants a fixed VT so tty7 is consistently the graphical login.
+# wants a fixed VT so tty7 is consistently the graphical login. It also writes
+# the tuigreet command; add the AMOLED white/grey theme there so the installed
+# login screen does not fall back to the virtual console's default colours.
 if [ -f /etc/greetd/config.toml ] && command -v python3 >/dev/null 2>&1; then
   python3 - <<'PY'
 import toml
@@ -26,6 +28,12 @@ terminal = data.setdefault("terminal", {})
 terminal["vt"] = 7
 default = data.setdefault("default_session", {})
 default["user"] = "_greetd"
+command = default.get("command", "")
+theme = ("border=white;text=white;time=white;container=black;"
+         "title=white;greet=gray;prompt=white;input=white;"
+         "action=gray;button=white")
+if "tuigreet" in command and "--theme" not in command:
+    default["command"] = command + " --theme '" + theme + "'"
 with open(path, "w") as handle:
     toml.dump(data, handle)
 PY

@@ -1,9 +1,10 @@
 #!/bin/sh
 # KaadzOS "AMOLED" palette -- the single source of truth for the entire theme.
 #
-# Every themed config (Sway, Waybar, foot, fuzzel, mako, swaylock, GTK, Qt,
-# wallpaper, console) is generated from these values by theme/generate.sh.
-# Edit colours here, then re-run theme/generate.sh to propagate.
+# Every generated themed config (Sway, Waybar, foot, fuzzel, mako, swaylock,
+# GTK, Qt, wallpaper, console) is rendered from these values by
+# theme/generate.sh. The boot-menu artwork and overrides are hand-authored from
+# the same values. Edit colours here, then re-run theme/generate.sh.
 #
 # Design: true #000 black, white text and a white accent, matching the
 # website's editorial black-and-white design. Surfaces are neutral near-black

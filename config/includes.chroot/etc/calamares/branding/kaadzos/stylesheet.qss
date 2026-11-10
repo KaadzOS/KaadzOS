@@ -11,6 +11,12 @@ QMainWindow, QDialog {
     background-color: #000000;
 }
 
+/* The Calamares slideshow is a QQuickWidget; the QML root paints the real
+   background, but this keeps the widget black before the scene has rendered. */
+QQuickWidget {
+    background-color: #000000;
+}
+
 #sidebarApp {
     background-color: #050505;
 }

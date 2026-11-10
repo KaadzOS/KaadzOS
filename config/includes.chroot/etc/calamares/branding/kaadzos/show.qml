@@ -10,6 +10,16 @@ Presentation
     textColor: "#ffffff"
     fontFamily: "Inter"
 
+    // Presentation is a plain Item, so the QQuickWidget would otherwise show
+    // its default white clear colour before the first slide paints. Fill the
+    // whole scene with the palette background so the install page is AMOLED
+    // from the first frame.
+    Rectangle {
+        anchors.fill: parent
+        color: "#000000"
+        z: -1
+    }
+
     Timer {
         interval: 12000
         running: presentation.activatedInCalamares
