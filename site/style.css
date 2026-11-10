@@ -208,38 +208,15 @@ img { max-width: 100%; }
 .ascii-stage {
   position: relative;
   width: 100%;
-  height: 100vh;
-  height: 100svh;
-  min-height: 640px;
-  overflow: hidden;
 }
 
 .ascii-hero {
-  position: absolute;
-  inset: 0;
+  position: relative;
   width: 100%;
-  height: 100%;
+  height: 600px;
   overflow: hidden;
+  border-bottom: 1px solid var(--line);
   background: var(--black);
-}
-
-.ascii-wordmark {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  display: grid;
-  place-items: center;
-  margin: 0;
-  font-size: clamp(4rem, 18vw, 14rem);
-  font-weight: 800;
-  line-height: 0.86;
-  letter-spacing: -0.05em;
-  color: var(--white);
-  opacity: 0.22;
-  mix-blend-mode: difference;
-  pointer-events: none;
-  text-align: center;
-  user-select: none;
 }
 
 /* Visible until React mounts, and permanently when JavaScript is off. */
@@ -249,27 +226,6 @@ img { max-width: 100%; }
   background:
     radial-gradient(ellipse 90% 60% at 50% 68%, rgba(255, 255, 255, 0.18), transparent 70%),
     radial-gradient(ellipse 55% 38% at 50% 78%, rgba(255, 255, 255, 0.08), transparent 72%);
-}
-
-.hero-overlay-shell {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding-inline: var(--pad);
-  padding-bottom: clamp(40px, 6vw, 88px);
-}
-
-.hero-overlay {
-  pointer-events: auto;
-  padding: 0;
-}
-
-.hero-overlay .ticker {
-  margin-top: clamp(24px, 4vw, 48px);
 }
 
 /* A large identity wordmark layered over the ASCII field. mix-blend-mode keeps
@@ -716,7 +672,7 @@ pre code {
 
 /* ----------------------------------------------------------- responsive */
 @media (max-width: 960px) {
-  .ascii-stage { min-height: 560px; }
+  .ascii-hero { height: 440px; }
   .footer-tech { height: 360px; }
   .hero-foot { grid-template-columns: 1fr; align-items: start; }
   .actions { justify-content: flex-start; }
@@ -733,7 +689,7 @@ pre code {
 }
 
 @media (max-width: 620px) {
-  .ascii-stage { min-height: 520px; }
+  .ascii-hero { height: 320px; }
   .footer-tech { height: 280px; }
   .masthead-nav { gap: 14px; }
   .ticker { gap: 8px 0; }
@@ -752,7 +708,6 @@ pre code {
 
 @media print {
   .masthead { position: static; }
-  .ascii-stage { height: auto; min-height: 0; }
   .ascii-hero { display: none; }
   .ascii-wordmark { display: none; }
   .footer-tech { height: 180px; }
