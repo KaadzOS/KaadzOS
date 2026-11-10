@@ -235,3 +235,11 @@ verification steps are in
   `7FC3 1B27 E931 570B 2D8C 3E42 9A4F 8D9E 9D5B 0C7A`). The keyring, source
   stanza, and package are all served by the Worker; no user action remains for
   publishing.
+- The website now builds with React 19 + Vite (run
+  [42767104714](https://github.com/KaadzOS/KaadzOS/actions/runs/42767104714),
+  commit `8604ea0`): `site.yml` runs `npm ci` and `npm run build` in `site/`
+  on every push and deploys `site/dist/`. The editorial page keeps its
+  hand-authored design; a vendored `GradientASCII` accent sits below the
+  masthead and a `TechText` `KAADZOS` wordmark sits above the footer, each with
+  static fallback markup. The CSP now permits `script-src 'self'` and
+  `style-src 'self' 'unsafe-inline'`.
