@@ -11,20 +11,20 @@ if (asciiMount) {
       shape="horizon"
       characters=" =+xX0S8#@"
       cellSize={18}
-      density={0.8}
-      glyphOpacity={0.85}
-      glow={0.2}
-      depthOfField={0}
-      flicker={0.2}
-      softness={0.5}
+      density={0.85}
+      glyphOpacity={0.9}
+      glow={0.45}
+      depthOfField={0.4}
+      flicker={0.35}
+      softness={0.6}
       scale={1}
-      flow={0.5}
-      speed={1}
+      flow={0.8}
+      speed={1.25}
       gradientOpacity={0.9}
-      grain={0.08}
-      variation={0}
+      grain={0.12}
+      variation={0.5}
       mouseInteraction
-      scrambleRadius={0.1}
+      scrambleRadius={0.22}
       clickEffect="wave"
       intro
       lightMode={false}
