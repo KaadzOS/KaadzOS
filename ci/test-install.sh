@@ -189,7 +189,7 @@ while (( SECONDS < deadline )); do
   fi
   if [[ ! -f "$install_exec_png" ]] \
     && grep -q 'KAADZOS_INSTALL_EXEC_BEGIN' "$install_serial" 2>/dev/null; then
-    sleep 20
+    sleep 3
     screendump "$install_monitor" "$install_exec_ppm" "$install_exec_png"
   fi
 

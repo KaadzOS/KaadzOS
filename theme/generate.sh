@@ -527,8 +527,8 @@ images:
     productIcon:    "logo.png"
     productWelcome: "welcome.png"
 
-slideshow: "show.qml"
-slideshowAPI: 2
+slideshow:
+    - "slide.png"
 
 style:
     SidebarBackground:        "${KAADZ_BG_ALT}"
