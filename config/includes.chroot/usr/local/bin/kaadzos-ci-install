@@ -46,7 +46,7 @@ pkill -x foot 2>/dev/null || true
 log=/tmp/calamares-ci.log
 : > "$log"
 sudo -E env HOME=/root QT_QPA_PLATFORM=wayland \
-  /usr/bin/calamares -c /etc/calamares-ci >>"$log" 2>&1 &
+  /usr/bin/calamares -d -c /etc/calamares-ci >>"$log" 2>&1 &
 cal_pid=$!
 
 wait_for_window() {
