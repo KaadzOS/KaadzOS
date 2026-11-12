@@ -455,7 +455,9 @@ fade_edges(welcome, BG, 120)
 write_png(cal_brand + '/welcome.png', welcome)
 
 # --------------------------------------------------------------- slide artwork
-# Deliberately quiet: the slideshow paints its text on top at 35% opacity.
+# Deliberately quiet: the install copy is baked into a matching panel by
+# theme/render-slides.py. Keep the mark and accent dot inside the central
+# 1000x650 area that Calamares' image slideshow actually shows.
 slide = Canvas(1600, 900, 3, BG)
 vertical_gradient(slide, BG, BG_ALT)
 glow(slide, 1300, 210, 780, ACCENT_ALT, 0.05)
@@ -473,10 +475,7 @@ mark_arm_paths = [
 ]
 composite_mask(slide, mask_strokes(1600, 900, mark_stem_path + mark_arm_paths, mark_stem),
                ACCENT, 0.28)
-disc(slide, 1352, 152, 4, ACCENT, 0.75)
-disc(slide, 1352, 152, 60, ACCENT, 0.08)
-
-draw_wordmark(slide, 'KAADZOS', 92, 742, 26, mix(FG_ALT, BG, 0.35))
-segment(slide, (92, 730), (92 + 46, 730), ACCENT, 3.0, 0.9)
+disc(slide, 1260, 170, 4, ACCENT, 0.75)
+disc(slide, 1260, 170, 60, ACCENT, 0.08)
 fade_edges(slide, BG, 100)
 write_png(cal_brand + '/slide.png', slide)

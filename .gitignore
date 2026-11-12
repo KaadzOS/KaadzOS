@@ -14,6 +14,9 @@ site/dist/
 # Packs are canonical in packs/; CI copies them into the image before build.
 config/includes.chroot/usr/share/kaadzos/packs/
 
+# Built in the CI trixie container and staged into the image; never committed.
+config/includes.chroot/usr/local/lib/kaadzos-calamares-map.so
+
 # Phase 8: generated APT trust material. The public key is exported from the
 # signing secret at build time, and the source stanza is written by a generated
 # chroot hook after package installation. The private key never touches the tree.

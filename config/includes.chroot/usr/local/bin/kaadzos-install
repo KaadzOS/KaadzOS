@@ -13,7 +13,18 @@ if [ ! -d /run/live/medium ] && [ ! -d /run/live/rootfs ]; then
   exit 1
 fi
 
+# Calamares' locale module draws a blue/green QRC world map that QSS cannot
+# recolour. The filter is built in CI and loaded only for the installer; the
+# installed system has no Qt6 GUI stack to load it into.
+preload=
+if [ -r /usr/local/lib/kaadzos-calamares-map.so ]; then
+  preload=/usr/local/lib/kaadzos-calamares-map.so
+fi
+
 if [ "$(id -u)" -eq 0 ]; then
+  if [ -n "$preload" ]; then
+    LD_PRELOAD="$preload" exec /usr/bin/calamares -c /etc/calamares "$@"
+  fi
   exec /usr/bin/calamares -c /etc/calamares "$@"
 fi
 
@@ -24,6 +35,11 @@ else
 fi
 
 # -c pins the app-data directory (settings, modules, branding and the required
-# qml/ dir) instead of relying on the distro-compiled default.
+# qml/ dir) instead of relying on the distro-compiled default. LD_PRELOAD is
+# set after sudo so the filter is applied to Calamares, not to sudo itself.
+if [ -n "$preload" ]; then
+  exec sudo -E env HOME=/root QT_QPA_PLATFORM="$platform" LD_PRELOAD="$preload" \
+    /usr/bin/calamares -c /etc/calamares "$@"
+fi
 exec sudo -E env HOME=/root QT_QPA_PLATFORM="$platform" \
   /usr/bin/calamares -c /etc/calamares "$@"

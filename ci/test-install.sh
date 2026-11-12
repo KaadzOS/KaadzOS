@@ -35,6 +35,8 @@ calamares_tail="$output_dir/$firmware-calamares-tail.log"
 
 install_window_ppm="$output_dir/$firmware-install-window.ppm"
 install_window_png="$output_dir/$firmware-install-window.png"
+install_locale_ppm="$output_dir/$firmware-install-locale.ppm"
+install_locale_png="$output_dir/$firmware-install-locale.png"
 install_exec_ppm="$output_dir/$firmware-install-exec.ppm"
 install_exec_png="$output_dir/$firmware-install-exec.png"
 installed_ppm="$output_dir/$firmware-installed.ppm"
@@ -187,9 +189,14 @@ while (( SECONDS < deadline )); do
     sleep 8
     screendump "$install_monitor" "$install_window_ppm" "$install_window_png"
   fi
+  if [[ ! -f "$install_locale_png" ]] \
+    && tr -d '\r' < "$install_serial" | grep -qx 'KAADZOS_CI_STEP locale'; then
+    sleep 1
+    screendump "$install_monitor" "$install_locale_ppm" "$install_locale_png"
+  fi
   if [[ ! -f "$install_exec_png" ]] \
     && grep -q 'KAADZOS_INSTALL_EXEC_BEGIN' "$install_serial" 2>/dev/null; then
-    sleep 3
+    sleep 8
     screendump "$install_monitor" "$install_exec_ppm" "$install_exec_png"
   fi
 

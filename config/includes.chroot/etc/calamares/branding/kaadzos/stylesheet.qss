@@ -11,13 +11,11 @@ QMainWindow, QDialog {
     background-color: #000000;
 }
 
-/* The Calamares slideshow is a QQuickWidget; its default clear colour is
-   opaque white, so set it to the palette background both via the Qt property
-   (qproperty-clearColor) and the widget background. The QML root paints the
-   real background once the scene has rendered. */
-QQuickWidget {
+/* The image slideshow is a plain QLabel with object name "image". Its pixmap
+   covers the label, and this background keeps any letterbox area AMOLED on a
+   larger screen. */
+#image {
     background-color: #000000;
-    qproperty-clearColor: #000000;
 }
 
 #sidebarApp {

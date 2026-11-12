@@ -45,8 +45,17 @@ pkill -x foot 2>/dev/null || true
 
 log=/tmp/calamares-ci.log
 : > "$log"
-sudo -E env HOME=/root QT_QPA_PLATFORM=wayland \
-  /usr/bin/calamares -c /etc/calamares-ci >>"$log" 2>&1 &
+preload=
+if [ -r /usr/local/lib/kaadzos-calamares-map.so ]; then
+  preload=/usr/local/lib/kaadzos-calamares-map.so
+fi
+if [ -n "$preload" ]; then
+  sudo -E env HOME=/root QT_QPA_PLATFORM=wayland LD_PRELOAD="$preload" \
+    /usr/bin/calamares -c /etc/calamares-ci >>"$log" 2>&1 &
+else
+  sudo -E env HOME=/root QT_QPA_PLATFORM=wayland \
+    /usr/bin/calamares -c /etc/calamares-ci >>"$log" 2>&1 &
+fi
 cal_pid=$!
 
 wait_for_window() {
@@ -115,7 +124,11 @@ mark "KAADZOS_CI_STEP welcome"
 wtype -M alt -k n -m alt
 sleep 5
 
+# The Location page is the only place the locale map is visible. The test
+# captures it after this marker; keep the page up long enough for that
+# screenshot before advancing.
 mark "KAADZOS_CI_STEP locale"
+sleep 8
 wtype -M alt -k n -m alt
 sleep 4
 
