@@ -1,0 +1,44 @@
+#!/bin/sh
+# Calamares' partition module hardcodes a Breeze palette for its partition
+# bars: blue/green/yellow/purple for existing partitions, red/orange/salmon
+# for new ones and a purple-grey for an unknown disklabel. There is no
+# configuration option, and on the AMOLED Summary page those bars were the
+# only coloured surface left in the installer.
+#
+# Rewrite the seven-character colour literals inside the module to neutral
+# greys of the same length, so the ELF layout is untouched and the bars stay
+# readable on true black. The patch is build-time and live-only: the
+# installer removes Calamares from the target system.
+set -eu
+
+module=$(find /usr/lib -type f \
+  -path '*/calamares/modules/partition/libcalamares_viewmodule_partition.so' \
+  -print -quit 2>/dev/null || true)
+if [ -z "$module" ]; then
+  echo "calamares-amoled: partition module not found" >&2
+  exit 1
+fi
+
+perl -pi -e '
+  s/#2980b9/#333333/g;  # Dark Plasma Blue
+  s/#27ae60/#3a3a3a/g;  # Dark Icon Green
+  s/#c9ce3b/#414141/g;  # Dirty Yellow
+  s/#3daee9/#484848/g;  # Plasma Blue
+  s/#9b59b6/#4f4f4f/g;  # Purple
+  s/#c0392b/#565656/g;  # Dark Icon Red
+  s/#f39c1f/#5d5d5d/g;  # Dark Icon Yellow
+  s/#f1b7bc/#646464/g;  # Light Salmon
+  s/#fed999/#6b6b6b/g;  # Light Orange
+  s/#4d4151/#292929/g;  # Unknown disklabel
+' "$module"
+chmod 0644 "$module"
+
+# A survivor means Calamares changed its palette or the patch did not apply:
+# fail the build instead of publishing coloured bars in the release
+# screenshots.
+for colour in 2980b9 27ae60 c9ce3b 3daee9 9b59b6 c0392b f39c1f f1b7bc fed999 4d4151; do
+  if grep -q "#$colour" "$module"; then
+    echo "calamares-amoled: #$colour survived the patch in $module" >&2
+    exit 1
+  fi
+done
