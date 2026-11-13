@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/kaadipranav/kaadipranav/refs/heads/main/assets/KaadzOS(1).png"/>
+  <img src="https://raw.githubusercontent.com/kaadipranav/kaadipranav/refs/heads/main/assets/kaadzoslogo.png"/>
 </div>
 
 A bootable Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop, a pure-black AMOLED theme, and an on-demand package system — built and boot-tested entirely in CI, with no build machine involved.
