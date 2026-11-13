@@ -2,11 +2,12 @@
 # Unattended Calamares driver for ci/test-install.sh.
 #
 # This is only started from the Sway autostart when the VM exposes the CI DMI
-# product name and the CI Calamares configuration is present. It types through
-# the pages with wtype (Wayland-native, so it works under Sway without a seat
-# daemon) and writes progress markers to the serial console. product_name is
-# used because /sys/class/dmi/id/product_serial is root-only; the live user
-# could not read it.
+# product name and the CI Calamares configuration is present. It advances the
+# pages with synthetic Sway clicks and types field values with wtype
+# (Wayland-native, so it works under Sway without a seat daemon), and writes
+# progress markers to the serial console. product_name is used because
+# /sys/class/dmi/id/product_serial is root-only; the live user could not read
+# it.
 set -u
 
 serial=/dev/ttyS0
@@ -49,11 +50,15 @@ preload=
 if [ -r /usr/local/lib/kaadzos-calamares-map.so ]; then
   preload=/usr/local/lib/kaadzos-calamares-map.so
 fi
+# Force the installer UI to US English: the driver navigates by position and
+# types fixed values, so the CI run must not inherit an arbitrary live-session
+# locale. Calamares reads QLocale::system(), which follows LANG.
 if [ -n "$preload" ]; then
-  sudo -E env HOME=/root QT_QPA_PLATFORM=wayland LD_PRELOAD="$preload" \
+  sudo -E env HOME=/root LANG=en_US.UTF-8 QT_QPA_PLATFORM=wayland \
+    LD_PRELOAD="$preload" \
     /usr/bin/calamares -c /etc/calamares-ci >>"$log" 2>&1 &
 else
-  sudo -E env HOME=/root QT_QPA_PLATFORM=wayland \
+  sudo -E env HOME=/root LANG=en_US.UTF-8 QT_QPA_PLATFORM=wayland \
     /usr/bin/calamares -c /etc/calamares-ci >>"$log" 2>&1 &
 fi
 cal_pid=$!
@@ -117,28 +122,58 @@ swaymsg '[class="calamares"] fullscreen enable' >/dev/null 2>&1 || true
 swaymsg '[class="calamares"] focus' >/dev/null 2>&1 || true
 sleep 6
 
-# Navigation. Calamares uses mnemonics (&Next / &Install); each page below has
-# a single Next, so Alt+N advances. The pause after the keyboard page gives
-# the partition module time to finish its device scan before Next is enabled.
+# Navigation. Do not use Calamares' Alt+N mnemonic: several pages focus a
+# combo box (the Welcome page focuses the language selector), and that widget
+# consumes "n" as type-ahead instead of letting the mnemonic reach the Next
+# button. That is timing-dependent under emulation, which is how a UEFI run
+# once ended up on the Norwegian language with the page never advancing.
+# Sway can dispatch a synthetic left click, so click the standard bottom-right
+# Next/Install button instead. Its centre is 90 px from the right edge and
+# 18 px from the bottom edge at the CI resolution (1280x800); derive the
+# resolution from the output mode so the click survives a future mode change.
+click_next() {
+  width=1280
+  height=800
+  # -p keeps the human-readable output when stdout is a pipe; swaymsg defaults
+  # to JSON for non-terminals.
+  mode=$(swaymsg -p -t get_outputs 2>/dev/null \
+    | sed -n 's/^[[:space:]]*Current mode: \([0-9][0-9]*\)x\([0-9][0-9]*\).*/\1 \2/p' \
+    | head -n 1)
+  if [ -n "$mode" ]; then
+    width=${mode%% *}
+    height=${mode##* }
+  fi
+  x=$((width - 90))
+  y=$((height - 18))
+  mark "KAADZOS_CI_CLICK x=$x y=$y"
+  swaymsg seat - cursor set "$x" "$y" >/dev/null 2>&1 || true
+  sleep 1
+  swaymsg seat - cursor press button1 >/dev/null 2>&1 || true
+  swaymsg seat - cursor release button1 >/dev/null 2>&1 || true
+  sleep 1
+}
+
 mark "KAADZOS_CI_STEP welcome"
-wtype -M alt -k n -m alt
-sleep 5
+click_next
+sleep 4
 
 # The Location page is the only place the locale map is visible. The test
 # captures it after this marker; keep the page up long enough for that
 # screenshot before advancing.
 mark "KAADZOS_CI_STEP locale"
 sleep 8
-wtype -M alt -k n -m alt
-sleep 4
+click_next
+sleep 3
 
 mark "KAADZOS_CI_STEP keyboard"
-wtype -M alt -k n -m alt
+click_next
+# Give the partition module time to finish its device scan before Next is
+# enabled on that page.
 sleep 40
 
 mark "KAADZOS_CI_STEP partition"
-wtype -M alt -k n -m alt
-sleep 5
+click_next
+sleep 4
 
 # Users page: onActivate() focuses the full name field. Full name, login name
 # and hostname are the three focusable fields before the password box; the
@@ -153,11 +188,13 @@ sleep 1
 wtype -k Tab
 wtype 'kaadzos2026'
 sleep 2
-wtype -M alt -k n -m alt
-sleep 5
+click_next
+sleep 4
 
 mark "KAADZOS_CI_STEP summary"
-wtype -M alt -k i -m alt
+# Hold the Summary page so the CI can capture it, then start the install.
+sleep 8
+click_next
 
 # 40 minute watchdog. Under TCG a full unpackfs + initramfs run is slow.
 deadline=$(( $(date +%s) + 2400 ))
