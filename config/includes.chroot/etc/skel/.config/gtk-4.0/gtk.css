@@ -41,3 +41,11 @@
 @define-color secondary_sidebar_fg_color #9c9c9c;
 @define-color shade_color rgba(255, 255, 255, 0.08);
 @define-color scrollbar_outline_color rgba(255, 255, 255, 0.16);
+
+/* Adwaita paints subtle vertical gradients on header bars, buttons and
+   toolbars. On a true-black AMOLED surface they read as muddy grey bands, so
+   flatten them; the colour definitions above already carry the surfaces. */
+headerbar, .titlebar, searchbar, toolbar,
+button, combobox arrow, spinbutton {
+    background-image: none;
+}

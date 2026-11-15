@@ -53,7 +53,7 @@ KAADZ_INFO="$KAADZ_TEAL"
 KAADZ_URGENT_FG="$KAADZ_BLACK" # text drawn on an urgent background
 
 # --------------------------------------------------------------- typography
-KAADZ_FONT_UI="Inter"          # sans-serif UI font
+KAADZ_FONT_UI="Inter Tight"    # the website's brand face, vendored in the image
 KAADZ_FONT_MONO="JetBrains Mono" # monospace / terminal font
 KAADZ_FONT_FALLBACK="DejaVu Sans"
 KAADZ_FONT_SIZE="11"

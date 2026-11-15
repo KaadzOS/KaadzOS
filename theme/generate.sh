@@ -29,22 +29,12 @@ mkdir -p \
 strip() { printf '%s' "${1#\#}"; }
 
 # ------------------------------------------------------------------- wallpaper
+# Flat true black: no washes or glows, just the AMOLED background with two
+# quiet contour lines and a waypoint dot (mirrored by theme/render-artwork.py).
 cat > "$wall_dir/wallpaper.svg" <<SVG
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
-  <defs>
-    <radialGradient id="glow" cx="72%" cy="28%" r="90%">
-      <stop offset="0%" stop-color="${KAADZ_ACCENT}" stop-opacity="0.06"/>
-      <stop offset="45%" stop-color="${KAADZ_ACCENT_ALT}" stop-opacity="0.02"/>
-      <stop offset="100%" stop-color="${KAADZ_BG}" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="base" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="${KAADZ_BG_ALT}"/>
-      <stop offset="100%" stop-color="${KAADZ_BG}"/>
-    </linearGradient>
-  </defs>
-  <rect width="1920" height="1080" fill="url(#base)"/>
-  <rect width="1920" height="1080" fill="url(#glow)"/>
+  <rect width="1920" height="1080" fill="${KAADZ_BG}"/>
   <g stroke="${KAADZ_BORDER}" stroke-opacity="0.35" fill="none">
     <path d="M0 760 L520 560 L1040 700 L1560 480 L1920 600" stroke-width="2"/>
     <path d="M0 860 L520 660 L1040 800 L1560 580 L1920 700" stroke-width="1" stroke-opacity="0.2"/>
@@ -470,6 +460,14 @@ cat > "$cfg/gtk-$ver/gtk.css" <<GTKCSS
 @define-color secondary_sidebar_fg_color ${KAADZ_FG_ALT};
 @define-color shade_color rgba(255, 255, 255, 0.08);
 @define-color scrollbar_outline_color rgba(255, 255, 255, 0.16);
+
+/* Adwaita paints subtle vertical gradients on header bars, buttons and
+   toolbars. On a true-black AMOLED surface they read as muddy grey bands, so
+   flatten them; the colour definitions above already carry the surfaces. */
+headerbar, .titlebar, searchbar, toolbar,
+button, combobox arrow, spinbutton {
+    background-image: none;
+}
 GTKCSS
 done
 
@@ -550,6 +548,9 @@ cat > "$cal_brand/stylesheet.qss" <<QSS
 QWidget {
     background-color: ${KAADZ_BG};
     color: ${KAADZ_FG};
+    /* The whole installer speaks the website's Inter Tight, independent of
+       root's Qt configuration. */
+    font-family: "${KAADZ_FONT_UI}";
     selection-background-color: ${KAADZ_ACCENT};
     selection-color: ${KAADZ_BG};
 }
@@ -732,7 +733,6 @@ rgbfloat() {
     "$(component "${hex:0:2}")" "$(component "${hex:2:2}")" "$(component "${hex:4:2}")"
 }
 splash_bg=$(rgbfloat "$KAADZ_BG")
-splash_bg_alt=$(rgbfloat "$KAADZ_BG_ALT")
 
 cat > "$ply_dir/kaadzos.plymouth" <<PLY
 [Plymouth Theme]
@@ -745,10 +745,12 @@ ImageDir=/usr/share/plymouth/themes/kaadzos
 ScriptFile=/usr/share/plymouth/themes/kaadzos/kaadzos.script
 PLY
 
+# Flat black backdrop: the two SetBackground calls used to bookend a subtle
+# gradient; a single colour keeps the splash AMOLED-flat.
 cat > "$ply_dir/kaadzos.script" <<PSCRIPT
 # KaadzOS AMOLED boot splash (generated from theme/palette by theme/generate.sh).
 Window.SetBackgroundTopColor($splash_bg);
-Window.SetBackgroundBottomColor($splash_bg_alt);
+Window.SetBackgroundBottomColor($splash_bg);
 
 win_w = Window.GetWidth();
 win_h = Window.GetHeight();

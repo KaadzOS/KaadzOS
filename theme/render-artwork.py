@@ -121,32 +121,6 @@ class Canvas:
             buf[i + 3] = int(out_a * 255)
 
 
-def vertical_gradient(canvas, top, bottom):
-    for y in range(canvas.h):
-        t = y / (canvas.h - 1)
-        row = bytes(int(top[k] + (bottom[k] - top[k]) * t) for k in range(3))
-        start = y * canvas.w * canvas.ch
-        canvas.buf[start:start + canvas.w * canvas.ch] = row * canvas.w
-
-
-def glow(canvas, cx, cy, radius, color, strength):
-    buf, w, ch = canvas.buf, canvas.w, canvas.ch
-    for y in range(canvas.h):
-        dy = y + 0.5 - cy
-        row = y * w * ch
-        for x in range(w):
-            dx = x + 0.5 - cx
-            d = math.sqrt(dx * dx + dy * dy)
-            if d >= radius:
-                continue
-            t = 1.0 - d / radius
-            alpha = strength * t * t * (3.0 - 2.0 * t)
-            i = row + x * ch
-            buf[i] = int(buf[i] + (color[0] - buf[i]) * alpha)
-            buf[i + 1] = int(buf[i + 1] + (color[1] - buf[i + 1]) * alpha)
-            buf[i + 2] = int(buf[i + 2] + (color[2] - buf[i + 2]) * alpha)
-
-
 def segment(canvas, start, end, color, width, alpha=1.0):
     """Anti-aliased round-capped line."""
     ax, ay = start
@@ -353,21 +327,6 @@ def mix(color_a, color_b, amount):
     return tuple(int(color_a[i] + (color_b[i] - color_a[i]) * amount) for i in range(3))
 
 
-def fade_edges(canvas, color, margin):
-    """Blend the border into the page background so the PNG has no hard frame."""
-    w, h = canvas.w, canvas.h
-    for y in range(h):
-        edge_y = min(y, h - 1 - y)
-        if edge_y >= margin:
-            continue
-        for x in range(w):
-            d = min(x, w - 1 - x, edge_y)
-            if d >= margin:
-                continue
-            t = 1.0 - d / margin
-            canvas.put(x, y, color, t * t * (3.0 - 2.0 * t) * 0.85)
-
-
 def rounded_rect_sd(px, py, x0, y0, x1, y1, radius):
     cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
     qx = abs(px - cx) - ((x1 - x0) / 2.0 - radius)
@@ -377,11 +336,9 @@ def rounded_rect_sd(px, py, x0, y0, x1, y1, radius):
 
 
 # ------------------------------------------------------------------- wallpaper
-# Matches wallpaper.svg: vertical base, a faint white bloom toward the upper
-# right, two contour lines and a single waypoint dot.
+# Matches wallpaper.svg: flat true black, two contour lines and a single
+# waypoint dot. No gradient washes — AMOLED surfaces stay flat.
 wall = Canvas(1920, 1080, 3, BG)
-vertical_gradient(wall, BG_ALT, BG)
-glow(wall, 1920 * 0.72, 1080 * 0.28, 1920 * 0.9, ACCENT, 0.06)
 polyline(wall, [(0, 760), (520, 560), (1040, 700), (1560, 480), (1920, 600)],
          BORDER, 2.0, 0.35)
 polyline(wall, [(0, 860), (520, 660), (1040, 800), (1560, 580), (1920, 700)],
@@ -422,8 +379,6 @@ write_png(cal_brand + '/logo.png', logo)
 
 # --------------------------------------------------------------- welcome image
 welcome = Canvas(1600, 900, 3, BG)
-vertical_gradient(welcome, BG_ALT, BG)
-glow(welcome, 800, 330, 1050, ACCENT, 0.06)
 polyline(welcome, [(0, 634), (433, 467), (867, 583), (1300, 400), (1600, 500)],
          BORDER, 2.0, 0.30)
 polyline(welcome, [(0, 717), (433, 550), (867, 667), (1300, 483), (1600, 583)],
@@ -451,7 +406,6 @@ tag = 'DEBIAN TRIXIE · SWAY · WAYLAND'
 tag_cell = 3.6
 tag_left = (1600 - text_width(tag, tag_cell, 2)) / 2.0
 draw_text(welcome, tag, tag_left, rule_y + 58, tag_cell, FG_ALT, alpha=0.92, tracking=2)
-fade_edges(welcome, BG, 120)
 write_png(cal_brand + '/welcome.png', welcome)
 
 # --------------------------------------------------------------- slide artwork
@@ -459,8 +413,6 @@ write_png(cal_brand + '/welcome.png', welcome)
 # theme/render-slides.py. Keep the mark and accent dot inside the central
 # 1000x650 area that Calamares' image slideshow actually shows.
 slide = Canvas(1600, 900, 3, BG)
-vertical_gradient(slide, BG, BG_ALT)
-glow(slide, 1300, 210, 780, ACCENT_ALT, 0.05)
 polyline(slide, [(0, 700), (430, 520), (860, 640), (1290, 470), (1600, 560)],
          BORDER, 2.0, 0.16)
 
@@ -477,5 +429,4 @@ composite_mask(slide, mask_strokes(1600, 900, mark_stem_path + mark_arm_paths, m
                ACCENT, 0.28)
 disc(slide, 1260, 170, 4, ACCENT, 0.75)
 disc(slide, 1260, 170, 60, ACCENT, 0.08)
-fade_edges(slide, BG, 100)
 write_png(cal_brand + '/slide.png', slide)

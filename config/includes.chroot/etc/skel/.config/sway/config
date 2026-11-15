@@ -5,7 +5,7 @@ set $launcher fuzzel
 set $lock swaylock
 set $browser xdg-open
 
-font pango:Inter 11
+font pango:Inter Tight 11
 
 # Wallpaper + idle behaviour
 output * bg /usr/share/backgrounds/kaadzos/wallpaper.png fill

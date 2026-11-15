@@ -3,6 +3,9 @@
 QWidget {
     background-color: #000000;
     color: #ffffff;
+    /* The whole installer speaks the website's Inter Tight, independent of
+       root's Qt configuration. */
+    font-family: "Inter Tight";
     selection-background-color: #ffffff;
     selection-color: #000000;
 }
