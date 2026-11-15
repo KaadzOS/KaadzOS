@@ -74,7 +74,7 @@ Phase 5 adds a Calamares installer. It does not debootstrap: it unpacks the live
 
 On the live desktop, launch it from the **Install** button in Waybar, with `$mod+i`, or by running `kaadzos-install` in a terminal. Do not run the raw `calamares` binary: it refuses to run as a normal user, and `sudo calamares` bypasses the wrapper that supplies `-c /etc/calamares` and preserves the Wayland environment.
 
-`install-test` runs the whole thing unattended in QEMU: it creates a sparse 12 GB disk, drives Calamares with `wtype`, powers off, then boots the installed disk *without* the ISO and asserts the markers that matter — `KAADZOS_MODE installed`, `KAADZOS_FIRSTBOOT_DONE`, `KAADZOS_LIVE_SUDOERS_ABSENT`, `KAADZOS_CALAMARES_ABSENT` — plus the same `swaynag` gate as the live boot.
+`install-test` runs the whole thing unattended in QEMU: it creates a sparse 12 GB disk, drives Calamares with synthetic Sway clicks and `wtype`, powers off, then boots the installed disk *without* the ISO and asserts the markers that matter — `KAADZOS_MODE installed`, `KAADZOS_FIRSTBOOT_DONE`, `KAADZOS_LIVE_SUDOERS_ABSENT`, `KAADZOS_CALAMARES_ABSENT` — plus the same `swaynag` gate as the live boot.
 
 The installer is verified end to end in CI on both BIOS and UEFI.
 
@@ -158,7 +158,7 @@ ci/test-apt-repo.sh          apt consumes a throwaway signed repository
 | 7 — releases and hosting | done |
 | 8 — optional APT repository | done |
 
-The current release, [v0.2.0](https://github.com/kaadzos/kaadzos/releases/tag/v0.2.0), ships the ISO, its checksum, a signed checksum and the archive keyring as GitHub release assets, and mirrors them to Cloudflare R2 under `releases/v0.2.0/`. The signed APT archive is live at https://iso.kaadzos.pages.dev/apt; the earlier v0.1.0 release remains available. Releases are cut by pushing a `v*` tag; see [`docs/hosting.md`](docs/hosting.md) for the tag flow and the Cloudflare setup, and [`docs/apt-repository.md`](docs/apt-repository.md) for the optional signed package archive.
+The current release, [v0.3.0](https://github.com/kaadzos/kaadzos/releases/tag/v0.3.0), is the AMOLED visual release: the desktop, boot experience and installer use a true-black black-and-white palette matching the website. It ships the ISO, its checksum, a signed checksum and the archive keyring as GitHub release assets, and mirrors them to Cloudflare R2 under `releases/v0.3.0/`. The signed APT archive is live at https://iso.kaadzos.pages.dev/apt and carries `kaadzos-pack-defs` 0.3.0; earlier releases remain available. Releases are cut by pushing a `v*` tag; see [`docs/hosting.md`](docs/hosting.md) for the tag flow and the Cloudflare setup, and [`docs/apt-repository.md`](docs/apt-repository.md) for the optional signed package archive.
 
 ## Licence
 
