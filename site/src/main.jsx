@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 
+import CursorGrid from './components/CursorGrid';
 import GradientASCII from './components/GradientASCII';
 import TechText from './components/TechText';
 
@@ -30,6 +31,27 @@ if (asciiMount) {
       lightMode={false}
       aria-hidden="true"
     />
+  );
+}
+
+const gridMount = document.getElementById('cursor-grid');
+if (gridMount) {
+  createRoot(gridMount).render(
+    <div style={{ width: '100%', height: '600px', position: 'relative' }}>
+      <CursorGrid
+        cellSize={30}
+        color="#ffffff"
+        highlight="area"
+        gridStyle="lines"
+        radius={70}
+        holdTime={400}
+        fadeDuration={800}
+        fillOpacity={0}
+        gridOpacity={0}
+        spotlight={1}
+        clickPulse
+      />
+    </div>
   );
 }
 
