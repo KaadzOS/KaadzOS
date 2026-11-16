@@ -98,18 +98,25 @@ Tight variable font (`site/public/fonts/`, SIL OFL), and hand-authored
 `site/style.css`. `site/index.html` carries the editorial content; the palette
 governs the OS surfaces, not the website.
 
-Two React Bits accents are layered on top as progressive enhancements:
-`GradientASCII` (an interactive ASCII horizon) sits below the masthead, and
+Three React Bits accents are layered on top as progressive enhancements:
+`GradientASCII` (an interactive ASCII horizon) sits below the masthead,
+`CursorGrid` (a cursor-reactive grid) sits behind the download chapter, and
 `TechText` (a dashed-path `KAADZOS` wordmark) sits above the footer. The
 component sources are vendored under `site/src/components/` (MIT + Commons
 Clause, Copyright (c) 2026 David Haz; see the licence file there) and mounted by
-`site/src/main.jsx`. Both mount points keep static fallback markup, so the page
-still reads with JavaScript disabled. The build is plain React 19 + Vite:
+`site/src/main.jsx`. All mount points keep static fallback markup, so the page
+still reads with JavaScript disabled.
+
+The manual lives at `/docs/` in `site/docs/` and is built as a second Vite
+page. It reuses the landing page's tokens, masthead and footer, then adds the
+three-column docs layout, search, scrollspy and copy buttons in `docs.css` and
+`docs.js`. Both pages ship their own static HTML; the build is plain React 19 +
+Vite with a multi-page input:
 
 ```sh
 cd site
 npm ci
-npm run build      # writes site/dist/
+npm run build      # writes site/dist/ and site/dist/docs/
 ```
 
 `site/public/` holds the files that must land at the deployment root:
@@ -206,40 +213,35 @@ verification steps are in
 
 - Pages project `kaadzos` exists in the active account; the site is live at
   https://kaadzos.pages.dev, deployed from `main` by
-  `.github/workflows/site.yml` (latest run
-  [42364155141](https://github.com/KaadzOS/KaadzOS/actions/runs/42364155141))
-  using the configured `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`
-  secrets. The project was deleted and recreated under the exact `kaadzos` name
-  after the previous account's project was deleted, so the temporary
-  `kaadzos-7z2.pages.dev` URL no longer serves the site.
+  `.github/workflows/site.yml` using the configured `CLOUDFLARE_API_TOKEN` and
+  `CLOUDFLARE_ACCOUNT_ID` secrets. The project was deleted and recreated under
+  the exact `kaadzos` name after the previous account's project was deleted, so
+  the temporary `kaadzos-7z2.pages.dev` URL no longer serves the site. The
+  workflow has been green for the React/Vite site through commit `d553e79`
+  (run [43788058286](https://github.com/KaadzOS/KaadzOS/actions/runs/43788058286)).
 - The ISO host https://iso.kaadzos.pages.dev is live as the `iso` preview
   branch alias of the same project. The project has an `R2_BUCKET` binding to
   the `kaadzos` bucket for both production and preview; `iso-site/_worker.js`
   serves `/` from static assets, `/health` from the Worker, and every other
   path from R2. R2 Public Access is disabled.
-- GitHub Releases: `v0.2.0`, published by CI from tag `v0.2.0` in run
-  [42368854133](https://github.com/KaadzOS/KaadzOS/actions/runs/42368854133)
-  (attempt 2; the first attempt published the GitHub release but hit a
-  transient R2 multipart `InvalidPart` while mirroring the ISO, and the failed
-  job succeeded on re-run). Assets: ISO 1,432,977,408 bytes, its 91-byte
-  checksum, an 833-byte detached signature, and the 1,664-byte public keyring.
-  The ISO is mirrored under `releases/v0.2.0/`.
-- The `v0.1.0` release is still available; its later re-run
-  [42366299998](https://github.com/KaadzOS/KaadzOS/actions/runs/42366299998)
-  replaced the original 1,431,568,384-byte ISO with a 1,432,977,408-byte build
-  and mirrored it under `releases/v0.1.0/`.
+- GitHub Releases: `v0.3.0` (13 Nov 2026), published by CI from tag `v0.3.0`
+  in run [43415799583](https://github.com/KaadzOS/KaadzOS/actions/runs/43415799583).
+  Assets: ISO 1,432,977,408 bytes, its checksum, a detached signature and the
+  archive public keyring; the ISO is mirrored under `releases/v0.3.0/`.
+  The `v0.2.1`, `v0.2.0` and `v0.1.0` releases remain available.
 - The optional APT archive is live at https://iso.kaadzos.pages.dev/apt for
-  `trixie main amd64`. The first package is `kaadzos-pack-defs` 0.2.0; its
-  `Packages` SHA-256 matches the published `.deb`, and the `InRelease` signature
-  verifies against the archive key (fingerprint
+  `trixie main amd64`. The current package is `kaadzos-pack-defs` 0.3.0; its
+  `Packages` SHA-256 (`0ee4bc85…`) matches the published `.deb`, and the
+  `InRelease` signature verifies against the archive key (fingerprint
   `7FC3 1B27 E931 570B 2D8C 3E42 9A4F 8D9E 9D5B 0C7A`). The keyring, source
   stanza, and package are all served by the Worker; no user action remains for
   publishing.
-- The website now builds with React 19 + Vite (run
-  [42767104714](https://github.com/KaadzOS/KaadzOS/actions/runs/42767104714),
-  commit `8604ea0`): `site.yml` runs `npm ci` and `npm run build` in `site/`
-  on every push and deploys `site/dist/`. The editorial page keeps its
-  hand-authored design; a vendored `GradientASCII` accent sits below the
-  masthead and a `TechText` `KAADZOS` wordmark sits above the footer, each with
-  static fallback markup. The CSP now permits `script-src 'self'` and
-  `style-src 'self' 'unsafe-inline'`.
+- The site builds with React 19 + Vite: `site.yml` runs `npm ci` and
+  `npm run build` in `site/` on every push and deploys `site/dist/`. The
+  editorial landing page keeps its hand-authored design; three vendored React
+  Bits accents are mounted by `site/src/main.jsx`: `GradientASCII` below the
+  masthead, `CursorGrid` behind the download chapter, and the `TechText`
+  `KAADZOS` wordmark above the footer. The documentation page at `/docs/`
+  is the second Vite input (`site/docs/` → `site/dist/docs/`) and reuses the
+  landing tokens and chrome with a docs-specific layout. The CSP permits
+  `script-src 'self'` and `style-src 'self' 'unsafe-inline'`.

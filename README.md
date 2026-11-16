@@ -52,11 +52,11 @@ Packs are plain `key=value` files in `packs/`, staged into the image at build ti
 |---|---|---|
 | `ai` | Ollama, whisper.cpp, Piper voice helpers | ~5 GB |
 | `android` | Waydroid (signed third-party repo) | ~3 GB |
-| `cloudflare` | `cloudflared` static binary | ~50 MB |
-| `creative` | Image, audio, and video editing | ~1.5 GB |
+| `cloudflare` | `cloudflared` static binary | ~60 MB |
+| `creative` | Image, vector and 3D studio (GIMP, Inkscape, Krita, Blender) | ~3 GB |
 | `dev` | Git, compilers, editors, Node, Python | ~900 MB |
-| `gaming` | Steam, Lutris, Mesa drivers | ~2 GB |
-| `privacy` | Tor, hardened browser, password manager | ~300 MB |
+| `gaming` | Wine, winetricks, GameMode, MangoHud | ~2 GB |
+| `privacy` | Tor, Unbound, MAC randomisation | ~150 MB |
 | `windows` | Wine and Bottles (i386 multiarch) | ~4 GB |
 
 ```sh
@@ -133,10 +133,13 @@ config/includes.chroot/      everything that lands in the image
   usr/local/bin/kaadzos-*    installer driver, cleanup, finalize, session readiness
   etc/calamares/             installer profile, modules, palette-generated branding
   etc/skel/.config/          Sway, Waybar, foot, fuzzel, mako, swaylock, Qt
-config/hooks/live/           build-time hooks (permissions, CI profile, session readiness)
+  usr/share/fonts/truetype/kaadzos/
+                             bundled Inter Tight (OFL)
+config/hooks/live/           build-time hooks (permissions, CI profile, Calamares palette)
 packs/                       declarative pack definitions and their hooks
 theme/                       AMOLED palette + generators for every themed surface and artwork
 site/                        black-and-white editorial site (React/Vite, builds to site/dist)
+  docs/                      hand-authored documentation page (/docs/)
 iso-site/                    advanced-mode Pages Worker for iso.kaadzos.pages.dev
 ci/test-boot.sh              QEMU boot validation (BIOS + UEFI)
 ci/test-install.sh           unattended install + installed-disk boot validation
@@ -157,6 +160,8 @@ ci/test-apt-repo.sh          apt consumes a throwaway signed repository
 | 6 — boot polish and identity | done |
 | 7 — releases and hosting | done |
 | 8 — optional APT repository | done |
+| 9 — installer hotfix release | done |
+| 10 — AMOLED visual release | done |
 
 The current release, [v0.3.0](https://github.com/kaadzos/kaadzos/releases/tag/v0.3.0), is the AMOLED visual release: the desktop, boot experience and installer use a true-black black-and-white palette matching the website. It ships the ISO, its checksum, a signed checksum and the archive keyring as GitHub release assets, and mirrors them to Cloudflare R2 under `releases/v0.3.0/`. The signed APT archive is live at https://iso.kaadzos.pages.dev/apt and carries `kaadzos-pack-defs` 0.3.0; earlier releases remain available. Releases are cut by pushing a `v*` tag; see [`docs/hosting.md`](docs/hosting.md) for the tag flow and the Cloudflare setup, and [`docs/apt-repository.md`](docs/apt-repository.md) for the optional signed package archive.
 
