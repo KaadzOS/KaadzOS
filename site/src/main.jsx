@@ -46,11 +46,12 @@ if (gridMount) {
         radius={150}
         holdTime={500}
         fadeDuration={1100}
-        fillOpacity={0.03}
-        gridOpacity={0.04}
-        spotlight={0.85}
-        ambient={0.04}
+        fillOpacity={0.025}
+        gridOpacity={0.03}
+        spotlight={0.8}
+        ambient={0.015}
         edgeFade={0.24}
+        intro={false}
         clickPulse
       />
     </div>
