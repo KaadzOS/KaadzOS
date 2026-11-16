@@ -381,6 +381,7 @@ cat > "$cfg/swaylock/config" <<LOCK
 daemonize
 show-failed-attempts
 ignore-empty-password
+font=${KAADZ_FONT_UI} ${KAADZ_FONT_SIZE}
 image=${wall_guest}/wallpaper.png
 scaling=fill
 color=$(strip "$KAADZ_BG")
@@ -399,6 +400,26 @@ text-ver-color=$(strip "$KAADZ_FG")
 text-clear-color=$(strip "$KAADZ_FG")
 text-wrong-color=$(strip "$KAADZ_URGENT_FG")
 LOCK
+
+# ----------------------------------------------------------------- fontconfig
+# Generic families resolve to the OS faces, so unstyled apps (girara,
+# portal dialogs, ...) also speak Inter Tight / JetBrains Mono.
+mkdir -p "$chroot/etc/fonts"
+cat > "$chroot/etc/fonts/local.conf" <<FCONF
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+  <!-- KaadzOS: the UI face and the terminal face answer generic requests. -->
+  <match target="pattern">
+    <test qual="any" name="family"><string>sans-serif</string></test>
+    <edit name="family" mode="prepend" binding="strong"><string>${KAADZ_FONT_UI}</string></edit>
+  </match>
+  <match target="pattern">
+    <test qual="any" name="family"><string>monospace</string></test>
+    <edit name="family" mode="prepend" binding="strong"><string>${KAADZ_FONT_MONO}</string></edit>
+  </match>
+</fontconfig>
+FCONF
 
 # ----------------------------------------------------------------------- GTK
 for ver in 3.0 4.0; do

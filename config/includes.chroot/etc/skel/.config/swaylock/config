@@ -2,6 +2,7 @@
 daemonize
 show-failed-attempts
 ignore-empty-password
+font=Inter Tight 11
 image=/usr/share/backgrounds/kaadzos/wallpaper.png
 scaling=fill
 color=000000
