@@ -63,6 +63,32 @@
   letter-spacing: -0.02em;
 }
 
+/* The FaultyTerminal canvas is scoped to the heading block and nothing else:
+   the article, sidebar and footer stay flat black. The mask keeps the field
+   from ending on a hard edge where it meets the lede. */
+.docs-title-stage { position: relative; isolation: isolate; }
+
+.docs-terminal {
+  position: absolute;
+  inset: -10% -2% -12%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.92;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 9%, #000 91%, transparent),
+    linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 9%, #000 91%, transparent),
+    linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+  mask-composite: intersect;
+}
+
+.docs-title-stage h1 {
+  position: relative;
+  z-index: 1;
+}
+
 .docs-hero-foot {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);

@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/docs/docs.css">
   <script type="module" src="/docs/docs.js"></script>
+  <script type="module" src="/src/docs-terminal.jsx"></script>
 </head>
 <body class="docs-page">
 
@@ -48,7 +49,10 @@
 <section class="docs-hero" aria-labelledby="docs-title">
   <div class="shell">
     <p class="mono kicker">Documentation · Live · Installable · Verified</p>
-    <h1 id="docs-title">KaadzOS,<br><em class="serif">documented.</em></h1>
+    <div class="docs-title-stage">
+      <div class="docs-terminal" id="docs-terminal" aria-hidden="true"></div>
+      <h1 id="docs-title">KaadzOS,<br><em class="serif">documented.</em></h1>
+    </div>
     <div class="docs-hero-foot">
       <p class="lede">Everything from the first checksum to the last CI job: boot the live image, install it to disk, add packs, theme the desktop, use the signed archive, and rebuild the ISO.</p>
       <ul class="docs-quick mono" aria-label="Quick links">
