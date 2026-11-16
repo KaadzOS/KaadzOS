@@ -476,21 +476,35 @@ code {
 
 /* ----------------------------------------------------------------- packs */
 .packs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 clamp(22px, 4vw, 56px);
-  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: clamp(26px, 4vw, 44px) 0 0;
   padding: 0;
   list-style: none;
-  font-size: clamp(2.1rem, 5.8vw, 4.8rem);
-  line-height: 1.04;
-  letter-spacing: -0.04em;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  font-size: clamp(2rem, 4.2vw, 3.6rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
   font-weight: 720;
 }
 
 .packs li {
-  display: inline-flex;
+  display: flex;
   align-items: baseline;
+  gap: 0.42em;
+  min-width: 0;
+  padding: clamp(12px, 1.4vw, 20px);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.pack-index {
+  flex: none;
+  color: var(--grey-dim);
+  font-size: 0.24em;
+  letter-spacing: 0.06em;
+  transform: translateY(-0.12em);
 }
 
 .afternote {
@@ -720,6 +734,9 @@ pre code {
   .masthead-nav { gap: 14px; }
   .ticker { gap: 8px 0; }
   .ticker li { padding-right: 12px; margin-right: 12px; }
+  .packs { font-size: clamp(1.15rem, 5.6vw, 1.7rem); }
+  .packs li { gap: 0.35em; padding: 10px 12px 12px; }
+  .pack-index { font-size: 0.28em; }
   .footer-grid { grid-template-columns: 1fr; }
   .colophon { flex-direction: column; }
 }
