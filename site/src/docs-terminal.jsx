@@ -8,16 +8,16 @@ if (mount) {
     <FaultyTerminal
       tint="#1c1d1f"
       glyphs="characters"
-      scale={2.4}
-      digitSize={1.1}
-      timeScale={0.5}
-      brightness={1.25}
-      glow={1.5}
+      scale={2.1}
+      digitSize={1.15}
+      timeScale={0.4}
+      brightness={1.2}
+      glow={1.35}
       persistence={0.5}
-      mouseStrength={0.5}
-      mouseGlow={0.6}
-      curvature={0.48}
-      vignette={0.25}
+      mouseStrength={0.3}
+      mouseGlow={0.25}
+      curvature={0.44}
+      vignette={0.22}
       clickEffect="glitch"
       scramble={0.9}
       scanlineIntensity={0.5}
@@ -25,8 +25,8 @@ if (mount) {
       flickerAmount={1}
       noiseAmp={1}
       chromaticAberration={0}
-      mouseReact={false}
-      pageLoadAnimation={false}
+      mouseReact
+      pageLoadAnimation
       pause={false}
       lightMode={false}
     />
