@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 
 import CursorGrid from './components/CursorGrid';
+import FlowingMenu from './components/FlowingMenu';
 import GradientASCII from './components/GradientASCII';
 import TechText from './components/TechText';
 
@@ -55,6 +56,93 @@ if (gridMount) {
         clickPulse
       />
     </div>
+  );
+}
+
+const packItems = [
+  { text: 'ai', image: '/packs/ai.jpg', meta: '~5 GB', ariaLabel: 'AI pack, about 5 GB. Copy the install command.' },
+  { text: 'android', image: '/packs/android.jpg', meta: '~3 GB', ariaLabel: 'Android pack, about 3 GB. Copy the install command.' },
+  { text: 'cloudflare', image: '/packs/cloudflare.jpg', meta: '~60 MB', ariaLabel: 'Cloudflare pack, about 60 MB. Copy the install command.' },
+  { text: 'creative', image: '/packs/creative.jpg', meta: '~3 GB', ariaLabel: 'Creative pack, about 3 GB. Copy the install command.' },
+  { text: 'dev', image: '/packs/dev.jpg', meta: '~900 MB', ariaLabel: 'Dev pack, about 900 MB. Copy the install command.' },
+  { text: 'gaming', image: '/packs/gaming.jpg', meta: '~2 GB', ariaLabel: 'Gaming pack, about 2 GB. Copy the install command.' },
+  { text: 'privacy', image: '/packs/privacy.jpg', meta: '~150 MB', ariaLabel: 'Privacy pack, about 150 MB. Copy the install command.' },
+  { text: 'windows', image: '/packs/windows.jpg', meta: '~4 GB', ariaLabel: 'Windows pack, about 4 GB. Copy the install command.' }
+];
+
+let packStatusTimer;
+const copyPackCommand = async item => {
+  const command = `kaadzos add ${item.text}`;
+  const status = document.getElementById('pack-copy-status');
+  let copied = false;
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(command);
+      copied = true;
+    }
+  } catch {
+    copied = false;
+  }
+
+  if (!copied) {
+    const field = document.createElement('textarea');
+    field.value = command;
+    field.setAttribute('readonly', '');
+    field.style.position = 'fixed';
+    field.style.top = '-1000px';
+    field.style.opacity = '0';
+    document.body.appendChild(field);
+    field.select();
+    try {
+      copied = document.execCommand('copy');
+    } catch {
+      copied = false;
+    }
+    field.remove();
+  }
+
+  if (!status) return;
+  clearTimeout(packStatusTimer);
+  status.textContent = copied ? `Copied — ${command}` : `Run ${command}`;
+  status.classList.add('is-visible');
+  packStatusTimer = setTimeout(() => {
+    status.classList.remove('is-visible');
+    packStatusTimer = setTimeout(() => {
+      status.textContent = '';
+    }, 300);
+  }, 3600);
+};
+
+const packsMount = document.getElementById('packs-menu');
+if (packsMount) {
+  createRoot(packsMount).render(
+    <FlowingMenu
+      items={packItems}
+      ariaLabel="Available packs. Select a pack to copy its install command."
+      speed={75}
+      stretch={0.3}
+      magnet={0.06}
+      followCursor={0.4}
+      textColor="#ffffff"
+      bgColor="#000000"
+      marqueeBgColor="#ffffff"
+      marqueeTextColor="#000000"
+      borderColor="rgba(255, 255, 255, 0.16)"
+      direction="alternate"
+      duration={0.45}
+      bandInset={0}
+      bandRadius={0}
+      carryContent={false}
+      dividers
+      dimInactive
+      align="left"
+      showIndex
+      showArrow={false}
+      imageShape="rounded"
+      intro={false}
+      onItemClick={copyPackCommand}
+    />
   );
 }
 

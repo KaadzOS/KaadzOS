@@ -1,9 +1,9 @@
 /* KaadzOS website — hand-authored editorial stylesheet.
    Pure black, pure white, one grotesk. No cards, no decoration that does not
-   carry information. Three React Bits accents (an ASCII gradient at the top, a
-   cursor-driven grid behind the download chapter and a dashed-path wordmark
-   above the footer) are mounted by src/main.jsx and degrade to the static
-   markup in index.html when JavaScript is unavailable. */
+   carry information. Four React Bits accents (an ASCII gradient at the top, a
+   flowing pack menu, a cursor-driven grid behind the download chapter and a
+   dashed-path wordmark above the footer) are mounted by src/main.jsx and
+   degrade to the static markup in index.html when JavaScript is unavailable. */
 
 @font-face {
   font-family: "Inter Tight";
@@ -475,6 +475,17 @@ code {
 }
 
 /* ----------------------------------------------------------------- packs */
+.packs-menu {
+  height: clamp(480px, 52vw, 560px);
+  margin-top: clamp(28px, 4vw, 44px);
+}
+
+.packs-fallback {
+  height: 100%;
+  margin: 0;
+  grid-auto-rows: 1fr;
+}
+
 .packs {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -505,6 +516,29 @@ code {
   font-size: 0.24em;
   letter-spacing: 0.06em;
   transform: translateY(-0.12em);
+}
+
+.pack-status {
+  position: fixed;
+  right: var(--pad);
+  bottom: var(--pad);
+  z-index: 40;
+  margin: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--white);
+  background: var(--black);
+  color: var(--white);
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.pack-status.is-visible {
+  opacity: 1;
+  transform: none;
 }
 
 .afternote {

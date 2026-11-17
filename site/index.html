@@ -146,16 +146,18 @@
       <div class="chapter-body reveal">
         <h2 id="packs-title">Eight packs,<br>one command.</h2>
 
-        <ul class="packs" aria-label="Available packs">
-          <li><span class="mono pack-index" aria-hidden="true">01</span>ai</li>
-          <li><span class="mono pack-index" aria-hidden="true">02</span>android</li>
-          <li><span class="mono pack-index" aria-hidden="true">03</span>cloudflare</li>
-          <li><span class="mono pack-index" aria-hidden="true">04</span>creative</li>
-          <li><span class="mono pack-index" aria-hidden="true">05</span>dev</li>
-          <li><span class="mono pack-index" aria-hidden="true">06</span>gaming</li>
-          <li><span class="mono pack-index" aria-hidden="true">07</span>privacy</li>
-          <li><span class="mono pack-index" aria-hidden="true">08</span>windows</li>
-        </ul>
+        <div class="packs-menu" id="packs-menu">
+          <ul class="packs packs-fallback" aria-label="Available packs">
+            <li><span class="mono pack-index" aria-hidden="true">01</span>ai</li>
+            <li><span class="mono pack-index" aria-hidden="true">02</span>android</li>
+            <li><span class="mono pack-index" aria-hidden="true">03</span>cloudflare</li>
+            <li><span class="mono pack-index" aria-hidden="true">04</span>creative</li>
+            <li><span class="mono pack-index" aria-hidden="true">05</span>dev</li>
+            <li><span class="mono pack-index" aria-hidden="true">06</span>gaming</li>
+            <li><span class="mono pack-index" aria-hidden="true">07</span>privacy</li>
+            <li><span class="mono pack-index" aria-hidden="true">08</span>windows</li>
+          </ul>
+        </div>
 
         <p class="afternote">
           <code>kaadzos add &lt;pack&gt;</code> — idempotent, gated on
@@ -275,6 +277,8 @@ sudo dd if=KaadzOS-trixie-amd64.iso \
     </p>
   </div>
 </footer>
+
+<p class="mono pack-status" id="pack-copy-status" role="status" aria-live="polite"></p>
 
 </body>
 </html>
