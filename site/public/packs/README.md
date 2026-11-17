@@ -1,7 +1,7 @@
 # Pack menu images
 
 The landing-page pack menu uses eight Unsplash photographs, cropped to 3:2 and
-converted to greyscale so they match the site's black-and-white palette.
+kept in colour so the photographs provide the page's only colour accent.
 
 - ai: https://images.unsplash.com/photo-1782977389500-dd7adad33ebe
 - android: https://images.unsplash.com/photo-1685062428514-2164290b3322

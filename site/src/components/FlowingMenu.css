@@ -180,7 +180,7 @@
   border-radius: 2px;
   background-position: center;
   background-size: cover;
-  filter: grayscale(1) contrast(1.06);
+  filter: contrast(1.06);
 }
 
 .flowing-menu[data-shape='rounded'] .flowing-menu__image {
