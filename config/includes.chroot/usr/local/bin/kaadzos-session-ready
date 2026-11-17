@@ -76,6 +76,20 @@ if ps -eo args 2>/dev/null | grep -q '[s]waynag'; then
   printf 'KAADZOS_SWAY_CONFIG_WARNINGS\n' > "$serial"
 fi
 
+# Verify the core command-line baseline is present on both live and installed
+# images. The boot test fails if any expected command is missing.
+missing_cmds=""
+for cmd in bash dash zsh mount fdisk fsck find grep awk tar gzip xz zstd mkfs.ext4; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    missing_cmds="$missing_cmds $cmd"
+  fi
+done
+if [ -z "$missing_cmds" ]; then
+  printf 'KAADZOS_COMMANDS_OK\n' > "$serial"
+else
+  printf 'KAADZOS_COMMANDS_MISSING%s\n' "$missing_cmds" > "$serial"
+fi
+
 # Dump layout and logs between markers so the runner can parse them. The
 # installed system intentionally lacks Calamares and the live logs, so do not
 # let a missing path abort the block before the end marker is written.

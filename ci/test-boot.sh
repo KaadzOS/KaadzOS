@@ -112,6 +112,13 @@ while (( SECONDS < deadline )); do
       exit 1
     fi
 
+    # The core command-line baseline must be present in the live image.
+    if grep -q 'KAADZOS_COMMANDS_MISSING' "$serial_log" 2>/dev/null; then
+      echo "Missing core commands under $firmware:" >&2
+      grep 'KAADZOS_COMMANDS_MISSING' "$serial_log" >&2
+      exit 1
+    fi
+
     # Report the idle-RAM diagnostic the guest emitted (non-fatal report).
     ram_line=$(grep 'KAADZOS_IDLE_RAM' "$serial_log" 2>/dev/null | tail -n 1 || true)
     if [ -n "$ram_line" ]; then

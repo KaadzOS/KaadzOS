@@ -104,3 +104,30 @@ zram-tools
 # stays unsigned; the live image booted with Secure Boot disabled on purpose.
 shim-signed
 grub-efi-amd64-signed
+
+# Core command-line baseline. apt-recommends is off, so every tool the
+# desktop, installer and diagnostics rely on must be named explicitly.
+# rsync, e2fsprogs and zstd are already listed in their feature sections above.
+bash
+dash
+zsh
+coreutils
+util-linux
+findutils
+grep
+gawk
+tar
+gzip
+xz-utils
+file
+less
+man-db
+manpages
+tree
+pciutils
+usbutils
+procps
+lsof
+p7zip-full
+unzip
+zip

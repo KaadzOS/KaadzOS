@@ -313,6 +313,11 @@ while (( SECONDS < deadline )); do
     echo "Calamares is still present on the installed system under $firmware" >&2
     exit 1
   fi
+  if grep -q 'KAADZOS_COMMANDS_MISSING' "$installed_serial" 2>/dev/null; then
+    dump_serial_tail "$installed_serial"
+    echo "The installed system is missing core commands under $firmware" >&2
+    exit 1
+  fi
 
   # Success: the same readiness path as the live boot test, in installed mode.
   if grep -q 'KAADZOS_DIAG_END' "$installed_serial" 2>/dev/null \
