@@ -8,6 +8,7 @@ waybar="$root/config/includes.chroot/etc/skel/.config/waybar/config"
 style="$root/config/includes.chroot/etc/skel/.config/waybar/style.css"
 sway="$root/config/includes.chroot/etc/skel/.config/sway/config"
 helper="$root/config/includes.chroot/usr/local/bin/kaadzos-bluetooth"
+session_ready="$root/config/includes.chroot/usr/local/bin/kaadzos-session-ready"
 hook="$root/config/hooks/live/0800-bluetooth.hook.chroot"
 packages="$root/config/package-lists/base.list.chroot"
 
@@ -51,8 +52,17 @@ for script in "$helper" "$hook"; do
   [ -x "$script" ] || fail "$script is not executable"
   dash -n "$script" || fail "$script does not parse as POSIX sh"
 done
-dash -n "$root/config/includes.chroot/usr/local/bin/kaadzos-session-ready" \
-  || fail "kaadzos-session-ready does not parse as POSIX sh"
+dash -n "$session_ready" || fail "kaadzos-session-ready does not parse as POSIX sh"
+
+# Never call bluetoothctl unbounded: when bluetoothd is inactive (no adapter)
+# the client waits for the daemon instead of returning.
+grep -q 'timeout 10 bluetoothctl' "$helper" \
+  || fail "kaadzos-bluetooth must bound bluetoothctl with a timeout"
+if grep -Eq '^[[:space:]]*bluetoothctl[[:space:]]' "$helper"; then
+  fail "kaadzos-bluetooth calls bluetoothctl without a timeout"
+fi
+grep -q 'timeout 5 bluetoothctl list' "$session_ready" \
+  || fail "kaadzos-session-ready must bound bluetoothctl list with a timeout"
 
 # The Bluetooth packages must actually be part of the base list.
 for package in bluez blueman dconf-gsettings-backend libglib2.0-bin; do

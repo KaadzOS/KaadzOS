@@ -18,8 +18,14 @@ require_bluetoothctl() {
   fi
 }
 
+# bluetoothctl waits for bluetoothd when the service is inactive, which happens
+# on machines without an adapter. Bound every probe so the helper always returns.
+bt() {
+  timeout 10 bluetoothctl "$@"
+}
+
 has_controller() {
-  bluetoothctl list 2>/dev/null | grep -q '^Controller '
+  bt list 2>/dev/null | grep -q '^Controller '
 }
 
 case "${1:-manager}" in
@@ -39,7 +45,7 @@ case "${1:-manager}" in
 
     action=$1
     if [ "$action" = toggle ]; then
-      powered=$(bluetoothctl show 2>/dev/null \
+      powered=$(bt show 2>/dev/null \
         | sed -n 's/^[[:space:]]*Powered:[[:space:]]*//p' \
         | head -n 1)
       if [ "$powered" = yes ]; then
@@ -49,7 +55,7 @@ case "${1:-manager}" in
       fi
     fi
 
-    if bluetoothctl power "$action" >/dev/null 2>&1; then
+    if bt power "$action" >/dev/null 2>&1; then
       notify "Bluetooth" "Bluetooth is now $action."
     else
       notify -u critical "Bluetooth" "Could not turn Bluetooth $action."
@@ -59,7 +65,7 @@ case "${1:-manager}" in
   status)
     require_bluetoothctl
     if has_controller; then
-      bluetoothctl show
+      bt show
     else
       echo "No Bluetooth adapter found." >&2
       exit 1

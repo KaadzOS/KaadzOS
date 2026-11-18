@@ -137,8 +137,10 @@ set +e
   echo '=== bluetooth ==='
   systemctl is-enabled bluetooth.service 2>&1
   systemctl is-failed bluetooth.service 2>&1
-  systemctl status bluetooth.service --no-pager 2>&1 | head -n 12
-  bluetoothctl list 2>&1
+  timeout 5 systemctl status bluetooth.service --no-pager 2>&1 | head -n 12 || true
+  # bluetoothctl waits for bluetoothd when the service is skipped for lack of
+  # an adapter; never let the diagnostic block hang on it.
+  timeout 5 bluetoothctl list 2>&1 || true
   echo '=== installer ==='
   if [ "$mode" = installed ]; then
     ls -l /etc/kaadzos 2>&1
