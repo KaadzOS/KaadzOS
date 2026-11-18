@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+# Enable BlueZ in the live and installed images. Debian's bluetooth.service has
+# ConditionPathIsDirectory=/sys/class/bluetooth, so a machine without an adapter
+# skips the unit instead of failing it. udev pulls bluetooth.target in when a
+# real adapter appears, which is what starts the enabled service.
+systemctl enable bluetooth.service >/dev/null 2>&1 || {
+  mkdir -p /etc/systemd/system/bluetooth.target.wants
+  ln -sf /usr/lib/systemd/system/bluetooth.service \
+    /etc/systemd/system/bluetooth.target.wants/bluetooth.service
+}
+test -e /etc/systemd/system/bluetooth.target.wants/bluetooth.service

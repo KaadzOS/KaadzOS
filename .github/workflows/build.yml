@@ -46,10 +46,13 @@ jobs:
           sed -i 's/^Components: main$/Components: main contrib non-free-firmware/' /etc/apt/sources.list.d/debian.sources
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y live-build gnupg \
-            g++ qt6-base-dev pkg-config
+            g++ qt6-base-dev pkg-config python3
 
       - name: Verify package availability
         run: sh ci/test-base-list.sh
+
+      - name: Verify desktop configuration
+        run: sh ci/test-desktop.sh
 
       - name: Set cache key
         id: cache-key
@@ -172,9 +175,13 @@ jobs:
         run: |
           sed -i 's/^Components: main$/Components: main contrib non-free-firmware/' /etc/apt/sources.list.d/debian.sources
           apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3
 
       - name: Verify base package availability
         run: sh ci/test-base-list.sh
+
+      - name: Verify desktop configuration
+        run: sh ci/test-desktop.sh
 
       - name: Run pack resolution tests
         run: bash ci/test-packs.sh

@@ -5,7 +5,7 @@
     "spacing": 0,
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["clock"],
-    "modules-right": ["custom/install", "network", "pulseaudio", "battery", "tray"],
+    "modules-right": ["custom/install", "network", "bluetooth", "pulseaudio", "battery", "tray"],
     "sway/workspaces": {
         "format": "{name}",
         "all-outputs": true,
@@ -31,6 +31,29 @@
         "format-ethernet": "\uf1e6 {ifname}",
         "format-disconnected": "\uf127 offline",
         "tooltip-format": "{ipaddr}/{cidr}"
+    },
+    "bluetooth": {
+        "format": "{icon}",
+        "format-connected": "{icon} {device_alias}",
+        "format-connected-battery": "{icon} {device_alias} {device_battery_percentage}%",
+        "format-icons": {
+            "default": "\uf293",
+            "on": "\uf293",
+            "off": "\uf294",
+            "connected": "\uf293",
+            "no-controller": "\uf294",
+            "disabled": "\uf294"
+        },
+        "max-length": 30,
+        "tooltip": true,
+        "tooltip-format": "Bluetooth: {status}",
+        "tooltip-format-off": "Bluetooth is off\nRight-click to power on",
+        "tooltip-format-on": "Bluetooth is on\nLeft-click to manage devices",
+        "tooltip-format-connected": "{controller_alias}\n{device_enumerate}",
+        "tooltip-format-no-controller": "No Bluetooth adapter found",
+        "tooltip-format-enumerate-connected": "{device_alias}  {device_address}",
+        "on-click": "kaadzos-bluetooth manager",
+        "on-click-right": "kaadzos-bluetooth toggle"
     },
     "pulseaudio": {
         "format": "{icon} {volume}%",

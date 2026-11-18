@@ -16,7 +16,7 @@ A bootable Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop,
 
 ## What it is
 
-KaadzOS is a minimal Debian derivative: kernel, firmware, NetworkManager, Sway, Waybar, foot, fuzzel, mako, and enough tooling to be a working desktop — roughly a 1.4 GB hybrid ISO that boots on BIOS and UEFI. Everything heavier (AI tooling, Android apps, Windows apps, dev toolchains) is installable afterwards from declarative "packs" instead of being baked into the image.
+KaadzOS is a minimal Debian derivative: kernel, firmware, NetworkManager, Bluetooth, Sway, Waybar, foot, fuzzel, mako, and enough tooling to be a working desktop — roughly a 1.4 GB hybrid ISO that boots on BIOS and UEFI. Everything heavier (AI tooling, Android apps, Windows apps, dev toolchains) is installable afterwards from declarative "packs" instead of being baked into the image.
 
 It is an operating system I actually boot, not a config-file collection: the repository contains the live-build configuration, the theme generator, the pack manager, a Calamares installer, and the CI harness that proves the image reaches a running compositor and installs to disk.
 
@@ -68,6 +68,14 @@ kaadzos --dry-run add ai  # print every command without running it
 
 `$mod+a` opens the same list as a fuzzel menu. State lives in `/var/lib/kaadzos/installed`, so `add` and `remove` are safe to repeat.
 
+## Bluetooth
+
+BlueZ and Blueman are part of the base image. `bluetooth.service` is enabled at build time, and Debian's unit carries `ConditionPathIsDirectory=/sys/class/bluetooth`: a machine with no adapter skips the service instead of failing it, and udev pulls `bluetooth.target` in when an adapter appears. The install and boot tests assert that the unit is enabled and not failed with no adapter present.
+
+Waybar's Bluetooth module is part of the generated bar. It is muted when Bluetooth is off or unavailable, white when powered on or connected, shows the connected device name (and battery percentage when BlueZ exposes it), and underlines itself while the adapter is discovering. Left-click opens Blueman; right-click toggles adapter power; `Super+X` opens Blueman from the keyboard. The shared helper is `kaadzos-bluetooth [manager|toggle|on|off|status]`.
+
+mako already provides `notification-daemon`, so Blueman does not pull a second notification daemon into the image. `dconf-gsettings-backend` and `libglib2.0-bin` are explicit because the image builds with `--apt-recommends false`.
+
 ## The installer
 
 Phase 5 adds a Calamares installer. It does not debootstrap: it unpacks the live squashfs onto the target, then repairs the copy in place. The ordering is the hard part — `live-config` diverts `update-initramfs`, so the live-only packages have to be purged *before* the initramfs is generated, and live-only NOPASSWD sudo has to be removed before the installed system boots.
@@ -101,7 +109,7 @@ Two changes came out of that: the lock binding moved to `$mod+Shift+x`, and the 
 
 ## Base image contents
 
-The base image is deliberately small. It contains the kernel and firmware, NetworkManager, Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `fdisk`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `7zip`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, docks, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`.
+The base image is deliberately small. It contains the kernel and firmware, NetworkManager, BlueZ and Blueman, Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `fdisk`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `7zip`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, docks, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`.
 
 ## Build it yourself
 

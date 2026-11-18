@@ -1,11 +1,12 @@
 # KaadzOS daily-driver implementation plan
 
-Status: planning output for Prompt 1 of
-[`daily-driver-roadmap.md`](daily-driver-roadmap.md). This document changes
-nothing in the image; it records what exists, what was verified, and the order
-in which the remaining prompts should land.
+Status: living implementation plan for
+[`daily-driver-roadmap.md`](daily-driver-roadmap.md). Prompt 1 recorded the
+verified state below; the prompt sections are updated as each feature lands.
+Prompt 3 (Bluetooth and Waybar) is implemented.
 
-Prepared: 2026-11-18, against `main` at `026091c`.
+Prepared: 2026-11-18, against `main` at `026091c`. Prompt 3 was implemented on
+top of `7a4e6e2`.
 
 ## 1. Inputs inspected
 
@@ -186,22 +187,37 @@ command assertion.
 
 ### Prompt 3 — Bluetooth and Waybar
 
-Depends on: 2. Package: `bluez`, `blueman`, `bluez-tools`.
+Status: implemented. Package: `bluez`, `blueman`,
+`dconf-gsettings-backend`, `libglib2.0-bin`. `bluez-tools` is not needed:
+`bluetoothctl` ships in `bluez`, and Blueman is the manager.
+
+Depends on: 2.
 
 - Enable `bluetooth.service` from a live hook; the service must stay green
   with no adapter (`ConditionPathIsDirectory=/sys/class/bluetooth`).
 - Add a Waybar `bluetooth` module with icons for off/unavailable/powered/
   connected/scanning, device name in the tooltip, left-click opens
   `blueman-manager`, right-click toggles `bluetoothctl power on|off`.
-- Add a control-centre entry and a Sway binding (`$mod+x` is free).
+- Add a control-centre entry and a Sway binding (`$mod+x` is free). The
+  control-centre entry itself lands with Prompt 4; Prompt 3 ships the shared
+  `kaadzos-bluetooth` helper it will call.
 - Files: `theme/generate.sh` (Waybar block, Sway bindings),
   `config/includes.chroot/etc/skel/.config/waybar/{config,style.css}`,
   `config/includes.chroot/etc/skel/.config/sway/config`,
-  `config/hooks/live/0800-bluetooth.hook.chroot` (new), base list.
-- Tests: Waybar config parses; module exists; `systemctl is-failed bluetooth`
-  is false in boot/install; no swaynag; screenshot.
+  `config/includes.chroot/usr/local/bin/kaadzos-bluetooth` (new),
+  `config/hooks/live/0800-bluetooth.hook.chroot` (new), base list,
+  `ci/test-desktop.sh` (new).
+- Tests: `ci/test-desktop.sh` parses the Waybar JSON, requires the module and
+  its click actions, checks the state styling and the single `$mod+x` binding,
+  and runs `dash -n` on the helper and hook. `kaadzos-session-ready` emits
+  `KAADZOS_BLUETOOTH_OK`, `KAADZOS_BLUETOOTH_MODULE_OK` and
+  `KAADZOS_WAYBAR_OK`; the live and installed boot tests fail on
+  `KAADZOS_BLUETOOTH_FAILED`, `..._DISABLED`, `..._MODULE_MISSING` or
+  `KAADZOS_WAYBAR_FAILED`, and still require no `swaynag` and a screenshot.
 - Risk: Blueman pulls GTK/GSettings at runtime; with recommends off it needs
-  `dconf-gsettings-backend` and `libglib2.0-bin` (verify and add explicitly).
+  `dconf-gsettings-backend` and `libglib2.0-bin` (confirmed and listed
+  explicitly). `mako-notifier` Provides `notification-daemon`, so Blueman does
+  not pull a second notification daemon.
 
 ### Prompt 4 — Waybar control centre
 

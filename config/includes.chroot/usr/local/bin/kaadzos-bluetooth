@@ -1,0 +1,72 @@
+#!/bin/sh
+# KaadzOS Bluetooth helper. Waybar and the Super+X binding call this so the
+# desktop has one place for "open the manager" and "toggle adapter power".
+# It is deliberately non-fatal: a machine with no adapter gets a notification,
+# not a broken session.
+set -eu
+
+notify() {
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send -a KaadzOS "$@" >/dev/null 2>&1 || true
+  fi
+}
+
+require_bluetoothctl() {
+  if ! command -v bluetoothctl >/dev/null 2>&1; then
+    notify "Bluetooth" "BlueZ is not installed."
+    exit 0
+  fi
+}
+
+has_controller() {
+  bluetoothctl list 2>/dev/null | grep -q '^Controller '
+}
+
+case "${1:-manager}" in
+  manager)
+    if command -v blueman-manager >/dev/null 2>&1; then
+      exec blueman-manager
+    fi
+    require_bluetoothctl
+    exec foot -T Bluetooth -e bluetoothctl
+    ;;
+  toggle|on|off)
+    require_bluetoothctl
+    if ! has_controller; then
+      notify "Bluetooth" "No Bluetooth adapter found."
+      exit 0
+    fi
+
+    action=$1
+    if [ "$action" = toggle ]; then
+      powered=$(bluetoothctl show 2>/dev/null \
+        | sed -n 's/^[[:space:]]*Powered:[[:space:]]*//p' \
+        | head -n 1)
+      if [ "$powered" = yes ]; then
+        action=off
+      else
+        action=on
+      fi
+    fi
+
+    if bluetoothctl power "$action" >/dev/null 2>&1; then
+      notify "Bluetooth" "Bluetooth is now $action."
+    else
+      notify -u critical "Bluetooth" "Could not turn Bluetooth $action."
+      exit 1
+    fi
+    ;;
+  status)
+    require_bluetoothctl
+    if has_controller; then
+      bluetoothctl show
+    else
+      echo "No Bluetooth adapter found." >&2
+      exit 1
+    fi
+    ;;
+  *)
+    echo "usage: kaadzos-bluetooth [manager|toggle|on|off|status]" >&2
+    exit 2
+    ;;
+esac

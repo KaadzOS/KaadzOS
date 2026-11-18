@@ -109,6 +109,9 @@ bindsym \$mod+Return exec \$term
 bindsym \$mod+d exec \$launcher
 bindsym \$mod+a exec kaadzos addons
 bindsym \$mod+i exec sh -c 'command -v kaadzos-install >/dev/null 2>&1 && kaadzos-install'
+# Bluetooth: the Waybar module opens Blueman on click and toggles adapter power
+# on right-click; Super+X is the keyboard equivalent.
+bindsym \$mod+x exec kaadzos-bluetooth manager
 bindsym \$mod+q kill
 bindsym \$mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
 bindsym \$mod+Shift+x exec \$lock
@@ -201,7 +204,7 @@ cat > "$cfg/waybar/config" <<WBAR
     "spacing": 0,
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["clock"],
-    "modules-right": ["custom/install", "network", "pulseaudio", "battery", "tray"],
+    "modules-right": ["custom/install", "network", "bluetooth", "pulseaudio", "battery", "tray"],
     "sway/workspaces": {
         "format": "{name}",
         "all-outputs": true,
@@ -227,6 +230,29 @@ cat > "$cfg/waybar/config" <<WBAR
         "format-ethernet": "\uf1e6 {ifname}",
         "format-disconnected": "\uf127 offline",
         "tooltip-format": "{ipaddr}/{cidr}"
+    },
+    "bluetooth": {
+        "format": "{icon}",
+        "format-connected": "{icon} {device_alias}",
+        "format-connected-battery": "{icon} {device_alias} {device_battery_percentage}%",
+        "format-icons": {
+            "default": "\uf293",
+            "on": "\uf293",
+            "off": "\uf294",
+            "connected": "\uf293",
+            "no-controller": "\uf294",
+            "disabled": "\uf294"
+        },
+        "max-length": 30,
+        "tooltip": true,
+        "tooltip-format": "Bluetooth: {status}",
+        "tooltip-format-off": "Bluetooth is off\nRight-click to power on",
+        "tooltip-format-on": "Bluetooth is on\nLeft-click to manage devices",
+        "tooltip-format-connected": "{controller_alias}\n{device_enumerate}",
+        "tooltip-format-no-controller": "No Bluetooth adapter found",
+        "tooltip-format-enumerate-connected": "{device_alias}  {device_address}",
+        "on-click": "kaadzos-bluetooth manager",
+        "on-click-right": "kaadzos-bluetooth toggle"
     },
     "pulseaudio": {
         "format": "{icon} {volume}%",
@@ -285,11 +311,17 @@ window#waybar {
     border-radius: 6px;
     font-weight: 600;
 }
-#clock, #network, #pulseaudio, #battery, #tray {
+#clock, #network, #bluetooth, #pulseaudio, #battery, #tray {
     padding: 0 12px;
     color: ${KAADZ_FG_ALT};
 }
 #clock { color: ${KAADZ_FG}; font-weight: 600; }
+#bluetooth.connected { color: ${KAADZ_FG}; }
+#bluetooth.discovering {
+    color: ${KAADZ_FG};
+    border-bottom: 2px solid ${KAADZ_ACCENT};
+}
+#bluetooth.off, #bluetooth.no-controller, #bluetooth.disabled { color: ${KAADZ_FG_MUTED}; }
 #battery.warning { color: ${KAADZ_WARNING}; }
 #battery.critical { color: ${KAADZ_URGENT}; }
 #network.disconnected { color: ${KAADZ_FG_MUTED}; }

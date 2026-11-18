@@ -59,6 +59,9 @@ bindsym $mod+Return exec $term
 bindsym $mod+d exec $launcher
 bindsym $mod+a exec kaadzos addons
 bindsym $mod+i exec sh -c 'command -v kaadzos-install >/dev/null 2>&1 && kaadzos-install'
+# Bluetooth: the Waybar module opens Blueman on click and toggles adapter power
+# on right-click; Super+X is the keyboard equivalent.
+bindsym $mod+x exec kaadzos-bluetooth manager
 bindsym $mod+q kill
 bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
 bindsym $mod+Shift+x exec $lock

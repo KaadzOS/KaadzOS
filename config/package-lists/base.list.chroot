@@ -4,6 +4,17 @@ network-manager
 wpasupplicant
 wireless-regdb
 polkitd
+
+# Bluetooth: BlueZ plus Blueman. Blueman's notification-daemon dependency is
+# already provided by mako-notifier, so no second notification daemon lands in
+# the image. The GSettings backend and gsettings CLI are explicit because apt
+# recommends are off. The service is enabled by a live hook; Debian's unit has
+# ConditionPathIsDirectory=/sys/class/bluetooth, so machines without an adapter
+# skip it instead of failing.
+bluez
+blueman
+dconf-gsettings-backend
+libglib2.0-bin
 sway
 swaybg
 swaylock

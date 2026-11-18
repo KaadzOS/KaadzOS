@@ -93,6 +93,33 @@ else
   printf 'KAADZOS_COMMANDS_MISSING%s\n' "$missing_cmds" > "$serial"
 fi
 
+# Bluetooth must be enabled in both the live and installed images, and it must
+# not have failed. With no adapter systemd skips bluetooth.service because of
+# its ConditionPathIsDirectory=/sys/class/bluetooth, which is healthy:
+# is-failed is false for a skipped unit. A disabled unit is a packaging failure.
+if systemctl is-failed --quiet bluetooth.service 2>/dev/null; then
+  printf 'KAADZOS_BLUETOOTH_FAILED\n' > "$serial"
+elif systemctl is-enabled --quiet bluetooth.service 2>/dev/null; then
+  printf 'KAADZOS_BLUETOOTH_OK\n' > "$serial"
+else
+  printf 'KAADZOS_BLUETOOTH_DISABLED\n' > "$serial"
+fi
+
+# The bar must actually be running, and its generated config must carry the
+# Bluetooth module wired to the helper. This catches a malformed waybar JSON
+# that would otherwise leave the desktop without a bar.
+if pgrep -x waybar >/dev/null 2>&1; then
+  printf 'KAADZOS_WAYBAR_OK\n' > "$serial"
+else
+  printf 'KAADZOS_WAYBAR_FAILED\n' > "$serial"
+fi
+if grep -q '"bluetooth"' "$HOME/.config/waybar/config" 2>/dev/null \
+   && grep -q 'kaadzos-bluetooth' "$HOME/.config/waybar/config" 2>/dev/null; then
+  printf 'KAADZOS_BLUETOOTH_MODULE_OK\n' > "$serial"
+else
+  printf 'KAADZOS_BLUETOOTH_MODULE_MISSING\n' > "$serial"
+fi
+
 # Dump layout and logs between markers so the runner can parse them. The
 # installed system intentionally lacks Calamares and the live logs, so do not
 # let a missing path abort the block before the end marker is written.
@@ -107,6 +134,11 @@ set +e
   swaymsg -t get_tree 2>&1
   echo '=== processes ==='
   ps -eo pid,args 2>/dev/null | grep -E '[w]aybar|[m]ako|[f]oot|[s]way|[g]reetd|[t]uigreet'
+  echo '=== bluetooth ==='
+  systemctl is-enabled bluetooth.service 2>&1
+  systemctl is-failed bluetooth.service 2>&1
+  systemctl status bluetooth.service --no-pager 2>&1 | head -n 12
+  bluetoothctl list 2>&1
   echo '=== installer ==='
   if [ "$mode" = installed ]; then
     ls -l /etc/kaadzos 2>&1

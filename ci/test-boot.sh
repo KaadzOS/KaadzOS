@@ -119,6 +119,21 @@ while (( SECONDS < deadline )); do
       exit 1
     fi
 
+    # Bluetooth must be enabled and healthy even though the CI VM has no
+    # adapter, and Waybar must be running with the Bluetooth module present.
+    if grep -Eq 'KAADZOS_BLUETOOTH_(FAILED|DISABLED|MODULE_MISSING)|KAADZOS_WAYBAR_FAILED' "$serial_log" 2>/dev/null; then
+      echo "Bluetooth or Waybar check failed under $firmware:" >&2
+      grep -E 'KAADZOS_BLUETOOTH_|KAADZOS_WAYBAR_' "$serial_log" >&2
+      exit 1
+    fi
+    if ! grep -q 'KAADZOS_BLUETOOTH_OK' "$serial_log" 2>/dev/null \
+      || ! grep -q 'KAADZOS_BLUETOOTH_MODULE_OK' "$serial_log" 2>/dev/null \
+      || ! grep -q 'KAADZOS_WAYBAR_OK' "$serial_log" 2>/dev/null; then
+      echo "Bluetooth/Waybar readiness markers are missing under $firmware" >&2
+      grep -E 'KAADZOS_BLUETOOTH_|KAADZOS_WAYBAR_' "$serial_log" >&2 || true
+      exit 1
+    fi
+
     # Report the idle-RAM diagnostic the guest emitted (non-fatal report).
     ram_line=$(grep 'KAADZOS_IDLE_RAM' "$serial_log" 2>/dev/null | tail -n 1 || true)
     if [ -n "$ram_line" ]; then

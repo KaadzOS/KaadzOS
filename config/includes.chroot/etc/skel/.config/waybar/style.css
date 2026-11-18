@@ -36,11 +36,17 @@ window#waybar {
     border-radius: 6px;
     font-weight: 600;
 }
-#clock, #network, #pulseaudio, #battery, #tray {
+#clock, #network, #bluetooth, #pulseaudio, #battery, #tray {
     padding: 0 12px;
     color: #9c9c9c;
 }
 #clock { color: #ffffff; font-weight: 600; }
+#bluetooth.connected { color: #ffffff; }
+#bluetooth.discovering {
+    color: #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+#bluetooth.off, #bluetooth.no-controller, #bluetooth.disabled { color: #8a8a8a; }
 #battery.warning { color: #d6c08a; }
 #battery.critical { color: #ff5c5c; }
 #network.disconnected { color: #8a8a8a; }
