@@ -49,13 +49,7 @@ jobs:
             g++ qt6-base-dev pkg-config
 
       - name: Verify package availability
-        run: |
-          while read -r package; do
-            case "$package" in
-              ""|'#'*) continue ;;
-            esac
-            apt-cache show "$package" >/dev/null
-          done < config/package-lists/base.list.chroot
+        run: sh ci/test-base-list.sh
 
       - name: Set cache key
         id: cache-key
@@ -180,13 +174,7 @@ jobs:
           apt-get update
 
       - name: Verify base package availability
-        run: |
-          while read -r package; do
-            case "$package" in
-              ""|'#'*) continue ;;
-            esac
-            apt-cache show "$package" >/dev/null
-          done < config/package-lists/base.list.chroot
+        run: sh ci/test-base-list.sh
 
       - name: Run pack resolution tests
         run: bash ci/test-packs.sh

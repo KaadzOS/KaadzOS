@@ -101,7 +101,7 @@ Two changes came out of that: the lock binding moved to `$mod+Shift+x`, and the 
 
 ## Base image contents
 
-The base image is deliberately small. It contains the kernel and firmware, NetworkManager, Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `p7zip-full`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, docks, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`.
+The base image is deliberately small. It contains the kernel and firmware, NetworkManager, Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `fdisk`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `7zip`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, docks, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`.
 
 ## Build it yourself
 

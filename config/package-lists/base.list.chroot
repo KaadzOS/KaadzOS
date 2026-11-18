@@ -131,6 +131,7 @@ pciutils
 usbutils
 procps
 lsof
-p7zip-full
+# p7zip-full is only a transitional package in trixie; 7zip provides /usr/bin/7z.
+7zip
 unzip
 zip
