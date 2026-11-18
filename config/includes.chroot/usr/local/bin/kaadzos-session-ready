@@ -77,10 +77,13 @@ if ps -eo args 2>/dev/null | grep -q '[s]waynag'; then
 fi
 
 # Verify the core command-line baseline is present on both live and installed
-# images. The boot test fails if any expected command is missing.
+# images. The boot test fails if any expected command is missing. A desktop
+# user's PATH does not include sbin, but disk tools live there, so widen the
+# lookup path rather than reporting them missing.
+check_path="$PATH:/usr/sbin:/sbin"
 missing_cmds=""
 for cmd in bash dash zsh mount fdisk fsck find grep awk tar gzip xz zstd mkfs.ext4; do
-  if ! command -v "$cmd" >/dev/null 2>&1; then
+  if ! PATH="$check_path" command -v "$cmd" >/dev/null 2>&1; then
     missing_cmds="$missing_cmds $cmd"
   fi
 done

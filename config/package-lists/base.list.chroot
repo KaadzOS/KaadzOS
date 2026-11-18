@@ -113,6 +113,9 @@ dash
 zsh
 coreutils
 util-linux
+# fdisk is a split util-linux package in trixie; the command is not installed
+# by util-linux itself, so the boot test and disk work need it explicitly.
+fdisk
 findutils
 grep
 gawk
