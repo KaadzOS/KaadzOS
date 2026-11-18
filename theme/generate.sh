@@ -112,6 +112,8 @@ bindsym \$mod+i exec sh -c 'command -v kaadzos-install >/dev/null 2>&1 && kaadzo
 # Bluetooth: the Waybar module opens Blueman on click and toggles adapter power
 # on right-click; Super+X is the keyboard equivalent.
 bindsym \$mod+x exec kaadzos-bluetooth manager
+# Control centre: audio, devices, display, power and session actions.
+bindsym \$mod+Shift+s exec kaadzos-control
 bindsym \$mod+q kill
 bindsym \$mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
 bindsym \$mod+Shift+x exec \$lock
@@ -204,7 +206,7 @@ cat > "$cfg/waybar/config" <<WBAR
     "spacing": 0,
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["clock"],
-    "modules-right": ["custom/install", "network", "bluetooth", "pulseaudio", "battery", "tray"],
+    "modules-right": ["custom/install", "custom/control", "network", "bluetooth", "backlight", "power-profiles-daemon", "pulseaudio", "idle_inhibitor", "battery", "tray"],
     "sway/workspaces": {
         "format": "{name}",
         "all-outputs": true,
@@ -220,6 +222,13 @@ cat > "$cfg/waybar/config" <<WBAR
         "tooltip": true,
         "tooltip-format": "Install KaadzOS to disk"
     },
+    "custom/control": {
+        "exec": "printf '\\\\357\\\\200\\\\223'",
+        "format": "{}",
+        "tooltip": true,
+        "tooltip-format": "Control Centre\nAudio, devices, display and session",
+        "on-click": "kaadzos-control"
+    },
     "clock": {
         "format": "{:%a %d %b  %H:%M}",
         "tooltip-format": "<tt>{calendar}</tt>",
@@ -229,7 +238,8 @@ cat > "$cfg/waybar/config" <<WBAR
         "format-wifi": "\uf1eb {essid}",
         "format-ethernet": "\uf1e6 {ifname}",
         "format-disconnected": "\uf127 offline",
-        "tooltip-format": "{ipaddr}/{cidr}"
+        "tooltip-format": "{ipaddr}/{cidr}",
+        "on-click": "sh -c 'command -v nm-connection-editor >/dev/null 2>&1 && exec nm-connection-editor || exec kaadzos-control'"
     },
     "bluetooth": {
         "format": "{icon}",
@@ -261,12 +271,40 @@ cat > "$cfg/waybar/config" <<WBAR
         "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
         "on-click-right": "pavucontrol || foot -T Volume -e wpctl status"
     },
+    "backlight": {
+        "format": "\uf185 {percent}%",
+        "tooltip": true,
+        "tooltip-format": "Backlight: {percent}%",
+        "on-scroll-up": "brightnessctl set 5%+",
+        "on-scroll-down": "brightnessctl set 5%-"
+    },
+    "power-profiles-daemon": {
+        "format": "{icon}",
+        "tooltip": true,
+        "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+        "format-icons": {
+            "performance": "\uf0e7",
+            "balanced": "\uf24e",
+            "power-saver": "\uf06c"
+        },
+        "on-click": "kaadzos-control power-profile"
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "\uf06e",
+            "deactivated": "\uf070"
+        },
+        "tooltip-format-activated": "Idle inhibition is on",
+        "tooltip-format-deactivated": "Idle inhibition is off"
+    },
     "battery": {
         "states": { "good": 80, "warning": 30, "critical": 15 },
         "format": "{icon} {capacity}%",
         "format-charging": "\uf0e7 {capacity}%",
         "format-icons": ["\uf244", "\uf243", "\uf242", "\uf241", "\uf240"],
-        "tooltip-format": "{timeTo} remaining"
+        "tooltip-format": "{timeTo} remaining",
+        "on-click": "kaadzos-control power"
     },
     "tray": { "icon-size": 18, "spacing": 8 }
 }
@@ -311,11 +349,16 @@ window#waybar {
     border-radius: 6px;
     font-weight: 600;
 }
-#clock, #network, #bluetooth, #pulseaudio, #battery, #tray {
+#clock, #network, #bluetooth, #backlight, #power-profiles-daemon,
+#pulseaudio, #idle_inhibitor, #battery, #custom-control, #tray {
     padding: 0 12px;
     color: ${KAADZ_FG_ALT};
 }
 #clock { color: ${KAADZ_FG}; font-weight: 600; }
+#custom-control { color: ${KAADZ_FG}; }
+#idle_inhibitor.activated { color: ${KAADZ_ACCENT}; }
+#power-profiles-daemon.performance { color: ${KAADZ_WARNING}; }
+#power-profiles-daemon.power-saver { color: ${KAADZ_FG_MUTED}; }
 #bluetooth.connected { color: ${KAADZ_FG}; }
 #bluetooth.discovering {
     color: ${KAADZ_FG};

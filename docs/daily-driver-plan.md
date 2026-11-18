@@ -4,7 +4,8 @@ Status: living implementation plan for
 [`daily-driver-roadmap.md`](daily-driver-roadmap.md). Prompt 1 recorded the
 verified state below; the prompt sections are updated as each feature lands.
 Prompts 2 (core baseline) and 3 (Bluetooth and Waybar) are implemented and
-green in CI runs 44217239776 and 44250067376.
+green in CI runs 44217239776 and 44250067376. Prompt 4 (Waybar control centre)
+is implemented locally and awaits its first CI run.
 
 Prepared: 2026-11-18, against `main` at `026091c`. Prompt 2 landed as `7a4e6e2`
 and Prompt 3 as `a316fd1` plus the diagnostic fix `1b26d0d`.
@@ -232,6 +233,11 @@ Depends on: 2.
   not pull a second notification daemon.
 
 ### Prompt 4 — Waybar control centre
+
+Status: implemented locally on 2026-11-18; the next push must run the normal
+matrix before this is recorded as green. The helper is `dash`-clean and the
+action dispatch is covered by fake-command tests that run in both the `build`
+and `pack-test` containers (`ci/test-control.sh`).
 
 Depends on: 3 (Bluetooth toggle), 2 (`zenity`).
 

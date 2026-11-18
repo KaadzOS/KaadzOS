@@ -76,6 +76,14 @@ Waybar's Bluetooth module is part of the generated bar. It is muted when Bluetoo
 
 mako already provides `notification-daemon`, so Blueman does not pull a second notification daemon into the image. `dconf-gsettings-backend` and `libglib2.0-bin` are explicit because the image builds with `--apt-recommends false`.
 
+## Control centre
+
+`kaadzos-control` is one POSIX-sh helper behind the Waybar gear, `$mod+Shift+s` and the **Control Centre** desktop entry. It covers output and microphone mute, volume, the pavucontrol mixer, Bluetooth (Blueman or the power toggle), network (the connection editor when the network pack provides it, otherwise `nmcli device status`), brightness, the power profile, night light, screenshots and recording, battery status, and the session actions (lock, log out, reboot, power off).
+
+Every optional command is probed before use: a missing tool disables one menu item with a notification instead of breaking the menu. Reboot and power off ask for confirmation when zenity is present. Night light starts `wlsunset`; when the compositor does not offer gamma control the helper reports it and leaves the rest of the session untouched.
+
+The generated Waybar now also carries `backlight`, `power-profiles-daemon` and `idle_inhibitor` modules. Battery left-click opens the power section, and the network click falls back to the control centre when `nm-connection-editor` is absent. `upower`, `power-profiles-daemon`, `wlsunset` and `zenity` are base packages; the control centre itself adds no daemon.
+
 ## The installer
 
 Phase 5 adds a Calamares installer. It does not debootstrap: it unpacks the live squashfs onto the target, then repairs the copy in place. The ordering is the hard part — `live-config` diverts `update-initramfs`, so the live-only packages have to be purged *before* the initramfs is generated, and live-only NOPASSWD sudo has to be removed before the installed system boots.
@@ -109,7 +117,7 @@ Two changes came out of that: the lock binding moved to `$mod+Shift+x`, and the 
 
 ## Base image contents
 
-The base image is deliberately small. It contains the kernel and firmware, NetworkManager, BlueZ and Blueman, Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `fdisk`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `7zip`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, docks, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`.
+The base image is deliberately small. It contains the kernel and firmware, NetworkManager, BlueZ and Blueman, the control centre (upower, power-profiles-daemon, wlsunset and zenity), Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `fdisk`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `7zip`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, docks, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`.
 
 ## Build it yourself
 

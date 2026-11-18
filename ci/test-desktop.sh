@@ -8,6 +8,8 @@ waybar="$root/config/includes.chroot/etc/skel/.config/waybar/config"
 style="$root/config/includes.chroot/etc/skel/.config/waybar/style.css"
 sway="$root/config/includes.chroot/etc/skel/.config/sway/config"
 helper="$root/config/includes.chroot/usr/local/bin/kaadzos-bluetooth"
+control="$root/config/includes.chroot/usr/local/bin/kaadzos-control"
+control_desktop="$root/config/includes.chroot/usr/share/applications/kaadzos-control.desktop"
 session_ready="$root/config/includes.chroot/usr/local/bin/kaadzos-session-ready"
 hook="$root/config/hooks/live/0800-bluetooth.hook.chroot"
 packages="$root/config/package-lists/base.list.chroot"
@@ -66,6 +68,53 @@ grep -q 'timeout 5 bluetoothctl list' "$session_ready" \
 
 # The Bluetooth packages must actually be part of the base list.
 for package in bluez blueman dconf-gsettings-backend libglib2.0-bin; do
+  grep -qx -- "$package" "$packages" || fail "base.list.chroot is missing: $package"
+done
+
+# Control centre: one helper, one launcher, one Sway binding and four Waybar
+# modules. The modules must also be generated, so a theme regeneration cannot
+# silently drop them from the committed skel config.
+[ -x "$control" ] || fail "$control is not executable"
+dash -n "$control" || fail "kaadzos-control does not parse as POSIX sh"
+[ -f "$control_desktop" ] || fail "$control_desktop is missing"
+grep -qx '^Exec=kaadzos-control$' "$control_desktop" \
+  || fail "control desktop entry must run kaadzos-control"
+
+count=$(grep -c '^bindsym \$mod+Shift+s exec kaadzos-control$' "$sway" || true)
+[ "$count" -eq 1 ] || fail "Sway config needs exactly one \$mod+Shift+s control binding"
+grep -Fq 'bindsym \$mod+Shift+s exec kaadzos-control' "$root/theme/generate.sh" \
+  || fail "theme/generate.sh does not generate the control binding"
+
+for module in '"custom/control"' '"backlight"' '"power-profiles-daemon"' \
+              '"idle_inhibitor"'; do
+  grep -q -- "$module" "$waybar" || fail "Waybar config is missing: $module"
+  grep -q -- "$module" "$root/theme/generate.sh" \
+    || fail "theme/generate.sh does not generate: $module"
+done
+grep -q '"on-click": "kaadzos-control"' "$waybar" \
+  || fail "Waybar control module is not wired to kaadzos-control"
+grep -q '"on-click": "kaadzos-control power"' "$waybar" \
+  || fail "Waybar battery click must open the power section"
+grep -q 'kaadzos-control power-profile' "$waybar" \
+  || fail "Waybar power profile click is not wired to kaadzos-control"
+grep -q 'nm-connection-editor.*kaadzos-control' "$waybar" \
+  || fail "Waybar network click must fall back to the control centre"
+
+for state in '#custom-control' '#backlight' '#power-profiles-daemon' \
+             '#idle_inhibitor'; do
+  grep -q -- "$state" "$style" || fail "Waybar style is missing: $state"
+  grep -q -- "$state" "$root/theme/generate.sh" \
+    || fail "theme/generate.sh does not generate: $state"
+done
+
+# The helper must probe optional commands instead of assuming they exist.
+for tool in wpctl powerprofilesctl upower brightnessctl wlsunset; do
+  grep -q "have $tool" "$control" \
+    || fail "kaadzos-control must guard $tool with a command probe"
+done
+
+# Control centre packages belong to the base list, not a pack.
+for package in upower power-profiles-daemon wlsunset zenity; do
   grep -qx -- "$package" "$packages" || fail "base.list.chroot is missing: $package"
 done
 

@@ -120,6 +120,16 @@ else
   printf 'KAADZOS_BLUETOOTH_MODULE_MISSING\n' > "$serial"
 fi
 
+# The control centre is a helper plus a desktop entry plus a Waybar module.
+# All three must be present so a clickable gear reaches a working menu.
+if [ -x /usr/local/bin/kaadzos-control ] \
+   && [ -f /usr/share/applications/kaadzos-control.desktop ] \
+   && grep -q '"custom/control"' "$HOME/.config/waybar/config" 2>/dev/null; then
+  printf 'KAADZOS_CONTROL_OK\n' > "$serial"
+else
+  printf 'KAADZOS_CONTROL_MISSING\n' > "$serial"
+fi
+
 # Dump layout and logs between markers so the runner can parse them. The
 # installed system intentionally lacks Calamares and the live logs, so do not
 # let a missing path abort the block before the end marker is written.

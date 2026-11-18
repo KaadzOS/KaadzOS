@@ -36,11 +36,16 @@ window#waybar {
     border-radius: 6px;
     font-weight: 600;
 }
-#clock, #network, #bluetooth, #pulseaudio, #battery, #tray {
+#clock, #network, #bluetooth, #backlight, #power-profiles-daemon,
+#pulseaudio, #idle_inhibitor, #battery, #custom-control, #tray {
     padding: 0 12px;
     color: #9c9c9c;
 }
 #clock { color: #ffffff; font-weight: 600; }
+#custom-control { color: #ffffff; }
+#idle_inhibitor.activated { color: #ffffff; }
+#power-profiles-daemon.performance { color: #d6c08a; }
+#power-profiles-daemon.power-saver { color: #8a8a8a; }
 #bluetooth.connected { color: #ffffff; }
 #bluetooth.discovering {
     color: #ffffff;

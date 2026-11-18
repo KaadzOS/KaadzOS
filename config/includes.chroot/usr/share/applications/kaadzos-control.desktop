@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Control Centre
+Comment=Audio, Bluetooth, network, display, power and session actions
+Exec=kaadzos-control
+Icon=preferences-system
+Terminal=false
+Categories=System;Settings;
+Keywords=control;settings;audio;bluetooth;network;display;power;night light;

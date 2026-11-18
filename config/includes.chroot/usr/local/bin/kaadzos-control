@@ -1,0 +1,380 @@
+#!/bin/sh
+# KaadzOS control centre. The Waybar gear, the Super+Shift+S binding and the
+# Control Centre desktop entry all run this helper. Every optional command is
+# probed first, so a missing editor or daemon disables one item instead of
+# breaking the menu.
+set -eu
+
+notify() {
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send -a KaadzOS "$@" >/dev/null 2>&1 || true
+  fi
+}
+
+have() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+missing() {
+  notify "Control Centre" "$1 is not installed."
+}
+
+confirm() {
+  if have zenity; then
+    if zenity --question --title="KaadzOS" --text="$1" \
+      --ok-label="Continue" --cancel-label="Cancel" >/dev/null 2>&1; then
+      return 0
+    fi
+    return 1
+  fi
+  # Without zenity the menu selection itself is the confirmation.
+  return 0
+}
+
+audio_mute() {
+  if ! have wpctl; then
+    missing wpctl
+    return 0
+  fi
+  if wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle >/dev/null 2>&1; then
+    notify "Audio" "Output mute toggled."
+  else
+    notify -u critical "Audio" "Could not toggle output mute."
+  fi
+}
+
+mic_mute() {
+  if ! have wpctl; then
+    missing wpctl
+    return 0
+  fi
+  if wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle >/dev/null 2>&1; then
+    notify "Microphone" "Microphone mute toggled."
+  else
+    notify -u critical "Microphone" "Could not toggle microphone mute."
+  fi
+}
+
+volume() {
+  if ! have wpctl; then
+    missing wpctl
+    return 0
+  fi
+  case $1 in
+    up) wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+ ;;
+    down) wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- ;;
+    *) return 0 ;;
+  esac || notify -u critical "Audio" "Could not change the volume."
+}
+
+sound() {
+  if have pavucontrol; then
+    nohup pavucontrol >/tmp/kaadzos-pavucontrol.log 2>&1 &
+    notify "Audio" "Opened the volume mixer."
+    return 0
+  fi
+  if have wpctl; then
+    exec foot -T Audio -e wpctl status
+  fi
+  missing pavucontrol
+}
+
+bluetooth_manager() {
+  if have kaadzos-bluetooth; then
+    exec kaadzos-bluetooth manager
+  fi
+  missing bluetoothctl
+}
+
+bluetooth_toggle() {
+  if have kaadzos-bluetooth; then
+    kaadzos-bluetooth toggle
+    return 0
+  fi
+  missing bluetoothctl
+}
+
+network() {
+  if have nm-connection-editor; then
+    exec nm-connection-editor
+  fi
+  if have nmcli; then
+    tmp=${TMPDIR:-/tmp}/kaadzos-network.txt
+    nmcli device status >"$tmp" 2>&1 || true
+    if have zenity; then
+      exec zenity --text-info --title="Network" --filename="$tmp" \
+        --width=640 --height=320
+    fi
+    exec foot -T Network -e nmcli device status
+  fi
+  missing nmcli
+}
+
+brightness() {
+  if ! have brightnessctl; then
+    missing brightnessctl
+    return 0
+  fi
+  if brightnessctl set "5%$1" >/dev/null 2>&1; then
+    return 0
+  fi
+  notify -u critical "Display" "Could not change the backlight."
+}
+
+night_light() {
+  if ! have wlsunset; then
+    missing wlsunset
+    return 0
+  fi
+  if have pgrep && pgrep -x wlsunset >/dev/null 2>&1; then
+    if have pkill; then
+      pkill -x wlsunset 2>/dev/null || true
+    fi
+    notify "Night light" "Warm colours are off."
+    return 0
+  fi
+  nohup wlsunset -t 4000 -T 6500 -s 18:00 -S 06:00 \
+    >/tmp/kaadzos-wlsunset.log 2>&1 &
+  sleep 1
+  if have pgrep && pgrep -x wlsunset >/dev/null 2>&1; then
+    notify "Night light" "Warm colours are on."
+  else
+    notify -u critical "Night light" \
+      "wlsunset could not start (gamma-control unsupported?)."
+  fi
+}
+
+power_profile() {
+  if ! have powerprofilesctl; then
+    missing powerprofilesctl
+    return 0
+  fi
+  current=$(powerprofilesctl get 2>/dev/null || printf 'balanced')
+  case $current in
+    performance) next=balanced ;;
+    balanced) next=power-saver ;;
+    *) next=performance ;;
+  esac
+  if powerprofilesctl set "$next" >/dev/null 2>&1; then
+    notify "Power profile" "Now using $next."
+  else
+    notify -u critical "Power profile" "Could not switch to $next."
+  fi
+}
+
+battery() {
+  if ! have upower; then
+    missing upower
+    return 0
+  fi
+  path=$(upower -e 2>/dev/null | sed -n '/battery/p' | head -n 1)
+  if [ -z "$path" ]; then
+    notify "Battery" "No battery found."
+    return 0
+  fi
+  text=$(upower -i "$path" 2>/dev/null \
+    | sed -n 's/^[[:space:]]*\(state\|percentage\|time to empty\|time to full\):[[:space:]]*/\1: /p')
+  if [ -z "$text" ]; then
+    text="Battery information is unavailable."
+  fi
+  if have zenity; then
+    exec zenity --info --title="Battery" --text="$text"
+  fi
+  notify "Battery" "$text"
+}
+
+screenshot() {
+  if have kaadzos-screenshot; then
+    kaadzos-screenshot full
+    return 0
+  fi
+  missing grim
+}
+
+recording() {
+  if have kaadzos-record; then
+    kaadzos-record
+    return 0
+  fi
+  missing wf-recorder
+}
+
+session_lock() {
+  if have swaylock; then
+    exec swaylock -f
+  fi
+  missing swaylock
+}
+
+session_logout() {
+  if have swaymsg; then
+    swaymsg exit
+    return 0
+  fi
+  missing swaymsg
+}
+
+session_reboot() {
+  if ! confirm "Restart the computer?"; then
+    return 0
+  fi
+  if ! have systemctl; then
+    missing systemctl
+    return 0
+  fi
+  if ! systemctl reboot; then
+    notify -u critical "Session" "Could not restart the computer."
+  fi
+}
+
+session_poweroff() {
+  if ! confirm "Shut down the computer?"; then
+    return 0
+  fi
+  if ! have systemctl; then
+    missing systemctl
+    return 0
+  fi
+  if ! systemctl poweroff; then
+    notify -u critical "Session" "Could not shut down the computer."
+  fi
+}
+
+dispatch() {
+  case $1 in
+    'Audio: mute output') audio_mute ;;
+    'Audio: volume mixer') sound ;;
+    'Audio: volume up') volume up ;;
+    'Audio: volume down') volume down ;;
+    'Microphone: mute') mic_mute ;;
+    'Bluetooth: devices') bluetooth_manager ;;
+    'Bluetooth: power') bluetooth_toggle ;;
+    'Network: connections') network ;;
+    'Display: brightness up') brightness + ;;
+    'Display: brightness down') brightness - ;;
+    'Display: night light') night_light ;;
+    'Power: profile') power_profile ;;
+    'Battery: status') battery ;;
+    'Screen: screenshot') screenshot ;;
+    'Screen: recording') recording ;;
+    'Session: lock') session_lock ;;
+    'Session: log out') session_logout ;;
+    'Session: reboot') session_reboot ;;
+    'Session: power off') session_poweroff ;;
+    *)
+      notify "Control Centre" "Unknown action: $1"
+      exit 2
+      ;;
+  esac
+}
+
+power_menu() {
+  if have zenity; then
+    choice=$(zenity --list --title="Power" \
+      --text="Battery, profile and session" --hide-header --print-column=1 \
+      --column="Action" --column="Detail" --width=540 --height=360 \
+      "Battery: status" "Show upower information" \
+      "Power: profile" "Cycle performance/balanced/power-saver" \
+      "Session: lock" "Lock the screen" \
+      "Session: log out" "Exit Sway" \
+      "Session: reboot" "Restart the computer" \
+      "Session: power off" "Shut down the computer") || exit 0
+  elif have fuzzel; then
+    choice=$(printf '%s\n' \
+      "Battery: status|Show upower information" \
+      "Power: profile|Cycle performance/balanced/power-saver" \
+      "Session: lock|Lock the screen" \
+      "Session: log out|Exit Sway" \
+      "Session: reboot|Restart the computer" \
+      "Session: power off|Shut down the computer" \
+      | fuzzel --dmenu --prompt "Power> ") || exit 0
+    choice=${choice%%|*}
+  else
+    notify "Control Centre" "Install zenity or fuzzel to use the menu."
+    exit 0
+  fi
+  [ -n "$choice" ] || exit 0
+  dispatch "$choice"
+}
+
+main_menu() {
+  if have zenity; then
+    choice=$(zenity --list --title="KaadzOS Control Centre" \
+      --text="Audio, devices, display and session" --hide-header \
+      --print-column=1 --column="Action" --column="Detail" \
+      --width=640 --height=580 \
+      "Audio: mute output" "Toggle the default sink" \
+      "Audio: volume mixer" "Open pavucontrol" \
+      "Audio: volume up" "Raise output volume" \
+      "Audio: volume down" "Lower output volume" \
+      "Microphone: mute" "Toggle the default source" \
+      "Bluetooth: devices" "Open Blueman" \
+      "Bluetooth: power" "Toggle the adapter" \
+      "Network: connections" "Open the editor or nmcli status" \
+      "Display: brightness up" "Raise the backlight" \
+      "Display: brightness down" "Lower the backlight" \
+      "Display: night light" "Toggle warm colours" \
+      "Power: profile" "Cycle performance/balanced/power-saver" \
+      "Screen: screenshot" "Save a PNG to ~/Pictures" \
+      "Screen: recording" "Toggle a video recording" \
+      "Session: lock" "Lock the screen" \
+      "Session: log out" "Exit Sway" \
+      "Session: reboot" "Restart the computer" \
+      "Session: power off" "Shut down the computer") || exit 0
+  elif have fuzzel; then
+    choice=$(printf '%s\n' \
+      "Audio: mute output|Toggle the default sink" \
+      "Audio: volume mixer|Open pavucontrol" \
+      "Audio: volume up|Raise output volume" \
+      "Audio: volume down|Lower output volume" \
+      "Microphone: mute|Toggle the default source" \
+      "Bluetooth: devices|Open Blueman" \
+      "Bluetooth: power|Toggle the adapter" \
+      "Network: connections|Open the editor or nmcli status" \
+      "Display: brightness up|Raise the backlight" \
+      "Display: brightness down|Lower the backlight" \
+      "Display: night light|Toggle warm colours" \
+      "Power: profile|Cycle performance/balanced/power-saver" \
+      "Screen: screenshot|Save a PNG to ~/Pictures" \
+      "Screen: recording|Toggle a video recording" \
+      "Session: lock|Lock the screen" \
+      "Session: log out|Exit Sway" \
+      "Session: reboot|Restart the computer" \
+      "Session: power off|Shut down the computer" \
+      | fuzzel --dmenu --prompt "Control> ") || exit 0
+    choice=${choice%%|*}
+  else
+    notify "Control Centre" "Install zenity or fuzzel to use the menu."
+    exit 0
+  fi
+  [ -n "$choice" ] || exit 0
+  dispatch "$choice"
+}
+
+case "${1:-menu}" in
+  menu) main_menu ;;
+  power) power_menu ;;
+  audio-mute) audio_mute ;;
+  mic-mute) mic_mute ;;
+  volume-up) volume up ;;
+  volume-down) volume down ;;
+  sound) sound ;;
+  bluetooth) bluetooth_manager ;;
+  bluetooth-toggle) bluetooth_toggle ;;
+  network) network ;;
+  brightness-up) brightness + ;;
+  brightness-down) brightness - ;;
+  night-light) night_light ;;
+  power-profile) power_profile ;;
+  battery) battery ;;
+  screenshot) screenshot ;;
+  record) recording ;;
+  lock) session_lock ;;
+  logout) session_logout ;;
+  reboot) session_reboot ;;
+  poweroff) session_poweroff ;;
+  *)
+    echo "usage: kaadzos-control [menu|power|audio-mute|mic-mute|volume-up|volume-down|sound|bluetooth|bluetooth-toggle|network|brightness-up|brightness-down|night-light|power-profile|battery|screenshot|record|lock|logout|reboot|poweroff]" >&2
+    exit 2
+    ;;
+esac

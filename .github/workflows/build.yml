@@ -54,6 +54,9 @@ jobs:
       - name: Verify desktop configuration
         run: sh ci/test-desktop.sh
 
+      - name: Verify control centre actions
+        run: sh ci/test-control.sh
+
       - name: Set cache key
         id: cache-key
         run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
@@ -182,6 +185,9 @@ jobs:
 
       - name: Verify desktop configuration
         run: sh ci/test-desktop.sh
+
+      - name: Verify control centre actions
+        run: sh ci/test-control.sh
 
       - name: Run pack resolution tests
         run: bash ci/test-packs.sh

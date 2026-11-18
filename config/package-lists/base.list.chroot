@@ -35,6 +35,14 @@ fonts-jetbrains-mono
 fonts-font-awesome
 kbd
 brightnessctl
+# Control centre: zenity renders the menu, upower supplies battery state,
+# power-profiles-daemon backs the Waybar profile module, and wlsunset is the
+# night-light backend. wlsunset needs the wlr-gamma-control protocol; the
+# helper hides the item when it cannot start, so a headless VM stays healthy.
+upower
+power-profiles-daemon
+wlsunset
+zenity
 user-setup
 live-config-systemd
 sudo
