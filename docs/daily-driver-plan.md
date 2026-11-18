@@ -3,10 +3,11 @@
 Status: living implementation plan for
 [`daily-driver-roadmap.md`](daily-driver-roadmap.md). Prompt 1 recorded the
 verified state below; the prompt sections are updated as each feature lands.
-Prompt 3 (Bluetooth and Waybar) is implemented.
+Prompts 2 (core baseline) and 3 (Bluetooth and Waybar) are implemented and
+green in CI runs 44217239776 and 44250067376.
 
-Prepared: 2026-11-18, against `main` at `026091c`. Prompt 3 was implemented on
-top of `7a4e6e2`.
+Prepared: 2026-11-18, against `main` at `026091c`. Prompt 2 landed as `7a4e6e2`
+and Prompt 3 as `a316fd1` plus the diagnostic fix `1b26d0d`.
 
 ## 1. Inputs inspected
 
@@ -171,6 +172,10 @@ ships the story.
 
 ### Prompt 2 — Core baseline (finish)
 
+Status: complete. CI run [44217239776](https://github.com/KaadzOS/KaadzOS/actions/runs/44217239776)
+(commit `7a4e6e2`) passed `pack-test`, `repo-test`, `build`, `boot-test`
+(bios/uefi) and `install-test` (bios/uefi).
+
 Depends on: nothing. Most of this landed in `cb75a6a`; `026091c` fixes the
 command assertion.
 
@@ -187,9 +192,15 @@ command assertion.
 
 ### Prompt 3 — Bluetooth and Waybar
 
-Status: implemented. Package: `bluez`, `blueman`,
-`dconf-gsettings-backend`, `libglib2.0-bin`. `bluez-tools` is not needed:
-`bluetoothctl` ships in `bluez`, and Blueman is the manager.
+Status: complete. CI run [44250067376](https://github.com/KaadzOS/KaadzOS/actions/runs/44250067376)
+(commit `1b26d0d`) passed `pack-test`, `repo-test`, `build`, `boot-test`
+(bios/uefi) and `install-test` (bios/uefi). The first run (44230914684) exposed
+a `bluetoothctl` hang in the session diagnostic when no adapter is present;
+`1b26d0d` bounds every probe with `timeout` and adds a static regression check.
+
+Package: `bluez`, `blueman`, `dconf-gsettings-backend`, `libglib2.0-bin`.
+`bluez-tools` is not needed: `bluetoothctl` ships in `bluez`, and Blueman is
+the manager.
 
 Depends on: 2.
 
@@ -209,7 +220,8 @@ Depends on: 2.
   `ci/test-desktop.sh` (new).
 - Tests: `ci/test-desktop.sh` parses the Waybar JSON, requires the module and
   its click actions, checks the state styling and the single `$mod+x` binding,
-  and runs `dash -n` on the helper and hook. `kaadzos-session-ready` emits
+  runs `dash -n` on the helper and hook, and requires every `bluetoothctl`
+  probe to be bounded with `timeout`. `kaadzos-session-ready` emits
   `KAADZOS_BLUETOOTH_OK`, `KAADZOS_BLUETOOTH_MODULE_OK` and
   `KAADZOS_WAYBAR_OK`; the live and installed boot tests fail on
   `KAADZOS_BLUETOOTH_FAILED`, `..._DISABLED`, `..._MODULE_MISSING` or
