@@ -10,6 +10,7 @@ sway="$root/config/includes.chroot/etc/skel/.config/sway/config"
 helper="$root/config/includes.chroot/usr/local/bin/kaadzos-bluetooth"
 control="$root/config/includes.chroot/usr/local/bin/kaadzos-control"
 control_desktop="$root/config/includes.chroot/usr/share/applications/kaadzos-control.desktop"
+portal_conf="$root/config/includes.chroot/etc/xdg/xdg-desktop-portal/portals.conf"
 session_ready="$root/config/includes.chroot/usr/local/bin/kaadzos-session-ready"
 hook="$root/config/hooks/live/0800-bluetooth.hook.chroot"
 packages="$root/config/package-lists/base.list.chroot"
@@ -117,6 +118,36 @@ done
 for package in upower power-profiles-daemon wlsunset zenity; do
   grep -qx -- "$package" "$packages" || fail "base.list.chroot is missing: $package"
 done
+
+# Portal/session integration: the portal packages are in base, the Sway config
+# exports the Wayland environment to both the private dbus-run-session bus and
+# the systemd user manager, and the backend selection is explicit.
+for package in xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-wlr; do
+  grep -qx -- "$package" "$packages" || fail "base.list.chroot is missing: $package"
+done
+grep -q 'dbus-update-activation-environment WAYLAND_DISPLAY' "$sway" \
+  || fail "Sway config must update the session bus activation environment"
+grep -Eq 'timeout [0-9]+ dbus-update-activation-environment --systemd WAYLAND_DISPLAY' "$sway" \
+  || fail "Sway config must update the systemd user activation environment"
+grep -q 'XDG_CURRENT_DESKTOP=sway' "$sway" \
+  || fail "Sway activation environment must name the desktop"
+grep -Fq 'dbus-update-activation-environment WAYLAND_DISPLAY' "$root/theme/generate.sh" \
+  || fail "theme/generate.sh does not generate the session bus environment update"
+grep -Eq 'timeout [0-9]+ dbus-update-activation-environment --systemd WAYLAND_DISPLAY' "$root/theme/generate.sh" \
+  || fail "theme/generate.sh does not generate the systemd environment update"
+
+[ -f "$portal_conf" ] || fail "$portal_conf is missing"
+grep -qx '\[preferred\]' "$portal_conf" || fail "portals.conf is missing [preferred]"
+grep -qx 'default=gtk' "$portal_conf" || fail "portals.conf must default to gtk"
+grep -qx 'org.freedesktop.impl.portal.ScreenCast=wlr' "$portal_conf" \
+  || fail "portals.conf must use wlr for ScreenCast"
+grep -qx 'org.freedesktop.impl.portal.Screenshot=wlr' "$portal_conf" \
+  || fail "portals.conf must use wlr for Screenshot"
+
+grep -Eq 'timeout [0-9]+ gdbus call' "$session_ready" \
+  || fail "kaadzos-session-ready must bound the portal activation check"
+grep -q 'org.freedesktop.portal.Desktop' "$session_ready" \
+  || fail "kaadzos-session-ready must assert the portal bus name"
 
 [ "$failed" -eq 0 ] || exit 1
 echo "desktop configuration is valid"

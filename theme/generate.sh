@@ -91,6 +91,12 @@ for_window [app_id="foot" title="KaadzOS Terminal"] floating enable, resize set 
 for_window [app_id="calamares"] fullscreen enable
 for_window [class="calamares"] fullscreen enable
 
+# Portal/session integration. The live and installed wrappers start Sway under
+# a private dbus-run-session bus, so update both that bus and the systemd user
+# manager with the Wayland variables before anything activates a portal.
+exec sh -c 'dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway XDG_SESSION_TYPE=wayland XDG_SESSION_DESKTOP=sway XDG_RUNTIME_DIR 2>/dev/null || true'
+exec sh -c 'timeout 5 dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway XDG_SESSION_TYPE=wayland XDG_SESSION_DESKTOP=sway XDG_RUNTIME_DIR 2>/dev/null || true'
+
 # Autostart (logs go to /tmp; /run/hostshare only exists in the QEMU boot test)
 exec waybar >/tmp/waybar.log 2>&1
 exec mako >/tmp/mako.log 2>&1

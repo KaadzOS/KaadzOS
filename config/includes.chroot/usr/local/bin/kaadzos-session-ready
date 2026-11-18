@@ -130,6 +130,20 @@ else
   printf 'KAADZOS_CONTROL_MISSING\n' > "$serial"
 fi
 
+# The portal service is D-Bus activated. Ping the well-known name so the check
+# proves both the service files and the activation environment (Wayland plus
+# the desktop name), not just that the packages are installed. Bound it so a
+# broken portal cannot hold the serial diagnostics open.
+if command -v gdbus >/dev/null 2>&1 \
+   && timeout 20 gdbus call --session \
+      --dest org.freedesktop.portal.Desktop \
+      --object-path /org/freedesktop/portal/desktop \
+      --method org.freedesktop.DBus.Peer.Ping >/dev/null 2>&1; then
+  printf 'KAADZOS_PORTAL_OK\n' > "$serial"
+else
+  printf 'KAADZOS_PORTAL_FAILED\n' > "$serial"
+fi
+
 # Dump layout and logs between markers so the runner can parse them. The
 # installed system intentionally lacks Calamares and the live logs, so do not
 # let a missing path abort the block before the end marker is written.
@@ -151,6 +165,12 @@ set +e
   # bluetoothctl waits for bluetoothd when the service is skipped for lack of
   # an adapter; never let the diagnostic block hang on it.
   timeout 5 bluetoothctl list 2>&1 || true
+  echo '=== portals ==='
+  timeout 10 gdbus call --session \
+    --dest org.freedesktop.portal.Desktop \
+    --object-path /org/freedesktop/portal/desktop \
+    --method org.freedesktop.DBus.Peer.Ping 2>&1 || true
+  timeout 5 busctl --user --list 2>/dev/null | grep -i portal || true
   echo '=== installer ==='
   if [ "$mode" = installed ]; then
     ls -l /etc/kaadzos 2>&1

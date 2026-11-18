@@ -4,8 +4,8 @@ This document records the planned expansion of the minimal Sway desktop into a
 daily-driver system. It is a planning document only; no implementation changes
 are implied by its presence. The verified, dependency-ordered output of
 Prompt 1 lives in [`daily-driver-plan.md`](daily-driver-plan.md), which carries
-the live status. Prompts 2 and 3 are green in CI; Prompt 4 is implemented
-locally and awaits the next CI run.
+the live status. Prompts 2 and 3 are green in CI; Prompt 4 and the
+portal/session foundation are implemented locally and await the next CI run.
 
 ## Principles
 
@@ -75,7 +75,7 @@ Also consider, mostly as optional or base-light additions:
 - `sane-airscan`
 - `simple-scan`
 - `firewalld` or `ufw`
-- `xdg-desktop-portal-wlr`
+- `xdg-desktop-portal`, `xdg-desktop-portal-gtk`, `xdg-desktop-portal-wlr`
 - `fonts-noto-core`
 - `fonts-noto-color-emoji`
 - `fcitx5` plus an input-method pack
@@ -101,7 +101,7 @@ Everything else becomes a pack:
 | Power profiles | base or `power` pack |
 | Archives / compression extras | base (already minimal) |
 | Fonts (Noto, emoji) | `fonts` pack |
-| Portal (xdg-desktop-portal-wlr) | base if needed for screen sharing |
+| Portal (xdg-desktop-portal + GTK/WLR backends) | base (implemented) |
 | Input methods (fcitx5) | `input` pack |
 | Dock | optional pack with Waybar fallback |
 | GUI package manager | optional pack |

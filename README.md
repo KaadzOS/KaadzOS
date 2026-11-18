@@ -84,6 +84,12 @@ Every optional command is probed before use: a missing tool disables one menu it
 
 The generated Waybar now also carries `backlight`, `power-profiles-daemon` and `idle_inhibitor` modules. Battery left-click opens the power section, and the network click falls back to the control centre when `nm-connection-editor` is absent. `upower`, `power-profiles-daemon`, `wlsunset` and `zenity` are base packages; the control centre itself adds no daemon.
 
+## Portals and session integration
+
+`xdg-desktop-portal`, `xdg-desktop-portal-gtk` and `xdg-desktop-portal-wlr` are base packages. `/etc/xdg/xdg-desktop-portal/portals.conf` sends the general desktop interfaces to the GTK backend and `ScreenCast`/`Screenshot` to the wlroots backend, which is the Wayland-native path for Sway. This is what makes file pickers and screen sharing work instead of failing with "org.freedesktop.portal.Desktop was not provided by any .service files".
+
+The live and installed sessions run Sway under a private `dbus-run-session` bus. The generated Sway config therefore calls `dbus-update-activation-environment` for both that bus and the systemd user manager, passing `WAYLAND_DISPLAY`, `XDG_CURRENT_DESKTOP=sway`, `XDG_SESSION_TYPE`, `XDG_SESSION_DESKTOP` and `XDG_RUNTIME_DIR`. The boot and install tests activate `org.freedesktop.portal.Desktop` with a bounded `gdbus` Ping and require `KAADZOS_PORTAL_OK`.
+
 ## The installer
 
 Phase 5 adds a Calamares installer. It does not debootstrap: it unpacks the live squashfs onto the target, then repairs the copy in place. The ordering is the hard part — `live-config` diverts `update-initramfs`, so the live-only packages have to be purged *before* the initramfs is generated, and live-only NOPASSWD sudo has to be removed before the installed system boots.
@@ -117,7 +123,7 @@ Two changes came out of that: the lock binding moved to `$mod+Shift+x`, and the 
 
 ## Base image contents
 
-The base image is deliberately small. It contains the kernel and firmware, NetworkManager, BlueZ and Blueman, the control centre (upower, power-profiles-daemon, wlsunset and zenity), Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `fdisk`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `7zip`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, docks, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`.
+The base image is deliberately small. It contains the kernel and firmware, NetworkManager, BlueZ and Blueman, the control centre (upower, power-profiles-daemon, wlsunset and zenity), the desktop portals (xdg-desktop-portal with GTK and WLR backends), Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `fdisk`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `7zip`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, docks, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`.
 
 ## Build it yourself
 

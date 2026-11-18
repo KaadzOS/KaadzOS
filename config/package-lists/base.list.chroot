@@ -5,6 +5,14 @@ wpasupplicant
 wireless-regdb
 polkitd
 
+# Portals: file pickers, notifications and screen sharing. The GTK backend
+# covers general desktop integration; the wlroots backend implements
+# ScreenCast/Screenshot on Sway. /etc/xdg/xdg-desktop-portal/portals.conf
+# selects the two backends per interface.
+xdg-desktop-portal
+xdg-desktop-portal-gtk
+xdg-desktop-portal-wlr
+
 # Bluetooth: BlueZ plus Blueman. Blueman's notification-daemon dependency is
 # already provided by mako-notifier, so no second notification daemon lands in
 # the image. The GSettings backend and gsettings CLI are explicit because apt

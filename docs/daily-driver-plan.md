@@ -5,7 +5,8 @@ Status: living implementation plan for
 verified state below; the prompt sections are updated as each feature lands.
 Prompts 2 (core baseline) and 3 (Bluetooth and Waybar) are implemented and
 green in CI runs 44217239776 and 44250067376. Prompt 4 (Waybar control centre)
-is implemented locally and awaits its first CI run.
+landed locally as `8cb8263`, and the portal/session foundation is implemented
+locally; both await the next CI run.
 
 Prepared: 2026-11-18, against `main` at `026091c`. Prompt 2 landed as `7a4e6e2`
 and Prompt 3 as `a316fd1` plus the diagnostic fix `1b26d0d`.
@@ -46,12 +47,16 @@ PATH; CI run `44213408283` is the gate for that fix.
 
 Gaps this plan closes:
 
-- No `xdg-desktop-portal*`: the failed install logs show
-  `org.freedesktop.portal.Desktop was not provided by any .service files`.
-  File pickers, screen sharing and some GTK integrations degrade.
-- No Bluetooth stack, no control centre, no settings application, no search
-  helper, no GUI package management, no dock, no context-menu helpers.
-- Waybar has workspaces/clock/network/audio/battery/tray only.
+- `xdg-desktop-portal*` was missing: the failed install logs showed
+  `org.freedesktop.portal.Desktop was not provided by any .service files`, so
+  file pickers, screen sharing and some GTK integrations degraded. Closed by
+  the portal/session foundation below.
+- Bluetooth and the control centre were missing; both are now implemented.
+  A settings application, search helper, GUI package management, dock and
+  context-menu helpers remain missing.
+- Waybar originally had workspaces/clock/network/audio/battery/tray only;
+  Bluetooth, backlight, power profile, idle inhibitor and the control centre
+  have since landed.
 - Printing, scanning, firmware/disk tools, VPN/firewall, Noto fonts, input
   methods and OpenCode are not represented as packs.
 
@@ -234,10 +239,10 @@ Depends on: 2.
 
 ### Prompt 4 — Waybar control centre
 
-Status: implemented locally on 2026-11-18; the next push must run the normal
-matrix before this is recorded as green. The helper is `dash`-clean and the
-action dispatch is covered by fake-command tests that run in both the `build`
-and `pack-test` containers (`ci/test-control.sh`).
+Status: landed locally as `8cb8263`; the next push must run the normal matrix
+before this is recorded as green. The helper is `dash`-clean and the action
+dispatch is covered by fake-command tests that run in both the `build` and
+`pack-test` containers (`ci/test-control.sh`).
 
 Depends on: 3 (Bluetooth toggle), 2 (`zenity`).
 
@@ -261,6 +266,36 @@ Depends on: 3 (Bluetooth toggle), 2 (`zenity`).
 - Risk: `wpctl`, `nmcli`, `bluetoothctl`, `brightnessctl` and
   `powerprofilesctl` must all be present or the menu must hide the item; test
   each absence path.
+
+### Portal and session integration (foundation)
+
+Status: implemented locally on 2026-11-18; CI validation is pending the next
+push. This is the shared dependency for file pickers, screen sharing and the
+GTK integrations used by Settings and the file manager.
+
+Depends on: 2 (`dbus`, `libglib2.0-bin`).
+
+- Base: `xdg-desktop-portal`, `xdg-desktop-portal-gtk`, `xdg-desktop-portal-wlr`.
+  The GTK backend serves the general desktop interfaces; the wlroots backend
+  serves `ScreenCast` and `Screenshot` on Sway.
+- Backend selection: `/etc/xdg/xdg-desktop-portal/portals.conf` sets
+  `default=gtk`, `org.freedesktop.impl.portal.ScreenCast=wlr` and
+  `org.freedesktop.impl.portal.Screenshot=wlr`.
+- Session environment: the generated Sway config calls
+  `dbus-update-activation-environment` for the private `dbus-run-session` bus
+  and, with `--systemd`, for the systemd user manager. Both calls carry
+  `WAYLAND_DISPLAY`, `XDG_CURRENT_DESKTOP=sway`, `XDG_SESSION_TYPE`,
+  `XDG_SESSION_DESKTOP` and `XDG_RUNTIME_DIR`; the systemd call is bounded so a
+  missing user manager cannot hold the session open.
+- Tests: `ci/test-desktop.sh` checks the packages, the Sway wiring and the
+  backend config. `kaadzos-session-ready` activates
+  `org.freedesktop.portal.Desktop` with a bounded `gdbus` Ping and emits
+  `KAADZOS_PORTAL_OK`; the live and installed boot gates require it and fail on
+  `KAADZOS_PORTAL_FAILED`.
+- Risk: the portal is D-Bus activated, so updating only the systemd user
+  environment is not enough under `dbus-run-session`; the bus update is the
+  functional one. The wlroots ScreenCast chooser still needs a manual
+  multi-output/region test because the CI VM cannot exercise it.
 
 ### Prompt 5 — Themed settings application
 
@@ -464,7 +499,8 @@ Depends on: 13 green.
 | Change | Placement | Approx. installed |
 |---|---|---|
 | `fdisk`, `7zip` | base | 7.5 MB |
-| portals + gvfs/udisks/Thunar integration | base | 8.5 MB |
+| portals (xdg-desktop-portal + GTK/WLR) | base | 3 MB |
+| gvfs/udisks/Thunar integration | base (follow-up) | 5.5 MB |
 | Bluetooth (bluez + blueman) | base | 9 MB |
 | upower, power-profiles-daemon, wlsunset, wlr-randr, zenity, wl-clipboard | base | 1 MB |
 | Thunar archive plugin + xarchiver | base | 2 MB |
@@ -489,10 +525,10 @@ the ISO near 1.45 GB before packs.
   session reason; heavy GUIs go to packs.
 - **Service races and hardware absence**: Bluetooth, CUPS, Avahi and fwupd
   must be non-fatal without hardware and must never delay the session.
-- **Portal/PipeWire environment**: `dbus-update-activation-environment
-  --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway` is missing from the
-  Sway config today; add it with the portal step and assert the portal bus
-  name.
+- **Portal/PipeWire environment**: the generated Sway config now updates both
+  the private `dbus-run-session` bus and the systemd user manager with
+  `WAYLAND_DISPLAY` and the desktop/session names, and the boot gates activate
+  the portal bus. Keep this wiring in sync if the session wrapper changes.
 - **Quoting and untrusted filenames**: all file actions go through one
   validating helper; no `eval`, no string-built shell commands.
 - **Privilege boundaries**: `pkexec` strips the Wayland environment; pass the
