@@ -4,8 +4,9 @@ This document records the planned expansion of the minimal Sway desktop into a
 daily-driver system. It is a planning document only; no implementation changes
 are implied by its presence. The verified, dependency-ordered output of
 Prompt 1 lives in [`daily-driver-plan.md`](daily-driver-plan.md), which carries
-the live status. Prompts 2 and 3 are green in CI; Prompt 4 and the
-portal/session foundation are implemented locally and await the next CI run.
+the live status. Prompts 2 and 3 are green in CI; Prompt 4, the
+portal/session foundation and Prompt 5 (settings) are implemented locally and
+await the next CI run.
 
 ## Principles
 

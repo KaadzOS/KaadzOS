@@ -84,6 +84,14 @@ Every optional command is probed before use: a missing tool disables one menu it
 
 The generated Waybar now also carries `backlight`, `power-profiles-daemon` and `idle_inhibitor` modules. Battery left-click opens the power section, and the network click falls back to the control centre when `nm-connection-editor` is absent. `upower`, `power-profiles-daemon`, `wlsunset` and `zenity` are base packages; the control centre itself adds no daemon.
 
+## Settings
+
+`kaadzos-settings` is the themed settings front end behind `$mod+comma` and the **Settings** desktop entry. It is one POSIX-sh + zenity helper, so it adds no daemon and no toolkit of its own. The sections are Appearance (wallpaper, night light, dark/light style, interface font and icon theme), Input (keyboard layout and touchpad tap), Display, Network, Bluetooth, Sound, Power, default browser/file manager and About.
+
+Wallpaper, keyboard and touchpad changes are applied immediately with `swaymsg` and persisted as overrides in `~/.config/sway/config.d/`; the generated Sway config ends with `include ~/.config/sway/config.d/*.conf`, so the theme generator can keep owning the base file. Preferences live in `~/.config/kaadzos/settings.conf`. Wallpaper paths go through `kaadzos-file-action`, which validates the path and writes the override atomically instead of interpolating a filename into a shell command.
+
+Optional tools are probed per row: `nwg-displays` or `wlr-randr` for displays, `nm-connection-editor` or `nmcli` for network, Blueman for Bluetooth, `pavucontrol` for sound, and `gsettings`/`xdg-settings`/`xdg-mime` for the desktop defaults. A missing tool disables that section with a notification rather than breaking the application. The boot and install tests require `KAADZOS_SETTINGS_OK`.
+
 ## Portals and session integration
 
 `xdg-desktop-portal`, `xdg-desktop-portal-gtk` and `xdg-desktop-portal-wlr` are base packages. `/etc/xdg/xdg-desktop-portal/portals.conf` sends the general desktop interfaces to the GTK backend and `ScreenCast`/`Screenshot` to the wlroots backend, which is the Wayland-native path for Sway. This is what makes file pickers and screen sharing work instead of failing with "org.freedesktop.portal.Desktop was not provided by any .service files".
@@ -123,7 +131,7 @@ Two changes came out of that: the lock binding moved to `$mod+Shift+x`, and the 
 
 ## Base image contents
 
-The base image is deliberately small. It contains the kernel and firmware, NetworkManager, BlueZ and Blueman, the control centre (upower, power-profiles-daemon, wlsunset and zenity), the desktop portals (xdg-desktop-portal with GTK and WLR backends), Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `fdisk`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `7zip`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, docks, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`.
+The base image is deliberately small. It contains the kernel and firmware, NetworkManager, BlueZ and Blueman, the control centre (upower, power-profiles-daemon, wlsunset and zenity), the settings helper, the desktop portals (xdg-desktop-portal with GTK and WLR backends), Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `fdisk`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `7zip`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, docks, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`.
 
 ## Build it yourself
 

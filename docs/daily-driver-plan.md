@@ -5,8 +5,9 @@ Status: living implementation plan for
 verified state below; the prompt sections are updated as each feature lands.
 Prompts 2 (core baseline) and 3 (Bluetooth and Waybar) are implemented and
 green in CI runs 44217239776 and 44250067376. Prompt 4 (Waybar control centre)
-landed locally as `8cb8263`, and the portal/session foundation is implemented
-locally; both await the next CI run.
+landed locally as `8cb8263`; the portal/session foundation and Prompt 5
+(settings) are implemented locally in `e8ae260` and `e98f10a` respectively.
+They await the next CI run.
 
 Prepared: 2026-11-18, against `main` at `026091c`. Prompt 2 landed as `7a4e6e2`
 and Prompt 3 as `a316fd1` plus the diagnostic fix `1b26d0d`.
@@ -51,9 +52,9 @@ Gaps this plan closes:
   `org.freedesktop.portal.Desktop was not provided by any .service files`, so
   file pickers, screen sharing and some GTK integrations degraded. Closed by
   the portal/session foundation below.
-- Bluetooth and the control centre were missing; both are now implemented.
-  A settings application, search helper, GUI package management, dock and
-  context-menu helpers remain missing.
+- Bluetooth, the control centre and the settings application were missing;
+  all three are now implemented. A search helper, GUI package management,
+  dock and context-menu helpers remain missing.
 - Waybar originally had workspaces/clock/network/audio/battery/tray only;
   Bluetooth, backlight, power profile, idle inhibitor and the control centre
   have since landed.
@@ -269,9 +270,9 @@ Depends on: 3 (Bluetooth toggle), 2 (`zenity`).
 
 ### Portal and session integration (foundation)
 
-Status: implemented locally on 2026-11-18; CI validation is pending the next
-push. This is the shared dependency for file pickers, screen sharing and the
-GTK integrations used by Settings and the file manager.
+Status: implemented locally on 2026-11-18 (`e8ae260`); CI validation is
+pending the next push. This is the shared dependency for file pickers, screen
+sharing and the GTK integrations used by Settings and the file manager.
 
 Depends on: 2 (`dbus`, `libglib2.0-bin`).
 
@@ -299,6 +300,13 @@ Depends on: 2 (`dbus`, `libglib2.0-bin`).
 
 ### Prompt 5 — Themed settings application
 
+Status: implemented locally on 2026-11-19 in `5a64c6c` (config.d include),
+`095fb93` (`kaadzos-file-action`), `e98f10a` (`kaadzos-settings`) and
+`6ec3073` (session gate); the next push must run the normal matrix before this
+is recorded as green. The helper is `dash`-clean and the actions are covered by
+fake-command tests in `ci/test-file-actions.sh` and `ci/test-settings.sh`,
+which run in both container jobs.
+
 Depends on: 3, 4 (shared actions), 10 for display/network editors (optional
 items degrade gracefully).
 
@@ -312,12 +320,19 @@ items degrade gracefully).
   (`xdg-settings`), About.
 - Persist session config in `~/.config/kaadzos/settings.conf` and user Sway
   overrides in `~/.config/sway/config.d/`; never edit generated theme files.
-  The generated Sway config needs `include ~/.config/sway/config.d/*` for this.
-- Files: `kaadzos-settings` (new), `kaadzos-file-action` (new, shared with 11),
-  `theme/generate.sh` + generated Sway config, skel `config.d/README`,
-  desktop entry, `$mod+comma` binding.
-- Tests: `dash -n`; launcher; guest asserts the desktop file and the include
-  line; missing optional commands leave the section disabled, not broken.
+  The generated Sway config needs `include ~/.config/sway/config.d/*.conf`
+  for this; the README and the default `.conf` file keep the glob inert and
+  always matching.
+- Files: `kaadzos-settings` (new), `kaadzos-file-action` (new, shared with 11;
+  this iteration implements the safe `wallpaper` action and rejects control
+  characters and leading dashes), `theme/generate.sh` + generated Sway config,
+  skel `config.d/{README,00-default.conf}`, desktop entry, `$mod+comma`
+  binding.
+- Tests: `dash -n`; launcher; `ci/test-file-actions.sh` covers spaces, quotes,
+  Unicode, symlinks, newlines and leading dashes; `ci/test-settings.sh`
+  exercises every section with fake commands; `kaadzos-session-ready` emits
+  `KAADZOS_SETTINGS_OK` and the live/installed gates require it. Missing
+  optional commands leave one section disabled, not broken.
 - Risk: `gsettings` needs `libglib2.0-bin` and a GSettings backend; `pkexec`
   strips the Wayland environment, so privileged actions must pass
   `WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR` and `XDG_SESSION_TYPE` explicitly.
