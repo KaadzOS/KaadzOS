@@ -5,9 +5,9 @@ Status: living implementation plan for
 verified state below; the prompt sections are updated as each feature lands.
 Prompts 2 (core baseline) and 3 (Bluetooth and Waybar) are implemented and
 green in CI runs 44217239776 and 44250067376. Prompt 4 (Waybar control centre)
-landed locally as `8cb8263`; the portal/session foundation and Prompt 5
-(settings) are implemented locally in `e8ae260` and `e98f10a` respectively.
-They await the next CI run.
+landed locally as `8cb8263`. The portal/session foundation, Prompt 5 (settings)
+and Prompt 6 (greeter) are implemented locally in `e8ae260`, `e98f10a` and
+`db477bb`; they await the next CI run.
 
 Prepared: 2026-11-18, against `main` at `026091c`. Prompt 2 landed as `7a4e6e2`
 and Prompt 3 as `a316fd1` plus the diagnostic fix `1b26d0d`.
@@ -339,20 +339,28 @@ items degrade gracefully).
 
 ### Prompt 6 — Display-manager theming
 
+Status: implemented locally on 2026-11-19 as `db477bb`; the next push must run
+the full matrix before this is recorded as green. The static checks run in both
+container jobs, and `install-test` now requires `KAADZOS_GREETER_OK`.
+
 Depends on: 5 (settings entry points).
 
 - Keep greetd + tuigreet. `nwg-hello` and `gtkgreet` are layer-shell greeters
   that need a compositor started by greetd; adopting either is a compositor
   integration project, not a theme swap. Document that decision.
 - Strengthen the installed tuigreet: keep the white/grey `--theme` written by
-  `kaadzos-install-finalize`, add the Inter Tight terminal font where tuigreet
-  supports it, and verify the VT/plymouth hand-off still has no race.
+  `kaadzos-install-finalize`, pin VT 7, add the `KaadzOS` greeting and the
+  Waybar clock format, and verify the VT/plymouth hand-off still has no race.
+  tuigreet renders in the Linux VT font, so Inter Tight is not applicable; a
+  proportional font would need a compositor greeter.
 - Files: `config/includes.chroot/etc/calamares/modules/displaymanager.conf`,
   `config/includes.chroot/usr/local/bin/kaadzos-install-finalize`,
   `config/includes.chroot/usr/share/plymouth/themes/kaadzos` (generated),
   `ci/test-install.sh`.
-- Tests: installed BIOS/UEFI boot reaches greetd, logs in, reaches
-  `KAADZOS_SWAY_READY`; greeter theme arguments present; no plymouth race.
+- Tests: `ci/test-greeter.sh` checks the theme tokens, greeting, time format,
+  VT 7, the `_greetd` identity and the Plymouth ordering. Installed BIOS/UEFI
+  boot reaches greetd, logs in, reaches `KAADZOS_SWAY_READY`, and
+  `kaadzos-session-ready` emits `KAADZOS_GREETER_OK` for the install gate.
 - Risk: changing the greeter command can lock the installed image out of a
   session; keep the CI driver's existing `tuigreet` login path and add a
   fallback assertion.

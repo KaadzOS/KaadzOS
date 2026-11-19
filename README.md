@@ -106,6 +106,8 @@ On the live desktop, launch it from the **Install** button in Waybar, with `$mod
 
 `install-test` runs the whole thing unattended in QEMU: it creates a sparse 12 GB disk, drives Calamares with synthetic Sway clicks and `wtype`, powers off, then boots the installed disk *without* the ISO and asserts the markers that matter — `KAADZOS_MODE installed`, `KAADZOS_FIRSTBOOT_DONE`, `KAADZOS_LIVE_SUDOERS_ABSENT`, `KAADZOS_CALAMARES_ABSENT` — plus the same `swaynag` gate as the live boot.
 
+The installed login is greetd plus tuigreet. `kaadzos-install-finalize` pins VT 7, keeps the AMOLED white/grey theme, adds the `KaadzOS` greeting and uses the same `%a %d %b  %H:%M` clock format as Waybar. tuigreet draws in the Linux VT font, so Inter Tight cannot be used there; a proportional font would need a compositor greeter, and the image deliberately keeps the smaller TUI path. The install test requires `KAADZOS_GREETER_OK`.
+
 The installer is verified end to end in CI on both BIOS and UEFI.
 
 ## The optional archive
