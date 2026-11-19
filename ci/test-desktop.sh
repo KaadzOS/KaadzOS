@@ -13,6 +13,7 @@ control="$root/config/includes.chroot/usr/local/bin/kaadzos-control"
 control_desktop="$root/config/includes.chroot/usr/share/applications/kaadzos-control.desktop"
 settings="$root/config/includes.chroot/usr/local/bin/kaadzos-settings"
 settings_desktop="$root/config/includes.chroot/usr/share/applications/kaadzos-settings.desktop"
+search="$root/config/includes.chroot/usr/local/bin/kaadzos-search"
 portal_conf="$root/config/includes.chroot/etc/xdg/xdg-desktop-portal/portals.conf"
 session_ready="$root/config/includes.chroot/usr/local/bin/kaadzos-session-ready"
 hook="$root/config/hooks/live/0800-bluetooth.hook.chroot"
@@ -152,6 +153,34 @@ grep -q 'KAADZOS_SETTINGS_MISSING' "$session_ready" \
   || fail "kaadzos-session-ready must emit KAADZOS_SETTINGS_MISSING"
 grep -Fq 'include ~/.config/sway/config.d/*.conf' "$session_ready" \
   || fail "kaadzos-session-ready must assert the config.d include"
+
+# Search: Super+D is the smart search over apps/files/settings/packs and
+# Super+Shift+D keeps the plain fuzzel launcher. The helper must not eval
+# filenames and must bound its home scan.
+[ -x "$search" ] || fail "$search is not executable"
+dash -n "$search" || fail "kaadzos-search does not parse as POSIX sh"
+if grep -Eq '^[[:space:]]*eval[[:space:]]' "$search"; then
+  fail "kaadzos-search must not use eval"
+fi
+count=$(grep -c '^bindsym \$mod+d exec kaadzos-search$' "$sway" || true)
+[ "$count" -eq 1 ] || fail "Sway config needs exactly one \$mod+d search binding"
+count=$(grep -c '^bindsym \$mod+Shift+d exec \$launcher$' "$sway" || true)
+[ "$count" -eq 1 ] || fail "Sway config needs exactly one \$mod+Shift+d launcher binding"
+if grep -q '^bindsym \$mod+d exec \$launcher$' "$sway"; then
+  fail "Sway config still binds \$mod+d to the plain launcher"
+fi
+grep -Fq 'bindsym \$mod+d exec kaadzos-search' "$root/theme/generate.sh" \
+  || fail "theme/generate.sh does not generate the search binding"
+grep -Fq 'bindsym \$mod+Shift+d exec \$launcher' "$root/theme/generate.sh" \
+  || fail "theme/generate.sh does not generate the plain launcher binding"
+for needle in 'fuzzel --dmenu' 'gio launch' 'xdg-open' 'kaadzos list' \
+              'kaadzos-settings' 'kaadzos add' 'timeout 2 find'; do
+  grep -Fq -- "$needle" "$search" || fail "kaadzos-search is missing: $needle"
+done
+for excluded in .ssh .gnupg node_modules .git keyrings google-chrome; do
+  grep -Fq -- "$excluded" "$search" \
+    || fail "kaadzos-search must exclude: $excluded"
+done
 
 # Portal/session integration: the portal packages are in base, the Sway config
 # exports the Wayland environment to both the private dbus-run-session bus and

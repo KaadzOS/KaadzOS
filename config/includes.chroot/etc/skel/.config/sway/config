@@ -62,7 +62,8 @@ exec sh -c 'if [ -r /sys/class/dmi/id/product_name ] && [ "$(cat /sys/class/dmi/
 
 # Launchers / system
 bindsym $mod+Return exec $term
-bindsym $mod+d exec $launcher
+bindsym $mod+d exec kaadzos-search
+bindsym $mod+Shift+d exec $launcher
 bindsym $mod+a exec kaadzos addons
 bindsym $mod+i exec sh -c 'command -v kaadzos-install >/dev/null 2>&1 && kaadzos-install'
 # Bluetooth: the Waybar module opens Blueman on click and toggles adapter power
