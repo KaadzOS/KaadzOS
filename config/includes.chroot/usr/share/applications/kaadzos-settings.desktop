@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Settings
+Comment=Appearance, input, display, network, Bluetooth, sound, power and defaults
+Exec=kaadzos-settings
+Icon=preferences-system
+Terminal=false
+Categories=Settings;System;
+Keywords=settings;appearance;wallpaper;keyboard;touchpad;display;network;bluetooth;sound;power;default apps;

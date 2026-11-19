@@ -11,6 +11,8 @@ sway_overrides="$root/config/includes.chroot/etc/skel/.config/sway/config.d"
 helper="$root/config/includes.chroot/usr/local/bin/kaadzos-bluetooth"
 control="$root/config/includes.chroot/usr/local/bin/kaadzos-control"
 control_desktop="$root/config/includes.chroot/usr/share/applications/kaadzos-control.desktop"
+settings="$root/config/includes.chroot/usr/local/bin/kaadzos-settings"
+settings_desktop="$root/config/includes.chroot/usr/share/applications/kaadzos-settings.desktop"
 portal_conf="$root/config/includes.chroot/etc/xdg/xdg-desktop-portal/portals.conf"
 session_ready="$root/config/includes.chroot/usr/local/bin/kaadzos-session-ready"
 hook="$root/config/hooks/live/0800-bluetooth.hook.chroot"
@@ -128,6 +130,22 @@ done
 for package in upower power-profiles-daemon wlsunset zenity; do
   grep -qx -- "$package" "$packages" || fail "base.list.chroot is missing: $package"
 done
+
+# Settings: one helper, one launcher and one free Sway binding. It must write
+# user overrides through config.d rather than editing the generated config.
+[ -x "$settings" ] || fail "$settings is not executable"
+dash -n "$settings" || fail "kaadzos-settings does not parse as POSIX sh"
+[ -f "$settings_desktop" ] || fail "$settings_desktop is missing"
+grep -qx '^Exec=kaadzos-settings$' "$settings_desktop" \
+  || fail "settings desktop entry must run kaadzos-settings"
+count=$(grep -c '^bindsym \$mod+comma exec kaadzos-settings$' "$sway" || true)
+[ "$count" -eq 1 ] || fail "Sway config needs exactly one \$mod+comma settings binding"
+grep -Fq 'bindsym \$mod+comma exec kaadzos-settings' "$root/theme/generate.sh" \
+  || fail "theme/generate.sh does not generate the settings binding"
+grep -q 'sway_dir/20-keyboard.conf' "$settings" \
+  || fail "kaadzos-settings must persist the keyboard override in config.d"
+grep -q 'kaadzos-file-action' "$settings" \
+  || fail "kaadzos-settings must delegate wallpaper handling"
 
 # Portal/session integration: the portal packages are in base, the Sway config
 # exports the Wayland environment to both the private dbus-run-session bus and

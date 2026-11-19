@@ -60,6 +60,9 @@ jobs:
       - name: Verify file actions
         run: sh ci/test-file-actions.sh
 
+      - name: Verify settings actions
+        run: sh ci/test-settings.sh
+
       - name: Set cache key
         id: cache-key
         run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
@@ -194,6 +197,9 @@ jobs:
 
       - name: Verify file actions
         run: sh ci/test-file-actions.sh
+
+      - name: Verify settings actions
+        run: sh ci/test-settings.sh
 
       - name: Run pack resolution tests
         run: bash ci/test-packs.sh

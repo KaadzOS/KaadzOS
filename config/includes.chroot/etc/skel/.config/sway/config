@@ -70,6 +70,8 @@ bindsym $mod+i exec sh -c 'command -v kaadzos-install >/dev/null 2>&1 && kaadzos
 bindsym $mod+x exec kaadzos-bluetooth manager
 # Control centre: audio, devices, display, power and session actions.
 bindsym $mod+Shift+s exec kaadzos-control
+# Settings: appearance, input, display, network, Bluetooth and the session.
+bindsym $mod+comma exec kaadzos-settings
 bindsym $mod+q kill
 bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
 bindsym $mod+Shift+x exec $lock
