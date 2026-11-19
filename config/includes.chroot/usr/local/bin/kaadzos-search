@@ -1,0 +1,204 @@
+#!/bin/sh
+# KaadzOS search. One fuzzel prompt over applications, recent files, a bounded
+# home scan, settings pages, packs and a small static command map. Candidates
+# are TAB-separated (kind, label, value); filenames are never evaluated, only
+# passed as argv to gio/xdg-open or a fixed command dispatch.
+set -eu
+
+have() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+notify() {
+  if have notify-send; then
+    notify-send -a KaadzOS "$@" >/dev/null 2>&1 || true
+  fi
+}
+
+error() {
+  notify -u critical "$1" "$2"
+  printf 'kaadzos-search: %s\n' "$2" >&2
+}
+
+desktop_candidates() {
+  old_ifs=$IFS
+  IFS=:
+  for base in "${XDG_DATA_HOME:-$HOME/.local/share}" \
+              ${XDG_DATA_DIRS:-/usr/local/share:/usr/share}; do
+    dir=$base/applications
+    [ -d "$dir" ] || continue
+    find "$dir" -maxdepth 1 -type f -name '*.desktop' 2>/dev/null \
+      | while IFS= read -r file; do
+          case $file in *[[:cntrl:]]*) continue ;; esac
+          grep -qx 'NoDisplay=true' "$file" 2>/dev/null && continue
+          grep -qx 'Hidden=true' "$file" 2>/dev/null && continue
+          name=$(sed -n 's/^Name=//p' "$file" 2>/dev/null | head -n 1)
+          [ -n "$name" ] || continue
+          case $name in *[[:cntrl:]]*) continue ;; esac
+          printf 'App\t%s\t%s\n' "$name" "$file"
+        done
+  done
+  IFS=$old_ifs
+}
+
+recent_candidates() {
+  recent=${XDG_DATA_HOME:-$HOME/.local/share}/recently-used.xbel
+  [ -r "$recent" ] || return 0
+  if have python3; then
+    python3 - "$recent" <<'PY'
+import sys
+import urllib.parse
+import xml.etree.ElementTree as ET
+
+try:
+    root = ET.parse(sys.argv[1]).getroot()
+except Exception:
+    sys.exit(0)
+
+count = 0
+for bookmark in root.iter('bookmark'):
+    href = bookmark.get('href', '')
+    if not href.startswith('file://'):
+        continue
+    path = urllib.parse.unquote(href[7:])
+    if not path.startswith('/') or any(ord(ch) < 32 for ch in path):
+        continue
+    name = path.rsplit('/', 1)[-1] or path
+    print('File\t%s\t%s' % (name, path))
+    count += 1
+    if count >= 100:
+        break
+PY
+    return 0
+  fi
+
+  # Without python3, decode the common percent escapes only. Paths containing
+  # control characters are still dropped so the list stays line-safe.
+  sed -n 's/.*<bookmark href="file:\/\/\([^"]*\)".*/\1/p' "$recent" \
+    | while IFS= read -r raw; do
+        path=$(printf '%s' "$raw" | sed 's/%25/%/g; s/%20/ /g; s/%23/#/g')
+        case $path in *[[:cntrl:]]*) continue ;; esac
+        printf 'File\t%s\t%s\n' "${path##*/}" "$path"
+      done
+}
+
+file_candidates() {
+  [ -d "$HOME" ] || return 0
+  timeout 2 find "$HOME" -maxdepth 6 \
+    \( -type d \( -name .ssh -o -name .gnupg -o -name .cache \
+       -o -name node_modules -o -name .git -o -name Trash \
+       -o -name .mozilla -o -name .thunderbird -o -name keyrings \
+       -o -name google-chrome -o -name chromium -o -name BraveSoftware \
+       \) -prune \) -o \
+    -type f -printf '%T@ %p\n' 2>/dev/null \
+    | sort -nr | head -n 200 | cut -d' ' -f2- \
+    | while IFS= read -r path; do
+        case $path in "$HOME"/*) ;; *) continue ;; esac
+        [ -f "$path" ] || continue
+        case $path in *[[:cntrl:]]*) continue ;; esac
+        printf 'File\t%s\t%s\n' "${path##*/}" "$path"
+      done
+}
+
+settings_candidates() {
+  printf 'Setting\tAppearance\tappearance\n'
+  printf 'Setting\tInput\tinput\n'
+  printf 'Setting\tDisplay\tdisplay\n'
+  printf 'Setting\tNetwork\tnetwork\n'
+  printf 'Setting\tBluetooth\tbluetooth\n'
+  printf 'Setting\tSound\tsound\n'
+  printf 'Setting\tPower\tpower\n'
+  printf 'Setting\tDefault browser\tbrowser\n'
+  printf 'Setting\tDefault file manager\tfile-manager\n'
+  printf 'Setting\tAbout\tabout\n'
+}
+
+pack_candidates() {
+  have kaadzos || return 0
+  kaadzos list 2>/dev/null | sed -n '2,$p' | while IFS= read -r line; do
+    name=${line%% *}
+    [ -n "$name" ] || continue
+    printf 'Pack\t%s\t%s\n' "$name" "$name"
+  done
+}
+
+command_candidates() {
+  printf 'Command\tSettings\tsettings\n'
+  printf 'Command\tControl Centre\tcontrol\n'
+  printf 'Command\tLock screen\tlock\n'
+  printf 'Command\tReload Sway\treload\n'
+  if have kaadzos-install; then
+    printf 'Command\tInstall KaadzOS\tinstall\n'
+  fi
+}
+
+dispatch() {
+  kind=$(printf '%s\n' "$1" | cut -f1)
+  value=$(printf '%s\n' "$1" | cut -f3-)
+  [ -n "$kind" ] && [ -n "$value" ] || return 0
+  case $value in
+    -*) error "Search" "Refusing a value that starts with a dash."; return 0 ;;
+  esac
+
+  case $kind in
+    App)
+      if have gio; then
+        gio launch "$value" >/dev/null 2>&1 || error "Search" "Could not launch $value."
+      else
+        error "Search" "gio is not installed."
+      fi
+      ;;
+    File)
+      if have xdg-open; then
+        xdg-open "$value" >/dev/null 2>&1 || error "Search" "Could not open $value."
+      else
+        error "Search" "xdg-open is not installed."
+      fi
+      ;;
+    Setting)
+      if have kaadzos-settings; then
+        exec kaadzos-settings "$value"
+      fi
+      error "Search" "kaadzos-settings is not installed."
+      ;;
+    Pack)
+      if have kaadzos && have foot; then
+        exec foot -T "Install $value" -e kaadzos add "$value"
+      fi
+      error "Search" "Install the pack from a terminal with: kaadzos add $value"
+      ;;
+    Command)
+      case $value in
+        settings) exec kaadzos-settings ;;
+        control) exec kaadzos-control ;;
+        lock) exec swaylock -f ;;
+        reload) swaymsg reload ;;
+        install) exec kaadzos-install ;;
+        *) error "Search" "Unknown command: $value" ;;
+      esac
+      ;;
+    *)
+      error "Search" "Unknown candidate: $kind"
+      exit 2
+      ;;
+  esac
+}
+
+if ! have fuzzel; then
+  error "Search" "fuzzel is not installed."
+  exit 1
+fi
+
+choice=$(
+  {
+    desktop_candidates
+    recent_candidates
+    file_candidates
+    settings_candidates
+    pack_candidates
+    command_candidates
+  } | fuzzel --dmenu --prompt "${KAADZOS_SEARCH_PROMPT:-Search> }" --lines 14 --width 72
+) || exit 0
+
+[ -n "$choice" ] || exit 0
+dispatch "$choice"
