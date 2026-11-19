@@ -7,8 +7,9 @@ Prompts 2 (core baseline) and 3 (Bluetooth and Waybar) are implemented and
 green in CI runs 44217239776 and 44250067376. Prompt 4 (Waybar control centre)
 landed locally as `8cb8263`. The portal/session foundation, Prompt 5 (settings)
 and Prompt 6 (greeter) are implemented locally in `e8ae260`, `e98f10a` and
-`db477bb`. Prompt 7 (search) is implemented locally in `cdc7019` and `64c8b7f`;
-these changes await the next CI run.
+`db477bb`. Prompt 7 (search) is implemented locally in `cdc7019` and `64c8b7f`.
+Prompt 9 (GUI package management) is implemented locally in `39d30a4` and
+`5c57729`; these changes await the next CI run.
 
 Prepared: 2026-11-18, against `main` at `026091c`. Prompt 2 landed as `7a4e6e2`
 and Prompt 3 as `a316fd1` plus the diagnostic fix `1b26d0d`.
@@ -426,6 +427,22 @@ Depends on: 2 (`kaadzos`), 5 (launcher patterns).
 - Risk: `synaptic` is X11; it runs under the already-present Xwayland. Test
   launch in the boot test (or assert its desktop entry and binary only if
   installing the pack in CI is affordable).
+
+Status: implemented locally on 2026-11-19 in `39d30a4` (the `kaadzos-packages`
+helper, `ci/test-packages.sh` and the `admin` pack) and `5c57729` (the desktop
+entry, `$mod+Shift+p`, Waybar module, Settings row, search entry, generated
+configs and CI calls); CI validation is pending the next push.
+
+The base front end uses zenity for its menu and `kaadzos` for the pack list;
+`admin` supplies `synaptic`, `pkexec` and `lxpolkit`, and the generated Sway
+config starts `lxpolkit` only when it is installed. Privileged actions validate
+the package name, pass it as one argv, confirm installs/removes (remove
+defaults to cancel), and distinguish a locked dpkg from an unreachable archive.
+The test stubs apt, pkexec, zenity, Synaptic and `kaadzos` to cover refresh,
+install/remove confirmation, lock, offline, invalid names, packs, archive and
+About without installing anything or showing a polkit prompt. The boot test
+does not launch Synaptic because the admin pack is optional; the pack test
+resolves its packages in trixie instead.
 
 ### Prompt 10 — Driver, firmware, disk, printer and network tools
 

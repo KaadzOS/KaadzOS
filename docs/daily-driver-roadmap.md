@@ -5,8 +5,9 @@ daily-driver system. It is a planning document only; no implementation changes
 are implied by its presence. The verified, dependency-ordered output of
 Prompt 1 lives in [`daily-driver-plan.md`](daily-driver-plan.md), which carries
 the live status. Prompts 2 and 3 are green in CI; Prompt 4, the
-portal/session foundation, Prompt 5 (settings), Prompt 6 (greeter) and Prompt 7
-(search) are implemented locally and await the next CI run.
+portal/session foundation, Prompt 5 (settings), Prompt 6 (greeter), Prompt 7
+(search) and Prompt 9 (package management) are implemented locally and await
+the next CI run.
 
 ## Principles
 

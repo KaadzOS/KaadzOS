@@ -50,6 +50,7 @@ Packs are plain `key=value` files in `packs/`, staged into the image at build ti
 
 | Pack | What it installs | Size |
 |---|---|---|
+| `admin` | Synaptic, `pkexec` and the polkit authentication agent | ~30 MB |
 | `ai` | Ollama, whisper.cpp, Piper voice helpers | ~5 GB |
 | `android` | Waydroid (signed third-party repo) | ~3 GB |
 | `cloudflare` | `cloudflared` static binary | ~60 MB |
@@ -97,6 +98,12 @@ Optional tools are probed per row: `nwg-displays` or `wlr-randr` for displays, `
 `kaadzos-search` is one POSIX-sh helper behind `$mod+d`. It builds a single fuzzel list from desktop entries, recent files in `$XDG_DATA_HOME/recently-used.xbel`, the 200 newest files from a bounded `find` over `$HOME` (depth 6, 2 s timeout), settings pages, `kaadzos list` packs and a small fixed command map, then dispatches the exact selected value: `gio launch` for applications, `xdg-open` for files, `kaadzos-settings <section>` for settings, `kaadzos add <pack>` in a foot terminal for packs, and fixed commands for lock, control centre, reload and install. `$mod+Shift+d` keeps the plain fuzzel launcher.
 
 Scanned homes skip `.ssh`, `.gnupg`, keyrings, browser profiles, trash, caches, `node_modules` and `.git`; control-character and newline names stay out of the line-oriented list; leading-dash values are refused; and a filename is never evaluated as shell. Recent files are listed before the home scan, so they win when the scan is capped. `ci/test-search.sh` covers spaces, Unicode, recent-file decoding, missing recent state, excluded directories, dispatch for every candidate kind, cancellation and the no-`eval` rule in both container jobs.
+
+## Packages
+
+`kaadzos-packages` is the base zenity front page behind `$mod+Shift+p`, the Waybar box and the **Packages** desktop entry; it is also reachable from Settings. It opens Synaptic when the `admin` pack is installed, offers to install that pack, refreshes the apt lists, lists the optional packs and explains the signed archive at https://iso.kaadzos.pages.dev/apt. The `admin` pack supplies `synaptic`, `pkexec` and the lightweight `lxpolkit` authentication agent; the base image already has `zenity`, `polkitd` and `sudo`.
+
+Privileged front-page actions validate the package name and pass it as one argv to `apt-get` through `pkexec` (or passwordless `sudo` in the live session). A locked dpkg and an unreachable archive get distinct messages, and remove asks for confirmation with a cancel default. `ci/test-packages.sh` stubs apt, pkexec, zenity and Synaptic to cover refresh, install/remove confirmation, lock, offline, invalid names, pack listing and archive information without installing anything.
 
 ## Portals and session integration
 
