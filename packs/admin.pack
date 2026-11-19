@@ -1,0 +1,4 @@
+name=admin
+description=Synaptic package manager, pkexec and the polkit authentication agent
+size=30MB
+apt=synaptic pkexec lxpolkit

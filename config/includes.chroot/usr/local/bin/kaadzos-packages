@@ -1,0 +1,210 @@
+#!/bin/sh
+# KaadzOS package front page. Synaptic does the package work; this helper
+# opens it, lists the optional packs, explains the signed archive and offers a
+# few explicit apt actions. Privileged apt commands go through pkexec (with a
+# sudo fallback) and always receive the package name as one argv.
+set -eu
+
+have() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+notify() {
+  if have notify-send; then
+    notify-send -a KaadzOS "$@" >/dev/null 2>&1 || true
+  fi
+}
+
+error() {
+  notify -u critical "$1" "$2"
+  printf 'kaadzos-packages: %s\n' "$2" >&2
+  return 1
+}
+
+require_zenity() {
+  if ! have zenity; then
+    error "Packages" "zenity is not installed."
+    exit 1
+  fi
+}
+
+validate_package() {
+  case ${1:-} in
+    '') error "Packages" "A package name is required."; return 1 ;;
+    -*) error "Packages" "A package name cannot start with a dash."; return 1 ;;
+    *[!a-z0-9+.-]*) error "Packages" "Invalid package name: $1"; return 1 ;;
+  esac
+}
+
+apt_log=$(mktemp)
+trap 'rm -f "$apt_log"' 0 1 2 15
+
+run_apt() {
+  if have pkexec; then
+    pkexec env DEBIAN_FRONTEND=noninteractive apt-get "$@" >"$apt_log" 2>&1
+  elif have sudo && sudo -n true >/dev/null 2>&1; then
+    sudo -n -E env DEBIAN_FRONTEND=noninteractive apt-get "$@" >"$apt_log" 2>&1
+  else
+    error "Packages" "Install the admin pack for pkexec and the polkit agent."
+    return 1
+  fi
+}
+
+apt_failure() {
+  if grep -Eqi 'could not get lock|unable to acquire the dpkg frontend lock|is another process using it' "$apt_log"; then
+    error "Packages" "Another package manager is running. Close it and try again."
+  elif grep -Eqi 'temporary failure resolving|network is unreachable|could not resolve|failed to fetch' "$apt_log"; then
+    error "Packages" "The package archive is unreachable. Check the network and try again."
+  else
+    error "Packages" "apt-get failed. See $apt_log."
+  fi
+}
+
+confirm() {
+  ct_title=$1
+  ct_text=$2
+  require_zenity
+  zenity --question --title="$ct_title" --text="$ct_text" --default-cancel
+}
+
+refresh() {
+  if ! run_apt update; then
+    apt_failure
+    return 1
+  fi
+  notify "Packages" "Package lists refreshed."
+}
+
+install_package() {
+  pkg=${1:-}
+  validate_package "$pkg" || return 1
+  if ! confirm "Install $pkg" "Install $pkg and its dependencies?"; then
+    return 0
+  fi
+  if ! run_apt install -y "$pkg"; then
+    apt_failure
+    return 1
+  fi
+  notify "Packages" "Installed $pkg."
+}
+
+remove_package() {
+  pkg=${1:-}
+  validate_package "$pkg" || return 1
+  if ! confirm "Remove $pkg" "Remove $pkg? Packages that depend on it may be removed too."; then
+    return 0
+  fi
+  if ! run_apt remove -y "$pkg"; then
+    apt_failure
+    return 1
+  fi
+  notify "Packages" "Removed $pkg."
+}
+
+pack_list() {
+  if ! have kaadzos; then
+    error "Packages" "kaadzos is not installed."
+    return 1
+  fi
+  if have zenity; then
+    kaadzos list | zenity --text-info --title="KaadzOS packs" \
+      --width=760 --height=440
+  else
+    kaadzos list
+  fi
+}
+
+archive_info() {
+  text='The optional KaadzOS APT archive is signed and served from:
+https://iso.kaadzos.pages.dev/apt
+
+The ISO preconfigures it when InRelease is reachable. Install packs with:
+  kaadzos add <pack>
+
+List packs with:
+  kaadzos list'
+  if have zenity; then
+    zenity --info --no-markup --title="KaadzOS APT archive" --text="$text"
+  else
+    printf '%s\n' "$text"
+  fi
+}
+
+synaptic() {
+  if have synaptic-pkexec; then
+    exec synaptic-pkexec
+  fi
+  if have synaptic; then
+    exec synaptic
+  fi
+  error "Packages" "Synaptic is not installed. Add the admin pack with: kaadzos add admin"
+}
+
+install_admin() {
+  if ! have kaadzos; then
+    error "Packages" "kaadzos is not installed."
+    return 1
+  fi
+  if ! have foot; then
+    error "Packages" "Install the admin pack from a terminal with: kaadzos add admin"
+    return 1
+  fi
+  exec foot -T "Install admin tools" -e kaadzos add admin
+}
+
+about() {
+  release=${KAADZOS_OS_RELEASE:-/etc/os-release}
+  name=KaadzOS
+  if [ -r "$release" ]; then
+    name=$(sed -n 's/^PRETTY_NAME=//p' "$release" | head -n 1 | tr -d '"')
+  fi
+  [ -n "$name" ] || name=KaadzOS
+  text=$(printf '%s\nPackage management: apt + Synaptic (admin pack)\nPacks: kaadzos list\nArchive: https://iso.kaadzos.pages.dev/apt' "$name")
+  if have zenity; then
+    zenity --info --no-markup --title="About packages" --text="$text"
+  else
+    printf '%s\n' "$text"
+  fi
+}
+
+menu() {
+  require_zenity
+  set -- --list --title="KaadzOS Packages" --hide-header \
+    --print-column=1 --column="Action" --column="Detail" \
+    --width=720 --height=520
+  if have synaptic-pkexec || have synaptic; then
+    set -- "$@" "Open Synaptic" "Search, install, remove and upgrade packages"
+  else
+    set -- "$@" "Install admin tools" "Add Synaptic, pkexec and the polkit agent"
+  fi
+  set -- "$@" \
+    "Refresh package lists" "Run apt-get update" \
+    "Browse packs" "List the optional KaadzOS packs" \
+    "APT archive" "Signed repository information" \
+    "About" "Package management in KaadzOS"
+  choice=$(zenity "$@") || exit 0
+  case $choice in
+    "Open Synaptic") synaptic ;;
+    "Install admin tools") install_admin ;;
+    "Refresh package lists") refresh ;;
+    "Browse packs") pack_list ;;
+    "APT archive") archive_info ;;
+    About) about ;;
+    *) error "Packages" "Unknown action: $choice"; exit 2 ;;
+  esac
+}
+
+case "${1:-menu}" in
+  menu) menu ;;
+  refresh) refresh ;;
+  install) shift; install_package "${1:-}" ;;
+  remove) shift; remove_package "${1:-}" ;;
+  packs) pack_list ;;
+  archive) archive_info ;;
+  synaptic) synaptic ;;
+  about) about ;;
+  *)
+    echo "usage: kaadzos-packages [menu|refresh|install PACKAGE|remove PACKAGE|packs|archive|synaptic|about]" >&2
+    exit 2
+    ;;
+esac
