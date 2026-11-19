@@ -7,7 +7,8 @@ Prompts 2 (core baseline) and 3 (Bluetooth and Waybar) are implemented and
 green in CI runs 44217239776 and 44250067376. Prompt 4 (Waybar control centre)
 landed locally as `8cb8263`. The portal/session foundation, Prompt 5 (settings)
 and Prompt 6 (greeter) are implemented locally in `e8ae260`, `e98f10a` and
-`db477bb`; they await the next CI run.
+`db477bb`. Prompt 7 (search) is implemented locally in `cdc7019` and `64c8b7f`;
+these changes await the next CI run.
 
 Prepared: 2026-11-18, against `main` at `026091c`. Prompt 2 landed as `7a4e6e2`
 and Prompt 3 as `a316fd1` plus the diagnostic fix `1b26d0d`.
@@ -381,6 +382,21 @@ Depends on: 5 (settings/pack entries).
 - Tests: paths with spaces and Unicode; no results; missing recent file;
   excluded directories; `dash -n`; no shell evaluation of filenames.
 - Risk: `find $HOME` latency on large homes; cap it and prefer recent files.
+
+Status: implemented locally on 2026-11-19 in `cdc7019` (helper and
+`ci/test-search.sh`) and `64c8b7f` (the `$mod+d`/`$mod+Shift+d` split, desktop
+checks and both container job calls); CI validation is pending the next push.
+
+The helper reads recent entries from `$XDG_DATA_HOME/recently-used.xbel`,
+prefers them over the depth-6 `timeout 2 find` scan and caps both at 100
+recent entries and 200 home files. It emits TAB-separated kind/label/value
+records, prunes the sensitive and noisy directories listed above, drops
+control-character and newline names, refuses leading-dash values and passes
+the selected value as argv to `gio launch`, `xdg-open`, `kaadzos-settings`,
+`kaadzos add` in foot or a fixed command. `ci/test-search.sh` covers candidate
+generation, spaces, Unicode, recent decoding and removal, exclusions,
+newline-name rejection, every dispatch path, cancellation, unknown kinds and
+the no-`eval` rule.
 
 ### Prompt 8 — Wayland dock
 

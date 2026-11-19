@@ -92,6 +92,12 @@ Wallpaper, keyboard and touchpad changes are applied immediately with `swaymsg` 
 
 Optional tools are probed per row: `nwg-displays` or `wlr-randr` for displays, `nm-connection-editor` or `nmcli` for network, Blueman for Bluetooth, `pavucontrol` for sound, and `gsettings`/`xdg-settings`/`xdg-mime` for the desktop defaults. A missing tool disables that section with a notification rather than breaking the application. The boot and install tests require `KAADZOS_SETTINGS_OK`.
 
+## Search
+
+`kaadzos-search` is one POSIX-sh helper behind `$mod+d`. It builds a single fuzzel list from desktop entries, recent files in `$XDG_DATA_HOME/recently-used.xbel`, the 200 newest files from a bounded `find` over `$HOME` (depth 6, 2 s timeout), settings pages, `kaadzos list` packs and a small fixed command map, then dispatches the exact selected value: `gio launch` for applications, `xdg-open` for files, `kaadzos-settings <section>` for settings, `kaadzos add <pack>` in a foot terminal for packs, and fixed commands for lock, control centre, reload and install. `$mod+Shift+d` keeps the plain fuzzel launcher.
+
+Scanned homes skip `.ssh`, `.gnupg`, keyrings, browser profiles, trash, caches, `node_modules` and `.git`; control-character and newline names stay out of the line-oriented list; leading-dash values are refused; and a filename is never evaluated as shell. Recent files are listed before the home scan, so they win when the scan is capped. `ci/test-search.sh` covers spaces, Unicode, recent-file decoding, missing recent state, excluded directories, dispatch for every candidate kind, cancellation and the no-`eval` rule in both container jobs.
+
 ## Portals and session integration
 
 `xdg-desktop-portal`, `xdg-desktop-portal-gtk` and `xdg-desktop-portal-wlr` are base packages. `/etc/xdg/xdg-desktop-portal/portals.conf` sends the general desktop interfaces to the GTK backend and `ScreenCast`/`Screenshot` to the wlroots backend, which is the Wayland-native path for Sway. This is what makes file pickers and screen sharing work instead of failing with "org.freedesktop.portal.Desktop was not provided by any .service files".
