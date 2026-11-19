@@ -57,6 +57,9 @@ Packs are plain `key=value` files in `packs/`, staged into the image at build ti
 | `creative` | Image, vector and 3D studio (GIMP, Inkscape, Krita, Blender) | ~3 GB |
 | `dev` | Git, compilers, editors, Node, Python | ~900 MB |
 | `gaming` | Wine, winetricks, GameMode, MangoHud | ~2 GB |
+| `hardware` | Firmware, disks, partitioning, SMART and sensors | ~300 MB |
+| `network` | VPN plugins, WireGuard and NetworkManager tools | ~40 MB |
+| `printing` | CUPS, printer drivers, scanning and mDNS discovery | ~250 MB |
 | `privacy` | Tor, Unbound, MAC randomisation | ~150 MB |
 | `windows` | Wine and Bottles (i386 multiarch) | ~4 GB |
 
@@ -146,7 +149,7 @@ Two changes came out of that: the lock binding moved to `$mod+Shift+x`, and the 
 
 ## Base image contents
 
-The base image is deliberately small. It contains the kernel and firmware, NetworkManager, BlueZ and Blueman, the control centre (upower, power-profiles-daemon, wlsunset and zenity), the settings helper, the desktop portals (xdg-desktop-portal with GTK and WLR backends), Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `fdisk`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `7zip`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, docks, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`.
+The base image is deliberately small. It contains the kernel and firmware, NetworkManager, BlueZ and Blueman, the control centre (upower, power-profiles-daemon, wlsunset and zenity), the settings helper, the desktop portals (xdg-desktop-portal with GTK and WLR backends), Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `fdisk`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `7zip`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, hardware tools, docks, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`.
 
 ## Build it yourself
 

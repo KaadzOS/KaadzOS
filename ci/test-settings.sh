@@ -42,7 +42,9 @@ EOF
 
 for command in gsettings xdg-settings xdg-mime swaymsg notify-send \
                kaadzos-control kaadzos-packages kaadzos-bluetooth nmcli \
-               pavucontrol wlr-randr; do
+               pavucontrol wlr-randr system-config-printer lpstat simple-scan \
+               scanimage gnome-firmware fwupdmgr gnome-disks gparted \
+               gparted-pkexec gsmartcontrol sensors inxi; do
   write_logger "$command"
 done
 
@@ -193,6 +195,64 @@ expect 'zenity [--text-info] [--title=Network]'
 write_logger nm-connection-editor
 run network
 expect 'nm-connection-editor'
+
+FAKE_ZENITY_CHOICE=Printers
+export FAKE_ZENITY_CHOICE
+run
+expect 'zenity [--list] [--title=Printers and scanners]'
+
+FAKE_ZENITY_CHOICE='Printers: manage'
+export FAKE_ZENITY_CHOICE
+run printers
+expect 'system-config-printer'
+
+FAKE_ZENITY_CHOICE='Printers: status'
+export FAKE_ZENITY_CHOICE
+run printers
+expect 'lpstat [-t]'
+expect 'zenity [--text-info] [--title=Printers]'
+
+FAKE_ZENITY_CHOICE='Scanner: scan'
+export FAKE_ZENITY_CHOICE
+run printers
+expect 'simple-scan'
+
+FAKE_ZENITY_CHOICE=Hardware
+export FAKE_ZENITY_CHOICE
+run
+expect 'zenity [--list] [--title=Hardware]'
+
+FAKE_ZENITY_CHOICE='Hardware: disks'
+export FAKE_ZENITY_CHOICE
+run hardware
+expect 'gnome-disks'
+
+FAKE_ZENITY_CHOICE='Hardware: partitions'
+export FAKE_ZENITY_CHOICE
+run hardware
+expect 'gparted-pkexec'
+
+FAKE_ZENITY_CHOICE='Hardware: firmware'
+export FAKE_ZENITY_CHOICE
+run hardware
+expect 'gnome-firmware'
+
+FAKE_ZENITY_CHOICE='Hardware: SMART'
+export FAKE_ZENITY_CHOICE
+run hardware
+expect 'gsmartcontrol'
+
+FAKE_ZENITY_CHOICE='Hardware: sensors'
+export FAKE_ZENITY_CHOICE
+run hardware
+expect 'sensors'
+expect 'zenity [--text-info] [--title=Sensors]'
+
+FAKE_ZENITY_CHOICE='Hardware: system information'
+export FAKE_ZENITY_CHOICE
+run hardware
+expect 'inxi [-Fz]'
+expect 'zenity [--text-info] [--title=System information]'
 
 run bluetooth
 expect 'kaadzos-bluetooth [manager]'

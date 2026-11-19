@@ -1,0 +1,5 @@
+name=printing
+description=Printing, scanning and network printer discovery
+size=250MB
+apt=cups cups-client cups-filters cups-pk-helper system-config-printer printer-driver-all cups-browsed avahi-daemon libnss-mdns sane-utils sane-airscan simple-scan
+hook=printing

@@ -31,7 +31,8 @@ EOF
 
 for command in wpctl brightnessctl systemctl swaylock swaymsg pavucontrol \
                upower nmcli nm-connection-editor kaadzos-bluetooth \
-               kaadzos-screenshot kaadzos-record notify-send; do
+               kaadzos-screenshot kaadzos-record kaadzos-settings \
+               notify-send; do
   write_logger "$command"
 done
 
@@ -128,6 +129,22 @@ FAKE_ZENITY_CHOICE='Session: lock'
 export FAKE_ZENITY_CHOICE
 run
 expect 'swaylock -f'
+
+FAKE_ZENITY_CHOICE='Printers: manage'
+export FAKE_ZENITY_CHOICE
+run
+expect 'kaadzos-settings printers'
+
+FAKE_ZENITY_CHOICE='Hardware: tools'
+export FAKE_ZENITY_CHOICE
+run
+expect 'kaadzos-settings hardware'
+
+run printers
+expect 'kaadzos-settings printers'
+
+run hardware
+expect 'kaadzos-settings hardware'
 
 FAKE_ZENITY_CHOICE=''
 FAKE_ZENITY_CANCEL=1

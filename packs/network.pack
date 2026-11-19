@@ -1,0 +1,5 @@
+name=network
+description=VPN plugins, WireGuard and NetworkManager connection tools
+size=40MB
+apt=network-manager-openvpn network-manager-openvpn-gnome network-manager-openconnect network-manager-openconnect-gnome wireguard-tools nm-connection-editor network-manager-gnome
+hook=network

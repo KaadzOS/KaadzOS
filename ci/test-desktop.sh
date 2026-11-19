@@ -190,6 +190,36 @@ grep -Fq "command -v lxpolkit" "$sway" \
 grep -Fq "command -v lxpolkit" "$root/theme/generate.sh" \
   || fail "theme/generate.sh does not generate the lxpolkit autostart"
 
+# Printing, hardware and network stay optional packs. The control centre and
+# settings app expose them through probed entries, and the search knows the
+# new settings pages.
+for pack in printing hardware network; do
+  [ -f "$root/packs/$pack.pack" ] || fail "packs/$pack.pack is missing"
+  [ -x "$root/packs/hooks/$pack.sh" ] || fail "packs/hooks/$pack.sh is not executable"
+  grep -qx "hook=$pack" "$root/packs/$pack.pack" \
+    || fail "$pack pack does not reference its hook"
+done
+grep -Fq 'Printers: manage' "$control" \
+  || fail "kaadzos-control is missing the printers entry"
+grep -Fq 'Hardware: tools' "$control" \
+  || fail "kaadzos-control is missing the hardware entry"
+grep -Fq 'kaadzos-settings printers' "$control" \
+  || fail "control centre must delegate printers to settings"
+grep -Fq 'kaadzos-settings hardware' "$control" \
+  || fail "control centre must delegate hardware to settings"
+grep -Fq '"Printers" "Printers, scanners and queue status"' "$settings" \
+  || fail "kaadzos-settings is missing the Printers row"
+grep -Fq '"Hardware" "Disks, firmware, SMART and sensors"' "$settings" \
+  || fail "kaadzos-settings is missing the Hardware row"
+grep -Fq 'printers) printers' "$settings" \
+  || fail "kaadzos-settings is missing the printers subcommand"
+grep -Fq 'hardware) hardware' "$settings" \
+  || fail "kaadzos-settings is missing the hardware subcommand"
+grep -Fq 'Setting\tPrinters\tprinters' "$search" \
+  || fail "kaadzos-search is missing the Printers setting"
+grep -Fq 'Setting\tHardware\thardware' "$search" \
+  || fail "kaadzos-search is missing the Hardware setting"
+
 # Search: Super+D is the smart search over apps/files/settings/packs and
 # Super+Shift+D keeps the plain fuzzel launcher. The helper must not eval
 # filenames and must bound its home scan.

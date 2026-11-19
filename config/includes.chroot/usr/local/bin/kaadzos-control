@@ -110,6 +110,20 @@ network() {
   missing nmcli
 }
 
+printers() {
+  if have kaadzos-settings; then
+    exec kaadzos-settings printers
+  fi
+  missing kaadzos-settings
+}
+
+hardware() {
+  if have kaadzos-settings; then
+    exec kaadzos-settings hardware
+  fi
+  missing kaadzos-settings
+}
+
 brightness() {
   if ! have brightnessctl; then
     missing brightnessctl
@@ -250,6 +264,8 @@ dispatch() {
     'Bluetooth: devices') bluetooth_manager ;;
     'Bluetooth: power') bluetooth_toggle ;;
     'Network: connections') network ;;
+    'Printers: manage') printers ;;
+    'Hardware: tools') hardware ;;
     'Display: brightness up') brightness + ;;
     'Display: brightness down') brightness - ;;
     'Display: night light') night_light ;;
@@ -302,7 +318,7 @@ main_menu() {
     choice=$(zenity --list --title="KaadzOS Control Centre" \
       --text="Audio, devices, display and session" --hide-header \
       --print-column=1 --column="Action" --column="Detail" \
-      --width=640 --height=580 \
+      --width=640 --height=680 \
       "Audio: mute output" "Toggle the default sink" \
       "Audio: volume mixer" "Open pavucontrol" \
       "Audio: volume up" "Raise output volume" \
@@ -311,6 +327,8 @@ main_menu() {
       "Bluetooth: devices" "Open Blueman" \
       "Bluetooth: power" "Toggle the adapter" \
       "Network: connections" "Open the editor or nmcli status" \
+      "Printers: manage" "Printers and scanners" \
+      "Hardware: tools" "Disks, firmware, SMART and sensors" \
       "Display: brightness up" "Raise the backlight" \
       "Display: brightness down" "Lower the backlight" \
       "Display: night light" "Toggle warm colours" \
@@ -331,6 +349,8 @@ main_menu() {
       "Bluetooth: devices|Open Blueman" \
       "Bluetooth: power|Toggle the adapter" \
       "Network: connections|Open the editor or nmcli status" \
+      "Printers: manage|Printers and scanners" \
+      "Hardware: tools|Disks, firmware, SMART and sensors" \
       "Display: brightness up|Raise the backlight" \
       "Display: brightness down|Lower the backlight" \
       "Display: night light|Toggle warm colours" \
@@ -362,6 +382,8 @@ case "${1:-menu}" in
   bluetooth) bluetooth_manager ;;
   bluetooth-toggle) bluetooth_toggle ;;
   network) network ;;
+  printers) printers ;;
+  hardware) hardware ;;
   brightness-up) brightness + ;;
   brightness-down) brightness - ;;
   night-light) night_light ;;
@@ -374,7 +396,7 @@ case "${1:-menu}" in
   reboot) session_reboot ;;
   poweroff) session_poweroff ;;
   *)
-    echo "usage: kaadzos-control [menu|power|audio-mute|mic-mute|volume-up|volume-down|sound|bluetooth|bluetooth-toggle|network|brightness-up|brightness-down|night-light|power-profile|battery|screenshot|record|lock|logout|reboot|poweroff]" >&2
+    echo "usage: kaadzos-control [menu|power|audio-mute|mic-mute|volume-up|volume-down|sound|bluetooth|bluetooth-toggle|network|printers|hardware|brightness-up|brightness-down|night-light|power-profile|battery|screenshot|record|lock|logout|reboot|poweroff]" >&2
     exit 2
     ;;
 esac

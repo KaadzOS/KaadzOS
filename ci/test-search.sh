@@ -150,6 +150,8 @@ expect_candidate "File${tab}hello world.txt${tab}$home/Documents/hello world.txt
 expect_candidate "File${tab}naïve.png${tab}$home/Pictures/naïve.png"
 expect_candidate "File${tab}recent-only.txt${tab}$tmp/recent-only.txt"
 expect_candidate "Setting${tab}Appearance${tab}appearance"
+expect_candidate "Setting${tab}Printers${tab}printers"
+expect_candidate "Setting${tab}Hardware${tab}hardware"
 expect_candidate "Setting${tab}Packages${tab}packages"
 expect_candidate "Pack${tab}dev${tab}dev"
 expect_candidate "Command${tab}Control Centre${tab}control"
@@ -167,6 +169,8 @@ dispatch_test "File${tab}naïve.png${tab}$home/Pictures/naïve.png" \
   "xdg-open [$home/Pictures/naïve.png]"
 dispatch_test "Setting${tab}Display${tab}display" \
   "kaadzos-settings [display]"
+dispatch_test "Setting${tab}Printers${tab}printers" \
+  "kaadzos-settings [printers]"
 dispatch_test "Pack${tab}dev${tab}dev" \
   "foot [-T] [Install dev] [-e] [kaadzos] [add] [dev]"
 dispatch_test "Command${tab}Lock screen${tab}lock" \

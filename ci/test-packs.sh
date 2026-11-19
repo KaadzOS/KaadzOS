@@ -39,6 +39,9 @@ for h in "$packs"/hooks/*.sh; do
   [ -f "$h" ] || continue
   run_ok "hook parses under dash: $(basename "$h")" dash -n "$h"
 done
+for h in printing hardware network; do
+  run_fail "$h hook rejects an unknown action" sh "$packs/hooks/$h.sh" bogus
+done
 
 echo "== pack parsing / resolution =="
 run_ok "kaadzos list resolves every pack" sh "$cli" list
@@ -74,6 +77,22 @@ if printf '%s' "$out" | grep -q "git"; then
 else
   bad "dev dry-run includes git"
 fi
+
+# The hardware-oriented packs are Debian-native and must plan both the apt
+# install and their post-install hook.
+for pack in printing hardware network; do
+  out=$(KAADZOS_DRY_RUN=1 sh "$cli" add "$pack" 2>&1 || true)
+  if printf '%s' "$out" | grep -q "apt-get -y install"; then
+    ok "$pack dry-run plans an apt install"
+  else
+    bad "$pack dry-run plans an apt install"
+  fi
+  if printf '%s' "$out" | grep -q "hooks/$pack.sh add"; then
+    ok "$pack dry-run plans its hook"
+  else
+    bad "$pack dry-run plans its hook"
+  fi
+done
 
 # android uses a third-party apt repo + signing key.
 out=$(KAADZOS_DRY_RUN=1 WAYLAND_DISPLAY=wayland-0 sh "$cli" add android 2>&1 || true)

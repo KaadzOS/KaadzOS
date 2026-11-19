@@ -105,6 +105,8 @@ settings_candidates() {
   printf 'Setting\tInput\tinput\n'
   printf 'Setting\tDisplay\tdisplay\n'
   printf 'Setting\tNetwork\tnetwork\n'
+  printf 'Setting\tPrinters\tprinters\n'
+  printf 'Setting\tHardware\thardware\n'
   printf 'Setting\tBluetooth\tbluetooth\n'
   printf 'Setting\tSound\tsound\n'
   printf 'Setting\tPower\tpower\n'

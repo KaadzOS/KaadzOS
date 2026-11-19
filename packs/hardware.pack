@@ -1,0 +1,5 @@
+name=hardware
+description=Firmware, disks, partitioning, SMART and sensor tools
+size=300MB
+apt=fwupd fwupd-amd64-signed gnome-firmware gnome-disk-utility gparted nwg-displays smartmontools nvme-cli lm-sensors gsmartcontrol testdisk ntfs-3g exfatprogs btrfs-progs xfsprogs inxi
+hook=hardware

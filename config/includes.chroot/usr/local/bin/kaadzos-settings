@@ -306,6 +306,140 @@ network() {
   return 1
 }
 
+show_output() {
+  so_title=$1
+  so_file=$2
+  shift 2
+  "$@" > "$so_file" 2>&1 || true
+  if have zenity; then
+    exec zenity --text-info --title="$so_title" --filename="$so_file" \
+      --width=720 --height=420
+  fi
+  cat "$so_file"
+}
+
+open_tool() {
+  ot_tool=$1
+  ot_title=$2
+  ot_pack=$3
+  if have "$ot_tool"; then
+    exec "$ot_tool"
+  fi
+  error "$ot_title" "Install the $ot_pack pack (kaadzos add $ot_pack)."
+  return 1
+}
+
+printer_manager() {
+  if have system-config-printer; then
+    exec system-config-printer
+  fi
+  if have lpstat; then
+    show_output "Printers" "${TMPDIR:-/tmp}/kaadzos-printers.txt" lpstat -t
+    return 0
+  fi
+  error "Printers" "Install the printing pack (kaadzos add printing)."
+  return 1
+}
+
+printer_status() {
+  if ! have lpstat; then
+    error "Printers" "Install the printing pack (kaadzos add printing)."
+    return 1
+  fi
+  show_output "Printers" "${TMPDIR:-/tmp}/kaadzos-printers.txt" lpstat -t
+}
+
+scanner() {
+  if have simple-scan; then
+    exec simple-scan
+  fi
+  if have scanimage; then
+    show_output "Scanner" "${TMPDIR:-/tmp}/kaadzos-scanner.txt" scanimage -L
+    return 0
+  fi
+  error "Scanner" "Install the printing pack (kaadzos add printing)."
+  return 1
+}
+
+printers() {
+  require_zenity
+  choice=$(zenity --list --title="Printers and scanners" --hide-header \
+    --print-column=1 --column="Action" --column="Detail" \
+    --width=560 --height=320 \
+    "Printers: manage" "Open the printer configuration" \
+    "Printers: status" "Show the CUPS queue state" \
+    "Scanner: scan" "Open Simple Scan") || exit 0
+  case $choice in
+    'Printers: manage') printer_manager ;;
+    'Printers: status') printer_status ;;
+    'Scanner: scan') scanner ;;
+    *) exit 0 ;;
+  esac
+}
+
+firmware() {
+  if have gnome-firmware; then
+    exec gnome-firmware
+  fi
+  if have fwupdmgr; then
+    show_output "Firmware" "${TMPDIR:-/tmp}/kaadzos-firmware.txt" \
+      fwupdmgr get-devices
+    return 0
+  fi
+  error "Firmware" "Install the hardware pack (kaadzos add hardware)."
+  return 1
+}
+
+partitions() {
+  if have gparted-pkexec; then
+    exec gparted-pkexec
+  fi
+  if have pkexec && have gparted; then
+    exec pkexec gparted
+  fi
+  open_tool gparted "Partitions" hardware
+}
+
+hardware_sensors() {
+  if have sensors; then
+    show_output "Sensors" "${TMPDIR:-/tmp}/kaadzos-sensors.txt" sensors
+    return 0
+  fi
+  error "Sensors" "Install the hardware pack (kaadzos add hardware)."
+  return 1
+}
+
+hardware_info() {
+  if have inxi; then
+    show_output "System information" "${TMPDIR:-/tmp}/kaadzos-inxi.txt" inxi -Fz
+    return 0
+  fi
+  error "Hardware" "Install the hardware pack (kaadzos add hardware)."
+  return 1
+}
+
+hardware() {
+  require_zenity
+  choice=$(zenity --list --title="Hardware" --hide-header \
+    --print-column=1 --column="Action" --column="Detail" \
+    --width=560 --height=440 \
+    "Hardware: disks" "Open GNOME Disks" \
+    "Hardware: partitions" "Open GParted with polkit" \
+    "Hardware: firmware" "Open GNOME Firmware" \
+    "Hardware: SMART" "Open GSmartControl" \
+    "Hardware: sensors" "Show lm-sensors output" \
+    "Hardware: system information" "Show the inxi summary") || exit 0
+  case $choice in
+    'Hardware: disks') open_tool gnome-disks Disks hardware ;;
+    'Hardware: partitions') partitions ;;
+    'Hardware: firmware') firmware ;;
+    'Hardware: SMART') open_tool gsmartcontrol SMART hardware ;;
+    'Hardware: sensors') hardware_sensors ;;
+    'Hardware: system information') hardware_info ;;
+    *) exit 0 ;;
+  esac
+}
+
 bluetooth() {
   if have kaadzos-bluetooth; then
     exec kaadzos-bluetooth manager
@@ -382,11 +516,13 @@ main_menu() {
   require_zenity
   choice=$(zenity --list --title="KaadzOS Settings" --hide-header \
     --print-column=1 --column="Section" --column="Detail" \
-    --width=620 --height=540 \
+    --width=620 --height=620 \
     "Appearance" "Wallpaper, style, font and night light" \
     "Input" "Keyboard layout and touchpad" \
     "Display" "Arrange outputs" \
     "Network" "Wired, wireless and VPN connections" \
+    "Printers" "Printers, scanners and queue status" \
+    "Hardware" "Disks, firmware, SMART and sensors" \
     "Bluetooth" "Devices and adapter power" \
     "Sound" "Volume mixer" \
     "Power" "Battery, profile and session" \
@@ -399,6 +535,8 @@ main_menu() {
     Input) input_menu ;;
     Display) display ;;
     Network) network ;;
+    Printers) printers ;;
+    Hardware) hardware ;;
     Bluetooth) bluetooth ;;
     Sound) sound ;;
     Power) power ;;
@@ -416,6 +554,8 @@ case "${1:-menu}" in
   input) input_menu ;;
   display) display ;;
   network) network ;;
+  printers) printers ;;
+  hardware) hardware ;;
   bluetooth) bluetooth ;;
   sound) sound ;;
   power) power ;;
@@ -432,7 +572,7 @@ case "${1:-menu}" in
   icons) icons ;;
   night-light) night_light ;;
   *)
-    echo "usage: kaadzos-settings [menu|appearance|input|display|network|bluetooth|sound|power|packages|browser|file-manager|about|wallpaper [PATH]|keyboard [LAYOUT]|touchpad [on|off]|dark-style|light-style|font|icons|night-light]" >&2
+    echo "usage: kaadzos-settings [menu|appearance|input|display|network|printers|hardware|bluetooth|sound|power|packages|browser|file-manager|about|wallpaper [PATH]|keyboard [LAYOUT]|touchpad [on|off]|dark-style|light-style|font|icons|night-light]" >&2
     exit 2
     ;;
 esac
