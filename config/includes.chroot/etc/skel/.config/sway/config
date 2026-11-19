@@ -50,6 +50,9 @@ exec sh -c 'timeout 5 dbus-update-activation-environment --systemd WAYLAND_DISPL
 # Autostart (logs go to /tmp; /run/hostshare only exists in the QEMU boot test)
 exec waybar >/tmp/waybar.log 2>&1
 exec mako >/tmp/mako.log 2>&1
+# Synaptic and the package front end use pkexec; the admin pack supplies the
+# lightweight lxpolkit agent, and the guard keeps a base image without it quiet.
+exec sh -c 'command -v lxpolkit >/dev/null 2>&1 && exec lxpolkit'
 exec sh -c 'if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Terminal" /usr/local/bin/kaadzos-welcome-terminal; fi'
 # The bar button and Super+I are persistent; this catches the first look at a
 # desktop with no icons.
@@ -73,6 +76,8 @@ bindsym $mod+x exec kaadzos-bluetooth manager
 bindsym $mod+Shift+s exec kaadzos-control
 # Settings: appearance, input, display, network, Bluetooth and the session.
 bindsym $mod+comma exec kaadzos-settings
+# Packages: Synaptic, optional packs and the signed APT archive.
+bindsym $mod+Shift+p exec kaadzos-packages
 bindsym $mod+q kill
 bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
 bindsym $mod+Shift+x exec $lock

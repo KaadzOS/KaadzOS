@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Packages
+Comment=Install software, browse packs and open Synaptic
+Exec=kaadzos-packages
+Icon=system-software-install
+Terminal=false
+Categories=System;PackageManager;
+Keywords=packages;software;install;remove;synaptic;apt;packs;

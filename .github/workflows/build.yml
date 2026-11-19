@@ -69,6 +69,9 @@ jobs:
       - name: Verify search candidates and dispatch
         run: sh ci/test-search.sh
 
+      - name: Verify package actions
+        run: sh ci/test-packages.sh
+
       - name: Set cache key
         id: cache-key
         run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
@@ -212,6 +215,9 @@ jobs:
 
       - name: Verify search candidates and dispatch
         run: sh ci/test-search.sh
+
+      - name: Verify package actions
+        run: sh ci/test-packages.sh
 
       - name: Run pack resolution tests
         run: bash ci/test-packs.sh

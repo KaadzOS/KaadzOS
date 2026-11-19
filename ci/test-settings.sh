@@ -41,7 +41,8 @@ EOF
 }
 
 for command in gsettings xdg-settings xdg-mime swaymsg notify-send \
-               kaadzos-control kaadzos-bluetooth nmcli pavucontrol wlr-randr; do
+               kaadzos-control kaadzos-packages kaadzos-bluetooth nmcli \
+               pavucontrol wlr-randr; do
   write_logger "$command"
 done
 
@@ -164,6 +165,11 @@ export FAKE_ZENITY_CHOICE
 run
 expect 'zenity [--info] [--no-markup] [--title=About KaadzOS]'
 
+FAKE_ZENITY_CHOICE=Packages
+export FAKE_ZENITY_CHOICE
+run
+expect 'kaadzos-packages'
+
 FAKE_ZENITY_CANCEL=1
 export FAKE_ZENITY_CANCEL
 : > "$log"
@@ -196,6 +202,9 @@ expect 'pavucontrol'
 
 run power
 expect 'kaadzos-control [power]'
+
+run packages
+expect 'kaadzos-packages'
 
 image="$tmp/wall paper.png"
 printf 'png' > "$image"

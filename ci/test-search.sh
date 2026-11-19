@@ -150,6 +150,7 @@ expect_candidate "File${tab}hello world.txt${tab}$home/Documents/hello world.txt
 expect_candidate "File${tab}naïve.png${tab}$home/Pictures/naïve.png"
 expect_candidate "File${tab}recent-only.txt${tab}$tmp/recent-only.txt"
 expect_candidate "Setting${tab}Appearance${tab}appearance"
+expect_candidate "Setting${tab}Packages${tab}packages"
 expect_candidate "Pack${tab}dev${tab}dev"
 expect_candidate "Command${tab}Control Centre${tab}control"
 expect_candidate "Command${tab}Install KaadzOS${tab}install"

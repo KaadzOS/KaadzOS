@@ -5,7 +5,7 @@
     "spacing": 0,
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["clock"],
-    "modules-right": ["custom/install", "custom/control", "network", "bluetooth", "backlight", "power-profiles-daemon", "pulseaudio", "idle_inhibitor", "battery", "tray"],
+    "modules-right": ["custom/install", "custom/packages", "custom/control", "network", "bluetooth", "backlight", "power-profiles-daemon", "pulseaudio", "idle_inhibitor", "battery", "tray"],
     "sway/workspaces": {
         "format": "{name}",
         "all-outputs": true,
@@ -20,6 +20,13 @@
         "on-click": "kaadzos-install",
         "tooltip": true,
         "tooltip-format": "Install KaadzOS to disk"
+    },
+    "custom/packages": {
+        "exec": "printf '\\357\\221\\246'",
+        "format": "{}",
+        "tooltip": true,
+        "tooltip-format": "Packages\nSoftware, packs and Synaptic",
+        "on-click": "kaadzos-packages"
     },
     "custom/control": {
         "exec": "printf '\\357\\200\\223'",

@@ -100,6 +100,9 @@ exec sh -c 'timeout 5 dbus-update-activation-environment --systemd WAYLAND_DISPL
 # Autostart (logs go to /tmp; /run/hostshare only exists in the QEMU boot test)
 exec waybar >/tmp/waybar.log 2>&1
 exec mako >/tmp/mako.log 2>&1
+# Synaptic and the package front end use pkexec; the admin pack supplies the
+# lightweight lxpolkit agent, and the guard keeps a base image without it quiet.
+exec sh -c 'command -v lxpolkit >/dev/null 2>&1 && exec lxpolkit'
 exec sh -c 'if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Terminal" /usr/local/bin/kaadzos-welcome-terminal; fi'
 # The bar button and Super+I are persistent; this catches the first look at a
 # desktop with no icons.
@@ -123,6 +126,8 @@ bindsym \$mod+x exec kaadzos-bluetooth manager
 bindsym \$mod+Shift+s exec kaadzos-control
 # Settings: appearance, input, display, network, Bluetooth and the session.
 bindsym \$mod+comma exec kaadzos-settings
+# Packages: Synaptic, optional packs and the signed APT archive.
+bindsym \$mod+Shift+p exec kaadzos-packages
 bindsym \$mod+q kill
 bindsym \$mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
 bindsym \$mod+Shift+x exec \$lock
@@ -219,7 +224,7 @@ cat > "$cfg/waybar/config" <<WBAR
     "spacing": 0,
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["clock"],
-    "modules-right": ["custom/install", "custom/control", "network", "bluetooth", "backlight", "power-profiles-daemon", "pulseaudio", "idle_inhibitor", "battery", "tray"],
+    "modules-right": ["custom/install", "custom/packages", "custom/control", "network", "bluetooth", "backlight", "power-profiles-daemon", "pulseaudio", "idle_inhibitor", "battery", "tray"],
     "sway/workspaces": {
         "format": "{name}",
         "all-outputs": true,
@@ -234,6 +239,13 @@ cat > "$cfg/waybar/config" <<WBAR
         "on-click": "kaadzos-install",
         "tooltip": true,
         "tooltip-format": "Install KaadzOS to disk"
+    },
+    "custom/packages": {
+        "exec": "printf '\\\\357\\\\221\\\\246'",
+        "format": "{}",
+        "tooltip": true,
+        "tooltip-format": "Packages\nSoftware, packs and Synaptic",
+        "on-click": "kaadzos-packages"
     },
     "custom/control": {
         "exec": "printf '\\\\357\\\\200\\\\223'",
@@ -363,12 +375,12 @@ window#waybar {
     font-weight: 600;
 }
 #clock, #network, #bluetooth, #backlight, #power-profiles-daemon,
-#pulseaudio, #idle_inhibitor, #battery, #custom-control, #tray {
+#pulseaudio, #idle_inhibitor, #battery, #custom-packages, #custom-control, #tray {
     padding: 0 12px;
     color: ${KAADZ_FG_ALT};
 }
 #clock { color: ${KAADZ_FG}; font-weight: 600; }
-#custom-control { color: ${KAADZ_FG}; }
+#custom-packages, #custom-control { color: ${KAADZ_FG}; }
 #idle_inhibitor.activated { color: ${KAADZ_ACCENT}; }
 #power-profiles-daemon.performance { color: ${KAADZ_WARNING}; }
 #power-profiles-daemon.power-saver { color: ${KAADZ_FG_MUTED}; }

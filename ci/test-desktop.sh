@@ -13,6 +13,8 @@ control="$root/config/includes.chroot/usr/local/bin/kaadzos-control"
 control_desktop="$root/config/includes.chroot/usr/share/applications/kaadzos-control.desktop"
 settings="$root/config/includes.chroot/usr/local/bin/kaadzos-settings"
 settings_desktop="$root/config/includes.chroot/usr/share/applications/kaadzos-settings.desktop"
+packages_cli="$root/config/includes.chroot/usr/local/bin/kaadzos-packages"
+packages_desktop="$root/config/includes.chroot/usr/share/applications/kaadzos-packages.desktop"
 search="$root/config/includes.chroot/usr/local/bin/kaadzos-search"
 portal_conf="$root/config/includes.chroot/etc/xdg/xdg-desktop-portal/portals.conf"
 session_ready="$root/config/includes.chroot/usr/local/bin/kaadzos-session-ready"
@@ -153,6 +155,40 @@ grep -q 'KAADZOS_SETTINGS_MISSING' "$session_ready" \
   || fail "kaadzos-session-ready must emit KAADZOS_SETTINGS_MISSING"
 grep -Fq 'include ~/.config/sway/config.d/*.conf' "$session_ready" \
   || fail "kaadzos-session-ready must assert the config.d include"
+
+# Packages: one base helper, one desktop entry, one Sway binding, one Waybar
+# module and the Settings row. Synaptic itself stays in the admin pack.
+[ -x "$packages_cli" ] || fail "$packages_cli is not executable"
+dash -n "$packages_cli" || fail "kaadzos-packages does not parse as POSIX sh"
+if grep -Eq '^[[:space:]]*eval[[:space:]]' "$packages_cli"; then
+  fail "kaadzos-packages must not use eval"
+fi
+[ -f "$packages_desktop" ] || fail "$packages_desktop is missing"
+grep -qx '^Exec=kaadzos-packages$' "$packages_desktop" \
+  || fail "packages desktop entry must run kaadzos-packages"
+count=$(grep -c '^bindsym \$mod+Shift+p exec kaadzos-packages$' "$sway" || true)
+[ "$count" -eq 1 ] || fail "Sway config needs exactly one \$mod+Shift+p packages binding"
+grep -Fq 'bindsym \$mod+Shift+p exec kaadzos-packages' "$root/theme/generate.sh" \
+  || fail "theme/generate.sh does not generate the packages binding"
+grep -q '"custom/packages"' "$waybar" || fail "Waybar config is missing custom/packages"
+grep -q '"custom/packages"' "$root/theme/generate.sh" \
+  || fail "theme/generate.sh does not generate custom/packages"
+grep -q '"on-click": "kaadzos-packages"' "$waybar" \
+  || fail "Waybar packages module is not wired to kaadzos-packages"
+grep -q '#custom-packages' "$style" || fail "Waybar style is missing #custom-packages"
+grep -q '#custom-packages' "$root/theme/generate.sh" \
+  || fail "theme/generate.sh does not generate #custom-packages"
+grep -Fq '"Packages" "Software and optional packs"' "$settings" \
+  || fail "kaadzos-settings is missing the Packages row"
+grep -Fq 'packages) packages' "$settings" \
+  || fail "kaadzos-settings is missing the packages subcommand"
+[ -f "$root/packs/admin.pack" ] || fail "packs/admin.pack is missing"
+grep -qx 'apt=synaptic pkexec lxpolkit' "$root/packs/admin.pack" \
+  || fail "admin pack must provide Synaptic, pkexec and the polkit agent"
+grep -Fq "command -v lxpolkit" "$sway" \
+  || fail "Sway config must start lxpolkit when the admin pack provides it"
+grep -Fq "command -v lxpolkit" "$root/theme/generate.sh" \
+  || fail "theme/generate.sh does not generate the lxpolkit autostart"
 
 # Search: Super+D is the smart search over apps/files/settings/packs and
 # Super+Shift+D keeps the plain fuzzel launcher. The helper must not eval

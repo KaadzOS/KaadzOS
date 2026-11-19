@@ -335,6 +335,13 @@ power() {
   error "Power" "kaadzos-control is not installed."
 }
 
+packages() {
+  if have kaadzos-packages; then
+    exec kaadzos-packages
+  fi
+  error "Packages" "kaadzos-packages is not installed."
+}
+
 browser() {
   if ! have xdg-settings; then
     error "Default browser" "xdg-settings is not installed."
@@ -383,6 +390,7 @@ main_menu() {
     "Bluetooth" "Devices and adapter power" \
     "Sound" "Volume mixer" \
     "Power" "Battery, profile and session" \
+    "Packages" "Software and optional packs" \
     "Default browser" "Use GNOME Web" \
     "Default file manager" "Use Thunar" \
     "About" "Version and session") || exit 0
@@ -394,6 +402,7 @@ main_menu() {
     Bluetooth) bluetooth ;;
     Sound) sound ;;
     Power) power ;;
+    Packages) packages ;;
     'Default browser') browser ;;
     'Default file manager') file_manager ;;
     About) about ;;
@@ -410,6 +419,7 @@ case "${1:-menu}" in
   bluetooth) bluetooth ;;
   sound) sound ;;
   power) power ;;
+  packages) packages ;;
   browser) browser ;;
   file-manager) file_manager ;;
   about) about ;;
@@ -422,7 +432,7 @@ case "${1:-menu}" in
   icons) icons ;;
   night-light) night_light ;;
   *)
-    echo "usage: kaadzos-settings [menu|appearance|input|display|network|bluetooth|sound|power|browser|file-manager|about|wallpaper [PATH]|keyboard [LAYOUT]|touchpad [on|off]|dark-style|light-style|font|icons|night-light]" >&2
+    echo "usage: kaadzos-settings [menu|appearance|input|display|network|bluetooth|sound|power|packages|browser|file-manager|about|wallpaper [PATH]|keyboard [LAYOUT]|touchpad [on|off]|dark-style|light-style|font|icons|night-light]" >&2
     exit 2
     ;;
 esac
