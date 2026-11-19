@@ -59,6 +59,17 @@ if [ "$mode" = installed ]; then
     printf 'KAADZOS_CALAMARES_ABSENT\n' > "$serial"
   fi
 
+  # The installed greeter must keep the AMOLED theme, the KaadzOS greeting and
+  # the fixed VT written by kaadzos-install-finalize.
+  if [ -r /etc/greetd/config.toml ] \
+     && grep -q -- '--theme' /etc/greetd/config.toml \
+     && grep -q -- '--greeting' /etc/greetd/config.toml \
+     && grep -q 'vt = 7' /etc/greetd/config.toml; then
+    printf 'KAADZOS_GREETER_OK\n' > "$serial"
+  else
+    printf 'KAADZOS_GREETER_MISSING\n' > "$serial"
+  fi
+
   if [ -e /etc/kaadzos/firstboot-done ]; then
     printf 'KAADZOS_FIRSTBOOT_DONE\n' > "$serial"
   else
@@ -182,6 +193,10 @@ set +e
     --object-path /org/freedesktop/portal/desktop \
     --method org.freedesktop.DBus.Peer.Ping 2>&1 || true
   timeout 5 busctl --user --list 2>/dev/null | grep -i portal || true
+  if [ "$mode" = installed ]; then
+    echo '=== greeter ==='
+    cat /etc/greetd/config.toml 2>&1
+  fi
   echo '=== settings ==='
   ls -l /usr/local/bin/kaadzos-settings \
     /usr/share/applications/kaadzos-settings.desktop 2>&1
