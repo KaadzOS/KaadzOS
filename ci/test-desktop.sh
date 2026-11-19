@@ -7,6 +7,7 @@ root=$(cd "$(dirname "$0")/.." && pwd)
 waybar="$root/config/includes.chroot/etc/skel/.config/waybar/config"
 style="$root/config/includes.chroot/etc/skel/.config/waybar/style.css"
 sway="$root/config/includes.chroot/etc/skel/.config/sway/config"
+sway_overrides="$root/config/includes.chroot/etc/skel/.config/sway/config.d"
 helper="$root/config/includes.chroot/usr/local/bin/kaadzos-bluetooth"
 control="$root/config/includes.chroot/usr/local/bin/kaadzos-control"
 control_desktop="$root/config/includes.chroot/usr/share/applications/kaadzos-control.desktop"
@@ -49,6 +50,15 @@ done
 # The Sway binding must exist exactly once; a duplicate would trip swaynag.
 count=$(grep -c '^bindsym \$mod+x exec kaadzos-bluetooth manager$' "$sway" || true)
 [ "$count" -eq 1 ] || fail "Sway config needs exactly one \$mod+x Bluetooth binding"
+
+# User overrides: only *.conf is included, the README stays inert, and the
+# default file keeps the glob matching before settings writes anything.
+grep -Fqx 'include ~/.config/sway/config.d/*.conf' "$sway" \
+  || fail "Sway config must include the per-user config.d overrides"
+grep -Fq 'include ~/.config/sway/config.d/*.conf' "$root/theme/generate.sh" \
+  || fail "theme/generate.sh does not generate the config.d include"
+[ -f "$sway_overrides/README" ] || fail "config.d/README is missing"
+[ -f "$sway_overrides/00-default.conf" ] || fail "config.d/00-default.conf is missing"
 
 # New helpers and hooks are POSIX sh and executable in the image.
 for script in "$helper" "$hook"; do

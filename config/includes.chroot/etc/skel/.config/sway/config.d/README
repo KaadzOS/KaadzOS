@@ -1,0 +1,19 @@
+KaadzOS user Sway overrides
+===========================
+
+The generated /etc/skel/.config/sway/config ends with:
+
+    include ~/.config/sway/config.d/*.conf
+
+Files matching *.conf in this directory are read after the generated config,
+so they can add bindings, input rules or output settings without editing the
+theme output (which theme/generate.sh overwrites).
+
+The KaadzOS settings application writes its overrides here:
+
+    10-wallpaper.conf   output * bg "..." fill
+    20-keyboard.conf    input type:keyboard { xkb_layout ... }
+    20-touchpad.conf    input type:touchpad { tap ... }
+
+Keep one directive per file and use `swaymsg reload` after a manual edit.
+Only *.conf is loaded; this README and backup files stay inert.

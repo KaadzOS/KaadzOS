@@ -150,3 +150,7 @@ mode "resize" {
     bindsym Escape mode "default"
 }
 bindsym $mod+r mode "resize"
+
+# Per-user overrides. KaadzOS settings writes .conf files here; only that
+# suffix is loaded so README and editor backups stay inert.
+include ~/.config/sway/config.d/*.conf
