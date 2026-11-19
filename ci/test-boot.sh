@@ -121,20 +121,21 @@ while (( SECONDS < deadline )); do
 
     # Bluetooth must be enabled and healthy even though the CI VM has no
     # adapter, Waybar must be running with the Bluetooth module present, the
-    # control centre helper/launcher/module must all exist, and the D-Bus
-    # portal must activate with the Wayland session environment.
-    if grep -Eq 'KAADZOS_BLUETOOTH_(FAILED|DISABLED|MODULE_MISSING)|KAADZOS_WAYBAR_FAILED|KAADZOS_CONTROL_MISSING|KAADZOS_PORTAL_FAILED' "$serial_log" 2>/dev/null; then
-      echo "Bluetooth, Waybar, control centre or portal check failed under $firmware:" >&2
-      grep -E 'KAADZOS_BLUETOOTH_|KAADZOS_WAYBAR_|KAADZOS_CONTROL_|KAADZOS_PORTAL_' "$serial_log" >&2
+    # control centre helper/launcher/module, settings helper/launcher/include
+    # and portal activation must all pass.
+    if grep -Eq 'KAADZOS_BLUETOOTH_(FAILED|DISABLED|MODULE_MISSING)|KAADZOS_WAYBAR_FAILED|KAADZOS_CONTROL_MISSING|KAADZOS_SETTINGS_MISSING|KAADZOS_PORTAL_FAILED' "$serial_log" 2>/dev/null; then
+      echo "Bluetooth, Waybar, control centre, settings or portal check failed under $firmware:" >&2
+      grep -E 'KAADZOS_BLUETOOTH_|KAADZOS_WAYBAR_|KAADZOS_CONTROL_|KAADZOS_SETTINGS_|KAADZOS_PORTAL_' "$serial_log" >&2
       exit 1
     fi
     if ! grep -q 'KAADZOS_BLUETOOTH_OK' "$serial_log" 2>/dev/null \
       || ! grep -q 'KAADZOS_BLUETOOTH_MODULE_OK' "$serial_log" 2>/dev/null \
       || ! grep -q 'KAADZOS_WAYBAR_OK' "$serial_log" 2>/dev/null \
       || ! grep -q 'KAADZOS_CONTROL_OK' "$serial_log" 2>/dev/null \
+      || ! grep -q 'KAADZOS_SETTINGS_OK' "$serial_log" 2>/dev/null \
       || ! grep -q 'KAADZOS_PORTAL_OK' "$serial_log" 2>/dev/null; then
-      echo "Bluetooth/Waybar/control/portal readiness markers are missing under $firmware" >&2
-      grep -E 'KAADZOS_BLUETOOTH_|KAADZOS_WAYBAR_|KAADZOS_CONTROL_|KAADZOS_PORTAL_' "$serial_log" >&2 || true
+      echo "Bluetooth/Waybar/control/settings/portal readiness markers are missing under $firmware" >&2
+      grep -E 'KAADZOS_BLUETOOTH_|KAADZOS_WAYBAR_|KAADZOS_CONTROL_|KAADZOS_SETTINGS_|KAADZOS_PORTAL_' "$serial_log" >&2 || true
       exit 1
     fi
 

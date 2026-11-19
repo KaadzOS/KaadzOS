@@ -130,6 +130,17 @@ else
   printf 'KAADZOS_CONTROL_MISSING\n' > "$serial"
 fi
 
+# Settings needs the helper, the desktop entry and the config.d include that
+# receives wallpaper, keyboard and touchpad overrides.
+if [ -x /usr/local/bin/kaadzos-settings ] \
+   && [ -f /usr/share/applications/kaadzos-settings.desktop ] \
+   && grep -Fq 'include ~/.config/sway/config.d/*.conf' \
+      "${HOME:-/root}/.config/sway/config" 2>/dev/null; then
+  printf 'KAADZOS_SETTINGS_OK\n' > "$serial"
+else
+  printf 'KAADZOS_SETTINGS_MISSING\n' > "$serial"
+fi
+
 # The portal service is D-Bus activated. Ping the well-known name so the check
 # proves both the service files and the activation environment (Wayland plus
 # the desktop name), not just that the packages are installed. Bound it so a
@@ -171,6 +182,12 @@ set +e
     --object-path /org/freedesktop/portal/desktop \
     --method org.freedesktop.DBus.Peer.Ping 2>&1 || true
   timeout 5 busctl --user --list 2>/dev/null | grep -i portal || true
+  echo '=== settings ==='
+  ls -l /usr/local/bin/kaadzos-settings \
+    /usr/share/applications/kaadzos-settings.desktop 2>&1
+  grep -F 'include ~/.config/sway/config.d/*.conf' \
+    "$HOME/.config/sway/config" 2>&1 || true
+  ls -l "$HOME/.config/sway/config.d" 2>&1
   echo '=== installer ==='
   if [ "$mode" = installed ]; then
     ls -l /etc/kaadzos 2>&1

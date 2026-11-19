@@ -146,6 +146,12 @@ grep -q 'sway_dir/20-keyboard.conf' "$settings" \
   || fail "kaadzos-settings must persist the keyboard override in config.d"
 grep -q 'kaadzos-file-action' "$settings" \
   || fail "kaadzos-settings must delegate wallpaper handling"
+grep -q 'KAADZOS_SETTINGS_OK' "$session_ready" \
+  || fail "kaadzos-session-ready must emit KAADZOS_SETTINGS_OK"
+grep -q 'KAADZOS_SETTINGS_MISSING' "$session_ready" \
+  || fail "kaadzos-session-ready must emit KAADZOS_SETTINGS_MISSING"
+grep -Fq 'include ~/.config/sway/config.d/*.conf' "$session_ready" \
+  || fail "kaadzos-session-ready must assert the config.d include"
 
 # Portal/session integration: the portal packages are in base, the Sway config
 # exports the Wayland environment to both the private dbus-run-session bus and
