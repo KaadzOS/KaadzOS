@@ -406,6 +406,9 @@ Wayland docks are not in trixie. Do not add an X11 dock and do not vendor a Go
 binary into the base. Keep Waybar as the supported bar; revisit only if a
 trixie package appears. Record the decision in README/docs (Prompt 14).
 
+Status: decision recorded locally on 2026-11-19. No package or binary was
+added; the user-facing README note remains part of the Prompt 14 pass.
+
 ### Prompt 9 — GUI package management
 
 Depends on: 2 (`kaadzos`), 5 (launcher patterns).
