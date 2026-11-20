@@ -36,8 +36,9 @@ validate_package() {
   esac
 }
 
-apt_log=$(mktemp)
-trap 'rm -f "$apt_log"' 0 1 2 15
+tmp_apt_log=$(mktemp)
+apt_log=$tmp_apt_log
+trap 'rm -f "$tmp_apt_log"' 0 1 2 15
 
 run_apt() {
   if have pkexec; then
@@ -45,16 +46,24 @@ run_apt() {
   elif have sudo && sudo -n true >/dev/null 2>&1; then
     sudo -n -E env DEBIAN_FRONTEND=noninteractive apt-get "$@" >"$apt_log" 2>&1
   else
-    error "Packages" "Install the admin pack for pkexec and the polkit agent."
+    error "Packages" "Install the admin pack for pkexec, or use a passwordless sudo session."
     return 1
   fi
 }
 
 apt_failure() {
+  # The temporary log is removed on exit; keep a copy for the error message so
+  # the user can inspect a failed local package after the helper returns.
+  saved=${XDG_CACHE_HOME:-${HOME:-/tmp}/.cache}/kaadzos/apt.log
+  if mkdir -p "${saved%/*}" 2>/dev/null && cp "$apt_log" "$saved" 2>/dev/null; then
+    apt_log=$saved
+  fi
   if grep -Eqi 'could not get lock|unable to acquire the dpkg frontend lock|is another process using it' "$apt_log"; then
     error "Packages" "Another package manager is running. Close it and try again."
   elif grep -Eqi 'temporary failure resolving|network is unreachable|could not resolve|failed to fetch' "$apt_log"; then
     error "Packages" "The package archive is unreachable. Check the network and try again."
+  elif grep -Eqi 'is not a valid package|not a debian format archive|dpkg: error processing' "$apt_log"; then
+    error "Packages" "The package file could not be installed. See $apt_log."
   else
     error "Packages" "apt-get failed. See $apt_log."
   fi
@@ -99,6 +108,45 @@ remove_package() {
     return 1
   fi
   notify "Packages" "Removed $pkg."
+}
+
+validate_deb() {
+  case ${1:-} in
+    '') error "Packages" "A package path is required."; return 1 ;;
+    -*) error "Packages" "A package path cannot start with a dash."; return 1 ;;
+  esac
+  case $1 in
+    *'$'*|*\`*) error "Packages" "Refusing a package path with shell metacharacters."; return 1 ;;
+    *[[:cntrl:]]*) error "Packages" "Refusing a package path with control characters."; return 1 ;;
+    *.deb) ;;
+    *) error "Packages" "Not a Debian package: $1"; return 1 ;;
+  esac
+  case $1 in
+    /*) ;;
+    *) error "Packages" "Use an absolute path to the package."; return 1 ;;
+  esac
+  if [ ! -f "$1" ]; then
+    error "Packages" "No such file: $1"
+    return 1
+  fi
+  if [ ! -r "$1" ]; then
+    error "Packages" "Not readable: $1"
+    return 1
+  fi
+}
+
+install_deb() {
+  deb=${1:-}
+  validate_deb "$deb" || return 1
+  name=${deb##*/}
+  if ! confirm "Install local package" "Install $name? Only install packages you trust: Debian maintainer scripts run as root."; then
+    return 0
+  fi
+  if ! run_apt install -y "$deb"; then
+    apt_failure
+    return 1
+  fi
+  notify "Packages" "Installed $name."
 }
 
 pack_list() {
@@ -199,12 +247,13 @@ case "${1:-menu}" in
   refresh) refresh ;;
   install) shift; install_package "${1:-}" ;;
   remove) shift; remove_package "${1:-}" ;;
+  install-deb) shift; install_deb "${1:-}" ;;
   packs) pack_list ;;
   archive) archive_info ;;
   synaptic) synaptic ;;
   about) about ;;
   *)
-    echo "usage: kaadzos-packages [menu|refresh|install PACKAGE|remove PACKAGE|packs|archive|synaptic|about]" >&2
+    echo "usage: kaadzos-packages [menu|refresh|install PACKAGE|remove PACKAGE|install-deb PATH|packs|archive|synaptic|about]" >&2
     exit 2
     ;;
 esac

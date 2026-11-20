@@ -115,6 +115,24 @@ zathura-pdf-poppler
 wf-recorder
 xdg-user-dirs
 
+# File manager integration. Thunar's native menu stays primary; the archive
+# plugin adds compress/extract, and xarchiver is the lean archive manager that
+# ships its own tap in /usr/lib/thunar-archive-plugin (the plugin package only
+# carries the ark, engrampa and file-roller taps). wl-clipboard backs Copy Path.
+# gvfs, gvfs-fuse, udisks2, thunar-volman and tumbler provide trash, removable
+# media and thumbnails; lxpolkit is the session polkit authentication agent.
+# gvfs-backends supplies the admin:// backend and stays in the admin pack so
+# the base image does not carry the SMB/MTP/camera stack by default.
+thunar-archive-plugin
+xarchiver
+wl-clipboard
+gvfs
+gvfs-fuse
+udisks2
+thunar-volman
+tumbler
+lxpolkit
+
 # Phase 6: bootsplash. The script plugin ships in plymouth core; plymouth-themes
 # is still installed for the two-step fallback machinery and the label plugins
 # come from plymouth-label. The AMOLED theme lives in theme/generate.sh output.

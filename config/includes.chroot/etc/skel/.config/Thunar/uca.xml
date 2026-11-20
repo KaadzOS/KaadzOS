@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- KaadzOS safe Thunar actions. Every command passes the selected path to
+     kaadzos-file-action as one argument; Thunar quotes field codes itself. -->
+<actions>
+<action>
+  <icon>utilities-terminal</icon>
+  <name>Open Terminal Here</name>
+  <submenu></submenu>
+  <unique-id>kaadzos-open-terminal</unique-id>
+  <command>kaadzos-file-action open-terminal %f</command>
+  <description>Open a terminal in this folder</description>
+  <range></range>
+  <patterns>*</patterns>
+  <startup-notify/>
+  <directories/>
+</action>
+<action>
+  <icon>edit-copy</icon>
+  <name>Copy Path</name>
+  <submenu></submenu>
+  <unique-id>kaadzos-copy-path</unique-id>
+  <command>kaadzos-file-action copy-path %f</command>
+  <description>Copy the selected path to the clipboard</description>
+  <range></range>
+  <patterns>*</patterns>
+  <startup-notify/>
+  <directories/>
+  <audio-files/>
+  <image-files/>
+  <other-files/>
+  <text-files/>
+  <video-files/>
+</action>
+<action>
+  <icon>preferences-desktop-wallpaper</icon>
+  <name>Set as Wallpaper</name>
+  <submenu></submenu>
+  <unique-id>kaadzos-set-wallpaper</unique-id>
+  <command>kaadzos-file-action wallpaper %f</command>
+  <description>Use this image as the desktop wallpaper</description>
+  <range></range>
+  <patterns>*.png;*.jpg;*.jpeg;*.webp;*.bmp</patterns>
+  <startup-notify/>
+  <image-files/>
+</action>
+<action>
+  <icon>dialog-password</icon>
+  <name>Open as Administrator</name>
+  <submenu></submenu>
+  <unique-id>kaadzos-admin-open</unique-id>
+  <command>kaadzos-file-action admin-open %f</command>
+  <description>Open this folder through polkit-backed admin:// access</description>
+  <range></range>
+  <patterns>*</patterns>
+  <startup-notify/>
+  <directories/>
+</action>
+<action>
+  <icon>system-software-install</icon>
+  <name>Install Local Package</name>
+  <submenu></submenu>
+  <unique-id>kaadzos-install-package</unique-id>
+  <command>kaadzos-file-action install-package %f</command>
+  <description>Install this .deb after a confirmation prompt</description>
+  <range></range>
+  <patterns>*.deb</patterns>
+  <startup-notify/>
+  <other-files/>
+</action>
+<action>
+  <icon>preferences-system</icon>
+  <name>Open Settings</name>
+  <submenu></submenu>
+  <unique-id>kaadzos-open-settings</unique-id>
+  <command>kaadzos-file-action open-settings</command>
+  <description>Open the KaadzOS settings application</description>
+  <range></range>
+  <patterns>*</patterns>
+  <startup-notify/>
+  <directories/>
+  <audio-files/>
+  <image-files/>
+  <other-files/>
+  <text-files/>
+  <video-files/>
+</action>
+</actions>

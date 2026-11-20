@@ -152,6 +152,36 @@ else
   printf 'KAADZOS_SETTINGS_MISSING\n' > "$serial"
 fi
 
+# Thunar context actions need the helper, the skel uca.xml, the archive
+# plugin and the clipboard tool. gvfs-backends (admin://) is optional because
+# it ships in the admin pack; the other pieces are in the base image.
+plugin_so=$(ls /usr/lib/*/thunarx-3/thunar-archive-plugin.so 2>/dev/null | head -n 1 || true)
+if [ -x /usr/local/bin/kaadzos-file-action ] \
+   && [ -f "${HOME:-/root}/.config/Thunar/uca.xml" ] \
+   && grep -Fq 'kaadzos-file-action' "${HOME:-/root}/.config/Thunar/uca.xml" 2>/dev/null \
+   && command -v wl-copy >/dev/null 2>&1 \
+   && command -v xarchiver >/dev/null 2>&1 \
+   && [ -n "$plugin_so" ]; then
+  printf 'KAADZOS_FILE_ACTIONS_OK\n' > "$serial"
+else
+  printf 'KAADZOS_FILE_ACTIONS_MISSING\n' > "$serial"
+fi
+
+# lxpolkit is the session's polkit agent. Without it, admin://, package
+# installation through pkexec and other privileged desktop actions cannot ask
+# for authorization. Sway starts it with an exec line; give it a moment to
+# appear before recording a failure.
+polkit_attempt=0
+while [ "$polkit_attempt" -lt 5 ] && ! pgrep -x lxpolkit >/dev/null 2>&1; do
+  polkit_attempt=$((polkit_attempt + 1))
+  sleep 1
+done
+if pgrep -x lxpolkit >/dev/null 2>&1; then
+  printf 'KAADZOS_POLKIT_AGENT_OK\n' > "$serial"
+else
+  printf 'KAADZOS_POLKIT_AGENT_MISSING\n' > "$serial"
+fi
+
 # The portal service is D-Bus activated. Ping the well-known name so the check
 # proves both the service files and the activation environment (Wayland plus
 # the desktop name), not just that the packages are installed. Bound it so a
@@ -203,6 +233,12 @@ set +e
   grep -F 'include ~/.config/sway/config.d/*.conf' \
     "$HOME/.config/sway/config" 2>&1 || true
   ls -l "$HOME/.config/sway/config.d" 2>&1
+  echo '=== file actions ==='
+  ls -l /usr/local/bin/kaadzos-file-action \
+    "$HOME/.config/Thunar/uca.xml" \
+    /usr/lib/*/thunarx-3/thunar-archive-plugin.so 2>&1
+  command -v wl-copy xarchiver lxpolkit 2>&1 || true
+  timeout 5 pgrep -a lxpolkit 2>&1 || true
   echo '=== installer ==='
   if [ "$mode" = installed ]; then
     ls -l /etc/kaadzos 2>&1

@@ -183,10 +183,12 @@ grep -Fq '"Packages" "Software and optional packs"' "$settings" \
 grep -Fq 'packages) packages' "$settings" \
   || fail "kaadzos-settings is missing the packages subcommand"
 [ -f "$root/packs/admin.pack" ] || fail "packs/admin.pack is missing"
-grep -qx 'apt=synaptic pkexec lxpolkit' "$root/packs/admin.pack" \
-  || fail "admin pack must provide Synaptic, pkexec and the polkit agent"
+grep -qx 'apt=synaptic pkexec lxpolkit gvfs-backends' "$root/packs/admin.pack" \
+  || fail "admin pack must provide Synaptic, pkexec, the polkit agent and gvfs backends"
+grep -qx 'lxpolkit' "$root/config/package-lists/base.list.chroot" \
+  || fail "base image must provide lxpolkit for the session polkit agent"
 grep -Fq "command -v lxpolkit" "$sway" \
-  || fail "Sway config must start lxpolkit when the admin pack provides it"
+  || fail "Sway config must start lxpolkit when it is present"
 grep -Fq "command -v lxpolkit" "$root/theme/generate.sh" \
   || fail "theme/generate.sh does not generate the lxpolkit autostart"
 

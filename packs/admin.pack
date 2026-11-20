@@ -1,4 +1,4 @@
 name=admin
-description=Synaptic package manager, pkexec and the polkit authentication agent
-size=30MB
-apt=synaptic pkexec lxpolkit
+description=Synaptic, pkexec, gvfs admin/network backends and the polkit agent
+size=45MB
+apt=synaptic pkexec lxpolkit gvfs-backends

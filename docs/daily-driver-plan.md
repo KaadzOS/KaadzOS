@@ -4,12 +4,12 @@ Status: living implementation plan for
 [`daily-driver-roadmap.md`](daily-driver-roadmap.md). Prompt 1 recorded the
 verified state below; the prompt sections are updated as each feature lands.
 Prompts 2 (core baseline) and 3 (Bluetooth and Waybar) are implemented and
-green in CI runs 44217239776 and 44250067376. Prompt 4 (Waybar control centre)
-landed locally as `8cb8263`. The portal/session foundation, Prompt 5 (settings)
-and Prompt 6 (greeter) are implemented locally in `e8ae260`, `e98f10a` and
-`db477bb`. Prompt 7 (search) is implemented locally in `cdc7019` and `64c8b7f`.
-Prompt 9 (GUI package management) is implemented locally in `39d30a4` and
-`5c57729`; these changes await the next CI run.
+green in CI runs 44217239776 and 44250067376. Prompts 4-10 and the
+portal/session foundation are covered by the green full-matrix run 44460300130
+on commit `1bbf4e8`, which passed `pack-test`, `repo-test`, `build`,
+`boot-test` (bios/uefi) and `install-test` (bios/uefi). Prompt 11 (safe
+context-menu actions) is implemented in this branch and awaits its own
+full-matrix run; the plan records the verified package choices below.
 
 Prepared: 2026-11-18, against `main` at `026091c`. Prompt 2 landed as `7a4e6e2`
 and Prompt 3 as `a316fd1` plus the diagnostic fix `1b26d0d`.
@@ -118,8 +118,11 @@ power-profiles-daemon, wlsunset and wlr-randr; hardware pack: nwg-displays.
 `yad 0.40.0`, `wl-clipboard 2.2.1` (0.2 MB), `cliphist 0.5.0`,
 `thunar-archive-plugin 0.5.3` (0.4 MB), `xarchiver 0.5.4` (1.7 MB),
 `file-roller 44.5` (4.9 MB). Base: zenity, wl-clipboard,
-thunar-archive-plugin + xarchiver. `cliphist` is optional; add later if a
-clipboard history is wanted.
+thunar-archive-plugin + xarchiver. xarchiver ships its own
+`/usr/lib/thunar-archive-plugin/xarchiver.tap`; the plugin package itself
+carries the ark, engrampa and file-roller taps, so xarchiver is the leanest
+supported backend. `cliphist` is optional; add later if a clipboard history is
+wanted.
 
 **Printing / scanning pack** — `cups 2.4.10`, `cups-client 2.4.10`,
 `cups-filters 1.28.17`, `cups-pk-helper 0.2.6`, `system-config-printer 1.5.18`,
@@ -242,10 +245,11 @@ Depends on: 2.
 
 ### Prompt 4 — Waybar control centre
 
-Status: landed locally as `8cb8263`; the next push must run the normal matrix
-before this is recorded as green. The helper is `dash`-clean and the action
-dispatch is covered by fake-command tests that run in both the `build` and
-`pack-test` containers (`ci/test-control.sh`).
+Status: complete. CI run [44460300130](https://github.com/KaadzOS/KaadzOS/actions/runs/44460300130)
+(commit `1bbf4e8`) passed `pack-test`, `repo-test`, `build`, `boot-test`
+(bios/uefi) and `install-test` (bios/uefi). The helper is `dash`-clean and the
+action dispatch is covered by fake-command tests that run in both the `build`
+and `pack-test` containers (`ci/test-control.sh`).
 
 Depends on: 3 (Bluetooth toggle), 2 (`zenity`).
 
@@ -272,9 +276,11 @@ Depends on: 3 (Bluetooth toggle), 2 (`zenity`).
 
 ### Portal and session integration (foundation)
 
-Status: implemented locally on 2026-11-18 (`e8ae260`); CI validation is
-pending the next push. This is the shared dependency for file pickers, screen
-sharing and the GTK integrations used by Settings and the file manager.
+Status: complete. CI run [44460300130](https://github.com/KaadzOS/KaadzOS/actions/runs/44460300130)
+(commit `1bbf4e8`) passed `pack-test`, `repo-test`, `build`, `boot-test`
+(bios/uefi) and `install-test` (bios/uefi). This is the shared dependency for
+file pickers, screen sharing and the GTK integrations used by Settings and the
+file manager.
 
 Depends on: 2 (`dbus`, `libglib2.0-bin`).
 
@@ -302,12 +308,11 @@ Depends on: 2 (`dbus`, `libglib2.0-bin`).
 
 ### Prompt 5 — Themed settings application
 
-Status: implemented locally on 2026-11-19 in `5a64c6c` (config.d include),
-`095fb93` (`kaadzos-file-action`), `e98f10a` (`kaadzos-settings`) and
-`6ec3073` (session gate); the next push must run the normal matrix before this
-is recorded as green. The helper is `dash`-clean and the actions are covered by
-fake-command tests in `ci/test-file-actions.sh` and `ci/test-settings.sh`,
-which run in both container jobs.
+Status: complete. CI run [44460300130](https://github.com/KaadzOS/KaadzOS/actions/runs/44460300130)
+(commit `1bbf4e8`) passed `pack-test`, `repo-test`, `build`, `boot-test`
+(bios/uefi) and `install-test` (bios/uefi). The helper is `dash`-clean and the
+actions are covered by fake-command tests in `ci/test-file-actions.sh` and
+`ci/test-settings.sh`, which run in both container jobs.
 
 Depends on: 3, 4 (shared actions), 10 for display/network editors (optional
 items degrade gracefully).
@@ -341,9 +346,10 @@ items degrade gracefully).
 
 ### Prompt 6 — Display-manager theming
 
-Status: implemented locally on 2026-11-19 as `db477bb`; the next push must run
-the full matrix before this is recorded as green. The static checks run in both
-container jobs, and `install-test` now requires `KAADZOS_GREETER_OK`.
+Status: complete. CI run [44460300130](https://github.com/KaadzOS/KaadzOS/actions/runs/44460300130)
+(commit `1bbf4e8`) passed `pack-test`, `repo-test`, `build`, `boot-test`
+(bios/uefi) and `install-test` (bios/uefi). The static checks run in both
+container jobs, and `install-test` requires `KAADZOS_GREETER_OK`.
 
 Depends on: 5 (settings entry points).
 
@@ -384,9 +390,11 @@ Depends on: 5 (settings/pack entries).
   excluded directories; `dash -n`; no shell evaluation of filenames.
 - Risk: `find $HOME` latency on large homes; cap it and prefer recent files.
 
-Status: implemented locally on 2026-11-19 in `cdc7019` (helper and
-`ci/test-search.sh`) and `64c8b7f` (the `$mod+d`/`$mod+Shift+d` split, desktop
-checks and both container job calls); CI validation is pending the next push.
+Status: complete. CI run [44460300130](https://github.com/KaadzOS/KaadzOS/actions/runs/44460300130)
+(commit `1bbf4e8`) passed `pack-test`, `repo-test`, `build`, `boot-test`
+(bios/uefi) and `install-test` (bios/uefi). The helper landed in `cdc7019`
+with `ci/test-search.sh`; the `$mod+d`/`$mod+Shift+d` split, desktop checks and
+both container job calls landed in `64c8b7f`.
 
 The helper reads recent entries from `$XDG_DATA_HOME/recently-used.xbel`,
 prefers them over the depth-6 `timeout 2 find` scan and caps both at 100
@@ -431,14 +439,15 @@ Depends on: 2 (`kaadzos`), 5 (launcher patterns).
   launch in the boot test (or assert its desktop entry and binary only if
   installing the pack in CI is affordable).
 
-Status: implemented locally on 2026-11-19 in `39d30a4` (the `kaadzos-packages`
-helper, `ci/test-packages.sh` and the `admin` pack) and `5c57729` (the desktop
-entry, `$mod+Shift+p`, Waybar module, Settings row, search entry, generated
-configs and CI calls); CI validation is pending the next push.
+Status: complete. CI run [44460300130](https://github.com/KaadzOS/KaadzOS/actions/runs/44460300130)
+(commit `1bbf4e8`) passed `pack-test`, `repo-test`, `build`, `boot-test`
+(bios/uefi) and `install-test` (bios/uefi). The helper and tests landed in
+`39d30a4`; the desktop entry, `$mod+Shift+p`, Waybar module, Settings row,
+search entry, generated configs and CI calls landed in `5c57729`.
 
 The base front end uses zenity for its menu and `kaadzos` for the pack list;
-`admin` supplies `synaptic`, `pkexec` and `lxpolkit`, and the generated Sway
-config starts `lxpolkit` only when it is installed. Privileged actions validate
+base adds `lxpolkit` (the generated Sway config starts it when present), while
+`admin` supplies `synaptic`, `pkexec` and `gvfs-backends`. Privileged actions validate
 the package name, pass it as one argv, confirm installs/removes (remove
 defaults to cancel), and distinguish a locked dpkg from an unreachable archive.
 The test stubs apt, pkexec, zenity, Synaptic and `kaadzos` to cover refresh,
@@ -448,6 +457,11 @@ does not launch Synaptic because the admin pack is optional; the pack test
 resolves its packages in trixie instead.
 
 ### Prompt 10 — Driver, firmware, disk, printer and network tools
+
+Status: complete. CI run [44460300130](https://github.com/KaadzOS/KaadzOS/actions/runs/44460300130)
+(commit `1bbf4e8`) passed `pack-test`, `repo-test`, `build`, `boot-test`
+(bios/uefi) and `install-test` (bios/uefi). The `hardware`, `network` and
+`printing` packs and their hooks landed in `1bbf4e8`.
 
 Depends on: 4/5 (entry points).
 
@@ -476,24 +490,53 @@ Depends on: 4/5 (entry points).
 
 ### Prompt 11 — Safe context-menu actions
 
+Status: implemented in this branch on 2026-11-20; the next push runs the
+normal matrix before this is recorded as green.
+
 Depends on: 5 (`kaadzos-file-action`), 10 (archive tools in a pack or base).
 
-- Thunar custom actions in skel `uca.xml`, each calling a single helper:
-  terminal here (`foot --working-directory`), copy path (wl-copy +
-  notify-send), compress/extract (thunar-archive-plugin + xarchiver),
-  set wallpaper (write `~/.config/sway/config.d/10-wallpaper` + `swaymsg`),
-  open settings, install local package (explicit zenity confirmation, then
-  `pkexec apt install ./file.deb`).
-- No action may eval or concatenate the filename into a shell string. Thunar
-  does not quote `%f`; the helper must receive the path as an argument and
-  refuse paths containing newlines, NUL, `$`, backticks or leading `-`.
+- Thunar custom actions in skel `uca.xml`, each calling `kaadzos-file-action`:
+  terminal here (`foot --working-directory`), copy path (`wl-copy` +
+  notify-send), set wallpaper (existing action), open as administrator
+  (Thunar's polkit-backed `admin://`), install local package (delegates to
+  `kaadzos-packages install-deb`) and open settings.
+- Archive create/extract uses `thunar-archive-plugin` + `xarchiver`. Verified:
+  xarchiver ships `/usr/lib/thunar-archive-plugin/xarchiver.tap`; the plugin
+  package carries ark/engrampa/file-roller taps and its binary searches both
+  `/usr/lib/thunar-archive-plugin` and `/usr/libexec/thunar-archive-plugin`.
+  xarchiver is 1.7 MB installed; file-roller is 4.9 MB plus libadwaita and a
+  Nautilus extension, so xarchiver stays.
+- The helper receives the path as one positional argument. Thunar expands
+  `%f` with `xfce_g_string_append_quoted`, so the commands leave field codes
+  unquoted. The helper never evals; it rejects empty, leading-dash,
+  control-character, `$` and backtick paths and validates the type per action
+  (regular file, directory, image, `.deb`, absolute package path). The
+  `admin-open` action also rejects `#`, `?` and `%` before building the URI.
+- Base additions: `thunar-archive-plugin`, `xarchiver`, `wl-clipboard`, `gvfs`,
+  `gvfs-fuse`, `udisks2`, `thunar-volman`, `tumbler`, `lxpolkit`.
+  `gvfs-backends` (the `admin://` backend and SMB/MTP/camera stack) is in the
+  `admin` pack so the base stays lean; the action reports that dependency
+  instead of launching a root file manager.
+- `kaadzos-packages install-deb` requires an absolute readable `.deb`, confirms
+  with zenity (default cancel), warns that maintainer scripts run as root, and
+  passes the path as one argv through `pkexec` or live passwordless `sudo`.
+  Failed apt logs are copied to `~/.cache/kaadzos/apt.log` before the temporary
+  log is removed.
 - Files: `config/includes.chroot/etc/skel/.config/Thunar/uca.xml` (new),
-  `kaadzos-file-action` (new), base additions `thunar-archive-plugin`,
-  `xarchiver`, `wl-clipboard`, `ci/test-file-actions.sh` (new).
-- Tests: spaces, quotes, Unicode, symlinks, `-rf`, newline rejection,
-  no-argument and missing-file errors.
-- Risk: "open as administrator" is the hardest case; prefer Thunar's
-  `admin://` location with gvfs + polkit over launching a root file manager.
+  `kaadzos-file-action`, `kaadzos-packages`, `kaadzos-session-ready`,
+  `config/package-lists/base.list.chroot`, `packs/admin.pack`,
+  `ci/test-file-actions.sh`, `ci/test-packages.sh`, `ci/test-boot.sh`,
+  `ci/test-install.sh`.
+- Tests: spaces, quotes, Unicode, symlinks, newline/`$`/backtick/leading-dash
+  rejection, no-argument and missing-file errors, every action, `uca.xml`
+  wiring and XML parsing, and local `.deb` validation/cancellation. The guest
+  emits `KAADZOS_FILE_ACTIONS_OK` and `KAADZOS_POLKIT_AGENT_OK`; the live and
+  installed gates require both.
+- Risk: "open as administrator" is the hardest case; it stays on Thunar's
+  `admin://` location with gvfs + polkit and never launches a root file
+  manager. `gvfs-backends` and `pkexec` come from the optional `admin` pack,
+  so the action and installed-system package installs degrade with a clear
+  message until that pack is present.
 
 ### Prompt 12 — OpenCode optional pack
 
@@ -559,7 +602,7 @@ Depends on: 13 green.
 |---|---|---|
 | `fdisk`, `7zip` | base | 7.5 MB |
 | portals (xdg-desktop-portal + GTK/WLR) | base | 3 MB |
-| gvfs/udisks/Thunar integration | base (follow-up) | 5.5 MB |
+| gvfs, gvfs-fuse, udisks2, thunar-volman, tumbler, lxpolkit | base (implemented) | ~10 MB |
 | Bluetooth (bluez + blueman) | base | 9 MB |
 | upower, power-profiles-daemon, wlsunset, wlr-randr, zenity, wl-clipboard | base | 1 MB |
 | Thunar archive plugin + xarchiver | base | 2 MB |
@@ -569,12 +612,12 @@ Depends on: 13 green.
 | ufw + gufw | `security` pack | 10 MB |
 | Noto core + emoji + mono | `fonts` pack | 55 MB |
 | fcitx5 + frontends + config | `input` pack | 20 MB |
-| synaptic + pack front page | `admin` pack | 10 MB |
+| synaptic + pkexec + gvfs-backends + polkit agent | `admin` pack | 45 MB |
 | OpenCode | `opencode` pack | ~100 MB |
 | dock | none (not packaged) | — |
 
-Base growth is about 28 MB installed, or roughly 10–15 MB of ISO. That keeps
-the ISO near 1.45 GB before packs.
+Base growth is about 40 MB installed, or roughly 15–20 MB of ISO. That keeps
+the ISO near 1.46 GB before packs.
 
 ## 6. Cross-cutting risks
 

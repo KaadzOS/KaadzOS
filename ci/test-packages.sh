@@ -16,6 +16,7 @@ mkdir -p "$bin"
 export PATH="$bin:$PATH"
 export KAADZOS_TEST_LOG="$log"
 export KAADZOS_OS_RELEASE="$tmp/os-release"
+export XDG_CACHE_HOME="$tmp/cache"
 
 cat > "$tmp/os-release" <<'EOF'
 PRETTY_NAME="KaadzOS 0.4 test"
@@ -182,6 +183,89 @@ export FAKE_ZENITY_ANSWER
 run remove hello
 expect 'apt-get [remove] [-y] [hello]'
 expect 'notify-send [-a] [KaadzOS] [Packages] [Removed hello.]'
+
+deb="$tmp/hello world.deb"
+printf 'deb' > "$deb"
+run install-deb "$deb"
+expect 'zenity [--question] [--title=Install local package]'
+expect "apt-get [install] [-y] [$deb]"
+expect 'notify-send [-a] [KaadzOS] [Packages] [Installed hello world.deb.]'
+
+FAKE_ZENITY_ANSWER=1
+export FAKE_ZENITY_ANSWER
+run install-deb "$deb"
+expect 'zenity [--question] [--title=Install local package]'
+if grep -Fq 'apt-get [install]' "$log"; then
+  fail "a cancelled local package install still reached apt-get"
+fi
+
+FAKE_ZENITY_ANSWER=0
+export FAKE_ZENITY_ANSWER
+
+notdeb="$tmp/not-a-package.txt"
+printf 'text' > "$notdeb"
+: > "$log"
+if "$helper" install-deb "$notdeb" >/dev/null 2>&1; then
+  fail "a non-.deb path was accepted"
+fi
+if grep -Fq 'apt-get [install]' "$log"; then
+  fail "a non-.deb path reached apt-get"
+fi
+
+: > "$log"
+if (cd "$tmp" && "$helper" install-deb "hello world.deb") >/dev/null 2>&1; then
+  fail "a relative package path was accepted"
+fi
+if grep -Fq 'apt-get [install]' "$log"; then
+  fail "a relative package path reached apt-get"
+fi
+
+printf 'deb' > "$tmp/-evil.deb"
+: > "$log"
+if (cd "$tmp" && "$helper" install-deb "-evil.deb") >/dev/null 2>&1; then
+  fail "a leading-dash package path was accepted"
+fi
+if grep -Fq 'apt-get [install]' "$log"; then
+  fail "a leading-dash package path reached apt-get"
+fi
+
+bad=$(printf 'bad\nname.deb')
+printf 'deb' > "$tmp/$bad"
+: > "$log"
+if "$helper" install-deb "$tmp/$bad" >/dev/null 2>&1; then
+  fail "a newline in the package path was accepted"
+fi
+if grep -Fq 'apt-get [install]' "$log"; then
+  fail "a newline package path reached apt-get"
+fi
+
+dollar="$tmp/price\$5.deb"
+printf 'deb' > "$dollar"
+: > "$log"
+if "$helper" install-deb "$dollar" >/dev/null 2>&1; then
+  fail "a '\$' package path was accepted"
+fi
+if grep -Fq 'apt-get [install]' "$log"; then
+  fail "a '\$' package path reached apt-get"
+fi
+
+tick="$tmp/back\`tick.deb"
+printf 'deb' > "$tick"
+: > "$log"
+if "$helper" install-deb "$tick" >/dev/null 2>&1; then
+  fail "a backtick package path was accepted"
+fi
+if grep -Fq 'apt-get [install]' "$log"; then
+  fail "a backtick package path reached apt-get"
+fi
+
+: > "$log"
+if "$helper" install-deb "$tmp/missing.deb" >/dev/null 2>&1; then
+  fail "a missing package was accepted"
+fi
+if grep -Fq 'apt-get [install]' "$log"; then
+  fail "a missing package reached apt-get"
+fi
 
 for bad in '-rf' 'bad name' 'UPPER'; do
   : > "$log"

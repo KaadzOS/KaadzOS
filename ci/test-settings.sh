@@ -269,7 +269,7 @@ expect 'kaadzos-packages'
 image="$tmp/wall paper.png"
 printf 'png' > "$image"
 run wallpaper "$image"
-expect "swaymsg [output] [*] [bg] [$image] [fill]"
+expect "swaymsg [output * bg \"$image\" fill]"
 grep -Fq "output * bg \"$image\" fill" "$sway_dir/10-wallpaper.conf" \
   || fail "wallpaper override was not written"
 grep -Fq "wallpaper=$image" "$state" \
