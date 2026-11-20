@@ -72,6 +72,9 @@ jobs:
       - name: Verify package actions
         run: sh ci/test-packages.sh
 
+      - name: Verify OpenCode pack
+        run: sh ci/test-opencode.sh
+
       - name: Set cache key
         id: cache-key
         run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
@@ -218,6 +221,9 @@ jobs:
 
       - name: Verify package actions
         run: sh ci/test-packages.sh
+
+      - name: Verify OpenCode pack
+        run: sh ci/test-opencode.sh
 
       - name: Run pack resolution tests
         run: bash ci/test-packs.sh

@@ -39,7 +39,7 @@ for h in "$packs"/hooks/*.sh; do
   [ -f "$h" ] || continue
   run_ok "hook parses under dash: $(basename "$h")" dash -n "$h"
 done
-for h in printing hardware network; do
+for h in printing hardware network opencode; do
   run_fail "$h hook rejects an unknown action" sh "$packs/hooks/$h.sh" bogus
 done
 

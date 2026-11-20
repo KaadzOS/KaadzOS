@@ -4,10 +4,9 @@ This document records the planned expansion of the minimal Sway desktop into a
 daily-driver system. It is a planning document only; no implementation changes
 are implied by its presence. The verified, dependency-ordered output of
 Prompt 1 lives in [`daily-driver-plan.md`](daily-driver-plan.md), which carries
-the live status. Prompts 2 and 3 are green in CI; Prompt 4, the
-portal/session foundation, Prompt 5 (settings), Prompt 6 (greeter), Prompt 7
-(search) and Prompt 9 (package management) are implemented locally and await
-the next CI run; Prompt 8 keeps Waybar and declines a Wayland dock.
+the live status. Prompts 2-11 and the portal/session foundation are green in
+CI; Prompt 12 (OpenCode) is implemented and awaits its full-matrix run;
+Prompt 8 keeps Waybar and declines a Wayland dock.
 
 ## Principles
 

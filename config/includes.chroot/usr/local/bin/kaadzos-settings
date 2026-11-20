@@ -476,6 +476,18 @@ packages() {
   error "Packages" "kaadzos-packages is not installed."
 }
 
+opencode() {
+  if ! have opencode; then
+    error "OpenCode" "OpenCode is not installed. Run 'kaadzos add opencode' first."
+    return 1
+  fi
+  if ! have kaadzos-opencode; then
+    error "OpenCode" "kaadzos-opencode is not installed."
+    return 1
+  fi
+  exec kaadzos-opencode "${1:-}"
+}
+
 browser() {
   if ! have xdg-settings; then
     error "Default browser" "xdg-settings is not installed."
@@ -527,6 +539,7 @@ main_menu() {
     "Sound" "Volume mixer" \
     "Power" "Battery, profile and session" \
     "Packages" "Software and optional packs" \
+    "OpenCode" "Opt-in coding agent (first run asks for consent)" \
     "Default browser" "Use GNOME Web" \
     "Default file manager" "Use Thunar" \
     "About" "Version and session") || exit 0
@@ -541,6 +554,7 @@ main_menu() {
     Sound) sound ;;
     Power) power ;;
     Packages) packages ;;
+    OpenCode) opencode ;;
     'Default browser') browser ;;
     'Default file manager') file_manager ;;
     About) about ;;
@@ -560,6 +574,7 @@ case "${1:-menu}" in
   sound) sound ;;
   power) power ;;
   packages) packages ;;
+  opencode) opencode "${2:-}" ;;
   browser) browser ;;
   file-manager) file_manager ;;
   about) about ;;
@@ -572,7 +587,7 @@ case "${1:-menu}" in
   icons) icons ;;
   night-light) night_light ;;
   *)
-    echo "usage: kaadzos-settings [menu|appearance|input|display|network|printers|hardware|bluetooth|sound|power|packages|browser|file-manager|about|wallpaper [PATH]|keyboard [LAYOUT]|touchpad [on|off]|dark-style|light-style|font|icons|night-light]" >&2
+    echo "usage: kaadzos-settings [menu|appearance|input|display|network|printers|hardware|bluetooth|sound|power|packages|opencode [DIR]|browser|file-manager|about|wallpaper [PATH]|keyboard [LAYOUT]|touchpad [on|off]|dark-style|light-style|font|icons|night-light]" >&2
     exit 2
     ;;
 esac

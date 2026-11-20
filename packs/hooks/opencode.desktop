@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=OpenCode
+Comment=AI coding agent for a project directory (first run asks for consent)
+Exec=kaadzos-opencode
+Icon=utilities-terminal
+Terminal=false
+Categories=Development;IDE;
+StartupNotify=true

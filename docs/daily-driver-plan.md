@@ -4,12 +4,12 @@ Status: living implementation plan for
 [`daily-driver-roadmap.md`](daily-driver-roadmap.md). Prompt 1 recorded the
 verified state below; the prompt sections are updated as each feature lands.
 Prompts 2 (core baseline) and 3 (Bluetooth and Waybar) are implemented and
-green in CI runs 44217239776 and 44250067376. Prompts 4-10 and the
-portal/session foundation are covered by the green full-matrix run 44460300130
-on commit `1bbf4e8`, which passed `pack-test`, `repo-test`, `build`,
-`boot-test` (bios/uefi) and `install-test` (bios/uefi). Prompt 11 (safe
-context-menu actions) is implemented in this branch and awaits its own
-full-matrix run; the plan records the verified package choices below.
+green in CI runs 44217239776 and 44250067376. Prompts 4-11 and the
+portal/session foundation are covered by green full-matrix runs 44460300130
+(`1bbf4e8`) and 44649890054 (`fea3433`), which passed `pack-test`, `repo-test`,
+`build`, `boot-test` (bios/uefi) and `install-test` (bios/uefi). Prompt 12
+(OpenCode pack) is implemented and awaits its own full-matrix run; the plan
+records the verified package choices below.
 
 Prepared: 2026-11-18, against `main` at `026091c`. Prompt 2 landed as `7a4e6e2`
 and Prompt 3 as `a316fd1` plus the diagnostic fix `1b26d0d`.
@@ -557,6 +557,16 @@ Depends on: 2 (pack system), security review. Not in base.
 - Tests: dry-run plans the download but does not execute it; secret scan over
   the pack/hook/artifacts; missing checksum fails; unsupported architecture
   fails cleanly.
+
+Status: implemented locally on 2026-11-20. The pack pins upstream v2.3.2 with
+the amd64 and arm64 SHA-256 values from the release `SHA256SUMS` asset
+(`563b5d66…` and `9d10185a…`). The hook verifies the archive before extracting
+it, installs the desktop entry from a payload next to itself, and removes both
+files on pack removal. `kaadzos-opencode` asks for consent once per project
+directory, records only that path, validates it and opens foot; Settings,
+Search and the desktop entry call the same helper. `ci/test-opencode.sh` runs
+in both container jobs and uses local stubs for curl, checksum, install and
+zenity, so no upstream binary is downloaded during CI.
 
 ### Prompt 13 — Complete validation and regression coverage
 

@@ -1,0 +1,61 @@
+#!/bin/sh
+set -eu
+
+have() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+notify() {
+  if have notify-send; then
+    notify-send -a KaadzOS "$@" >/dev/null 2>&1 || true
+  fi
+}
+
+die() {
+  printf 'kaadzos-opencode: %s\n' "$1" >&2
+  notify -u critical "OpenCode" "$1"
+  exit 1
+}
+
+have opencode || die "OpenCode is not installed. Run 'kaadzos add opencode' first."
+
+if [ "$#" -ge 1 ]; then
+  project=$1
+else
+  project=${HOME:-}
+fi
+[ -n "$project" ] || die "No project directory was given."
+case $project in
+  -*) die "Refusing a directory that begins with '-'." ;;
+  *[[:cntrl:]]*) die "Refusing a directory with control characters." ;;
+esac
+[ -d "$project" ] || die "No such directory: $project"
+project=$(CDPATH= cd -- "$project" && pwd -P) || die "Could not open $project"
+
+config_home=${XDG_CONFIG_HOME:-${HOME:-/tmp}/.config}
+consent_file=$config_home/kaadzos/opencode-consent
+
+accepted=0
+if [ -r "$consent_file" ]; then
+  if grep -Fqx "$project" "$consent_file"; then
+    accepted=1
+  fi
+fi
+
+if [ "$accepted" -ne 1 ]; then
+  have zenity || die "zenity is required for the first-run consent dialog."
+  text="OpenCode is an AI coding agent. In $project it can read and write files and run commands with your user privileges.
+It does not receive sudo, API keys or credentials automatically.
+Only continue if you trust the contents of this directory."
+  zenity --question --title="OpenCode first-run consent" --text="$text" \
+    --ok-label="Open in this directory" --cancel-label="Cancel" --default-cancel \
+    || exit 0
+  mkdir -p "$config_home/kaadzos" || die "Could not create $config_home/kaadzos"
+  printf '%s\n' "$project" >> "$consent_file" \
+    || die "Could not record consent in $consent_file"
+fi
+
+if have foot; then
+  exec foot -T OpenCode --working-directory="$project" -e opencode
+fi
+exec opencode

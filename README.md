@@ -59,6 +59,7 @@ Packs are plain `key=value` files in `packs/`, staged into the image at build ti
 | `gaming` | Wine, winetricks, GameMode, MangoHud | ~2 GB |
 | `hardware` | Firmware, disks, partitioning, SMART and sensors | ~300 MB |
 | `network` | VPN plugins, WireGuard and NetworkManager tools | ~40 MB |
+| `opencode` | Pinned upstream OpenCode coding agent (opt-in) | ~250 MB |
 | `printing` | CUPS, printer drivers, scanning and mDNS discovery | ~250 MB |
 | `privacy` | Tor, Unbound, MAC randomisation | ~150 MB |
 | `windows` | Wine and Bottles (i386 multiarch) | ~4 GB |
@@ -115,6 +116,12 @@ Scanned homes skip `.ssh`, `.gnupg`, keyrings, browser profiles, trash, caches, 
 `kaadzos-packages` is the base zenity front page behind `$mod+Shift+p`, the Waybar box and the **Packages** desktop entry; it is also reachable from Settings. It opens Synaptic when the `admin` pack is installed, offers to install that pack, refreshes the apt lists, lists the optional packs and explains the signed archive at https://iso.kaadzos.pages.dev/apt. The `admin` pack supplies `synaptic`, `pkexec` and `gvfs-backends` (the admin:// and network/camera backends); the base image already has `zenity`, `polkitd`, `lxpolkit` and `sudo`.
 
 Privileged front-page actions validate the package name and pass it as one argv to `apt-get` through `pkexec` (or passwordless `sudo` in the live session). A locked dpkg and an unreachable archive get distinct messages, and remove asks for confirmation with a cancel default. `kaadzos-packages install-deb PATH` backs the Thunar **Install Local Package** action: it requires an absolute readable `.deb`, warns that maintainer scripts run as root and asks for confirmation before apt sees the file. `ci/test-packages.sh` stubs apt, pkexec, zenity and Synaptic to cover refresh, install/remove confirmation, local `.deb` install, lock, offline, invalid names, pack listing and archive information without installing anything.
+
+## OpenCode
+
+OpenCode is optional and never in the base image. `kaadzos add opencode` downloads a pinned v2.3.2 archive from upstream GitHub releases, checks its SHA-256 against the value committed in `packs/hooks/opencode.sh`, then installs the CLI under `/usr/local/bin/opencode` and a desktop entry that is absent until the pack is added. amd64 and arm64 are supported; any other architecture fails before the download. Updating is an explicit pack change, never a silent background upgrade, and no apt repo or signing key is added.
+
+The desktop entry and the Settings **OpenCode** row (also in search) run `kaadzos-opencode [DIR]`. The first run for a directory asks through zenity, names the directory in full, and states that the agent can read and write there and run commands as the user, with no automatic sudo or credentials. Consent is recorded per directory in `~/.config/kaadzos/opencode-consent`; cancellation changes nothing. The helper validates the path, never evaluates it as shell, and opens the agent in a foot terminal in that directory. See [`docs/opencode.md`](docs/opencode.md) for the pinned digests, update policy and security boundaries; `ci/test-opencode.sh` runs in both container jobs.
 
 ## Portals and session integration
 

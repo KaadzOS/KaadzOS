@@ -111,6 +111,7 @@ settings_candidates() {
   printf 'Setting\tSound\tsound\n'
   printf 'Setting\tPower\tpower\n'
   printf 'Setting\tPackages\tpackages\n'
+  printf 'Setting\tOpenCode\topencode\n'
   printf 'Setting\tDefault browser\tbrowser\n'
   printf 'Setting\tDefault file manager\tfile-manager\n'
   printf 'Setting\tAbout\tabout\n'

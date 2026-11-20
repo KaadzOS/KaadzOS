@@ -41,7 +41,8 @@ EOF
 }
 
 for command in gsettings xdg-settings xdg-mime swaymsg notify-send \
-               kaadzos-control kaadzos-packages kaadzos-bluetooth nmcli \
+                kaadzos-control kaadzos-packages kaadzos-bluetooth opencode \
+                kaadzos-opencode nmcli \
                pavucontrol wlr-randr system-config-printer lpstat simple-scan \
                scanimage gnome-firmware fwupdmgr gnome-disks gparted \
                gparted-pkexec gsmartcontrol sensors inxi; do
@@ -171,6 +172,11 @@ FAKE_ZENITY_CHOICE=Packages
 export FAKE_ZENITY_CHOICE
 run
 expect 'kaadzos-packages'
+
+FAKE_ZENITY_CHOICE=OpenCode
+export FAKE_ZENITY_CHOICE
+run
+expect 'kaadzos-opencode'
 
 FAKE_ZENITY_CANCEL=1
 export FAKE_ZENITY_CANCEL

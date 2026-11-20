@@ -1,0 +1,5 @@
+name=opencode
+description=OpenCode coding agent (pinned opt-in binary)
+size=250MB
+requires=curl
+hook=opencode
