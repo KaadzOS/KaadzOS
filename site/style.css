@@ -476,8 +476,26 @@ code {
 
 /* ----------------------------------------------------------------- packs */
 .packs-menu {
-  height: clamp(480px, 52vw, 560px);
+  height: clamp(440px, 46vw, 520px);
   margin-top: clamp(28px, 4vw, 44px);
+}
+
+.packs-menu__columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  height: 100%;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.packs-menu__columns > .flowing-menu {
+  height: 100%;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+.packs-menu__columns > .flowing-menu + .flowing-menu {
+  border-left: 1px solid var(--line);
 }
 
 .packs-fallback {
@@ -768,6 +786,11 @@ pre code {
   .masthead-nav { gap: 14px; }
   .ticker { gap: 8px 0; }
   .ticker li { padding-right: 12px; margin-right: 12px; }
+  .packs-menu { height: clamp(420px, 112vw, 500px); }
+  .packs-menu__columns .flowing-menu__index,
+  .packs-menu__columns .flowing-menu__meta { display: none; }
+  .packs-menu__columns .flowing-menu__link { grid-template-columns: 1fr; padding-inline: 10px; }
+  .packs-menu__columns .flowing-menu__label { font-size: clamp(0.95rem, 34cqh, 1.55rem); }
   .packs { font-size: clamp(1.15rem, 5.6vw, 1.7rem); }
   .packs li { gap: 0.35em; padding: 10px 12px 12px; }
   .pack-index { font-size: 0.28em; }
