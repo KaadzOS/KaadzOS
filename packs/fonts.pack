@@ -1,0 +1,4 @@
+name=fonts
+description=Noto core, emoji and monospace font families
+size=55MB
+apt=fonts-noto-core fonts-noto-color-emoji fonts-noto-mono

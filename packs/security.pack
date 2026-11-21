@@ -1,0 +1,4 @@
+name=security
+description=Firewall configuration with ufw and gufw
+size=10MB
+apt=ufw gufw
