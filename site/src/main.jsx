@@ -40,18 +40,18 @@ if (gridMount) {
   createRoot(gridMount).render(
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <CursorGrid
-        cellSize={36}
+        cellSize={32}
         color="#ffffff"
         highlight="area"
         gridStyle="lines"
-        radius={150}
-        holdTime={500}
-        fadeDuration={1100}
-        fillOpacity={0.025}
-        gridOpacity={0.03}
-        spotlight={0.8}
-        ambient={0.015}
-        edgeFade={0.24}
+        radius={190}
+        holdTime={650}
+        fadeDuration={1200}
+        fillOpacity={0.045}
+        gridOpacity={0.07}
+        spotlight={1.05}
+        ambient={0.03}
+        edgeFade={0.2}
         intro={false}
         clickPulse
       />
