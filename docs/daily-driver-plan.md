@@ -19,6 +19,10 @@ and draft `v0.4.0` release notes are updated, with green branch runs
 (commit `ee5c40b`, site deploy). The intermediate
 [44872660791](https://github.com/KaadzOS/KaadzOS/actions/runs/44872660791)
 failed `pack-test` on invalid fcitx5 frontend names; `f85d1b5` fixed them.
+The annotated `v0.4.0` tag points at `cd0a7e9`; tag run
+[44881594815](https://github.com/KaadzOS/KaadzOS/actions/runs/44881594815)
+passed the full matrix, including `apt-repo` and `release`, and published the
+ISO, checksum, signature, keyring and `kaadzos-pack-defs` 0.4.0.
 The plan records the verified package choices below.
 
 Prepared: 2026-11-18, against `main` at `026091c`. Prompt 2 landed as `7a4e6e2`
@@ -500,8 +504,8 @@ Depends on: 4/5 (entry points).
 
 ### Prompt 11 — Safe context-menu actions
 
-Status: implemented in this branch on 2026-11-20; the next push runs the
-normal matrix before this is recorded as green.
+Status: complete in full-matrix run 44649890054 (`fea3433`) on 2026-11-20.
+The tag-gated `release` and `apt-repo` jobs were skipped for the branch push.
 
 Depends on: 5 (`kaadzos-file-action`), 10 (archive tools in a pack or base).
 
@@ -636,11 +640,12 @@ the no-dock decision, records OpenCode and licence boundaries, and lists all
 packs. The manual has 27 static chapters and no-JavaScript reading path.
 Added `security`, `fonts` and `input` packs; their trixie package names were
 verified before editing, including the corrected `fcitx5-frontend-*` names
-after run 44872660791. `docs/release-notes/v0.4.0.md` is ready for the next
-tag. No generated theme file was hand-edited, no secret or non-free runtime
+after run 44872660791. `docs/release-notes/v0.4.0.md` was used for the tag.
+No generated theme file was hand-edited, no secret or non-free runtime
 dependency was added, and `apt-recommends=false` remains in `auto/config`.
-Branch runs 44872951906 and 44872660750 are green; no tag or release was
-created, so tagging remains the separate release gate.
+Branch runs 44872951906 and 44872660750 are green; the annotated `v0.4.0` tag
+points at `cd0a7e9`, and tag run 44881594815 passed the full matrix including
+`apt-repo` and `release`.
 
 ## 5. Base vs pack summary
 

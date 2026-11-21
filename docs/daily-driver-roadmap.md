@@ -9,8 +9,11 @@ CI; Prompt 14 (documentation and release readiness) is complete with green
 branch runs [44872951906](https://github.com/KaadzOS/KaadzOS/actions/runs/44872951906)
 (full build matrix, commit `f85d1b5`) and
 [44872660750](https://github.com/KaadzOS/KaadzOS/actions/runs/44872660750)
-(site deploy, commit `ee5c40b`); Prompt 8 keeps Waybar and declines a Wayland
-dock.
+(site deploy, commit `ee5c40b`); the annotated `v0.4.0` tag points at
+`cd0a7e9`, and tag run
+[44881594815](https://github.com/KaadzOS/KaadzOS/actions/runs/44881594815)
+published the release and APT archive. Prompt 8 keeps Waybar and declines a
+Wayland dock.
 
 ## Principles
 
