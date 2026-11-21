@@ -4,12 +4,15 @@ Status: living implementation plan for
 [`daily-driver-roadmap.md`](daily-driver-roadmap.md). Prompt 1 recorded the
 verified state below; the prompt sections are updated as each feature lands.
 Prompts 2 (core baseline) and 3 (Bluetooth and Waybar) are implemented and
-green in CI runs 44217239776 and 44250067376. Prompts 4-12 and the
+green in CI runs 44217239776 and 44250067376. Prompts 4-13 and the
 portal/session foundation are covered by green full-matrix runs 44460300130
-(`1bbf4e8`), 44649890054 (`fea3433`) and 44725417530 (`3cae041`), which passed
-`pack-test`, `repo-test`, `build`, `boot-test` (bios/uefi) and `install-test`
-(bios/uefi). Prompt 13 (validation coverage) is implemented and awaits its own
-full-matrix run; the plan records the verified package choices below.
+(`1bbf4e8`), 44649890054 (`fea3433`), 44725417530 (`3cae041`) and 44860542611
+(`ca080a1`), which passed `pack-test`, `repo-test`, `build`, `boot-test`
+(bios/uefi) and `install-test` (bios/uefi). The intermediate 44852495532
+(`a21100e`) failed both install tests because a shellcheck cleanup changed the
+Calamares launch environment; `ca080a1` restored it. Prompt 14 (documentation
+and release readiness) is next; the plan records the verified package choices
+below.
 
 Prepared: 2026-11-18, against `main` at `026091c`. Prompt 2 landed as `7a4e6e2`
 and Prompt 3 as `a316fd1` plus the diagnostic fix `1b26d0d`.
@@ -589,7 +592,8 @@ Depends on: all feature prompts. Additive only; never weaken a gate.
 - Risk: CI runtime growth; keep new checks in the existing container jobs and
   the existing two QEMU matrices.
 
-Status: implemented locally on 2026-11-20. `ci/test-helpers.sh` is the single
+Status: complete in full-matrix run 44860542611 (`ca080a1`).
+`ci/test-helpers.sh` is the single
 syntax, shellcheck and functional entry point in both container jobs; the six
 functional suites run under `set -e` with local fakes, and no suite was removed
 from the gate. `shellcheck` 0.10.0 is installed from trixie, and all shipped
