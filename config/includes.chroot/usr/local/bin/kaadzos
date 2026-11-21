@@ -21,8 +21,8 @@ if [ "${1:-}" = "--dry-run" ]; then
 fi
 
 # Current pack fields; reset before every parse.
-p_name= p_desc= p_size= p_requires= p_apt=
-p_repo_url= p_repo_suite= p_repo_components= p_repo_key= p_hook=
+p_name='' p_desc='' p_size='' p_requires='' p_apt=''
+p_repo_url='' p_repo_suite='' p_repo_components='' p_repo_key='' p_hook=''
 
 msg()  { printf '%s\n' "$*"; }
 info() { printf '  %s\n' "$*"; }
@@ -61,8 +61,8 @@ EOF
 # ---------------------------------------------------------------- pack loading
 pack_load() {
   file=$1
-  p_name= p_desc= p_size= p_requires= p_apt=
-  p_repo_url= p_repo_suite= p_repo_components= p_repo_key= p_hook=
+  p_name='' p_desc='' p_size='' p_requires='' p_apt=''
+  p_repo_url='' p_repo_suite='' p_repo_components='' p_repo_key='' p_hook=''
 
   if [ ! -f "$file" ]; then
     die "pack file not found: $file"
@@ -226,7 +226,14 @@ do_add() {
     run env DEBIAN_FRONTEND=noninteractive apt-get -y update
   fi
   if [ -n "$p_apt" ]; then
-    run env DEBIAN_FRONTEND=noninteractive apt-get -y install $p_apt
+    set --
+    pack_ifs=$IFS
+    IFS=' '
+    for apt_name in $p_apt; do
+      set -- "$@" "$apt_name"
+    done
+    IFS=$pack_ifs
+    run env DEBIAN_FRONTEND=noninteractive apt-get -y install "$@"
   fi
   if [ -n "$p_hook" ]; then
     run sh "$HOOKS_DIR/$p_hook.sh" add
@@ -257,7 +264,14 @@ do_remove() {
     run sh "$HOOKS_DIR/$p_hook.sh" remove
   fi
   if [ -n "$p_apt" ]; then
-    run env DEBIAN_FRONTEND=noninteractive apt-get -y remove $p_apt
+    set --
+    pack_ifs=$IFS
+    IFS=' '
+    for apt_name in $p_apt; do
+      set -- "$@" "$apt_name"
+    done
+    IFS=$pack_ifs
+    run env DEBIAN_FRONTEND=noninteractive apt-get -y remove "$@"
   fi
   remove_repo
 

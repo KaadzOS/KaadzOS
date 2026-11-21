@@ -56,10 +56,10 @@ fi
 if [ -n "$preload" ]; then
   sudo -E env HOME=/root LANG=en_US.UTF-8 QT_QPA_PLATFORM=wayland \
     LD_PRELOAD="$preload" \
-    /usr/bin/calamares -c /etc/calamares-ci >>"$log" 2>&1 &
+    sh -c '/usr/bin/calamares -c /etc/calamares-ci >>"$1" 2>&1' sh "$log" &
 else
   sudo -E env HOME=/root LANG=en_US.UTF-8 QT_QPA_PLATFORM=wayland \
-    /usr/bin/calamares -c /etc/calamares-ci >>"$log" 2>&1 &
+    sh -c '/usr/bin/calamares -c /etc/calamares-ci >>"$1" 2>&1' sh "$log" &
 fi
 cal_pid=$!
 

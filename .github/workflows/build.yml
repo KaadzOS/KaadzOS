@@ -46,7 +46,7 @@ jobs:
           sed -i 's/^Components: main$/Components: main contrib non-free-firmware/' /etc/apt/sources.list.d/debian.sources
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y live-build gnupg \
-            g++ qt6-base-dev pkg-config python3
+            g++ qt6-base-dev pkg-config python3 shellcheck
 
       - name: Verify package availability
         run: sh ci/test-base-list.sh
@@ -54,26 +54,11 @@ jobs:
       - name: Verify desktop configuration
         run: sh ci/test-desktop.sh
 
-      - name: Verify control centre actions
-        run: sh ci/test-control.sh
-
-      - name: Verify file actions
-        run: sh ci/test-file-actions.sh
-
-      - name: Verify settings actions
-        run: sh ci/test-settings.sh
+      - name: Verify helper scripts
+        run: sh ci/test-helpers.sh
 
       - name: Verify greeter configuration
         run: sh ci/test-greeter.sh
-
-      - name: Verify search candidates and dispatch
-        run: sh ci/test-search.sh
-
-      - name: Verify package actions
-        run: sh ci/test-packages.sh
-
-      - name: Verify OpenCode pack
-        run: sh ci/test-opencode.sh
 
       - name: Set cache key
         id: cache-key
@@ -196,7 +181,7 @@ jobs:
         run: |
           sed -i 's/^Components: main$/Components: main contrib non-free-firmware/' /etc/apt/sources.list.d/debian.sources
           apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3 shellcheck
 
       - name: Verify base package availability
         run: sh ci/test-base-list.sh
@@ -204,26 +189,11 @@ jobs:
       - name: Verify desktop configuration
         run: sh ci/test-desktop.sh
 
-      - name: Verify control centre actions
-        run: sh ci/test-control.sh
-
-      - name: Verify file actions
-        run: sh ci/test-file-actions.sh
-
-      - name: Verify settings actions
-        run: sh ci/test-settings.sh
+      - name: Verify helper scripts
+        run: sh ci/test-helpers.sh
 
       - name: Verify greeter configuration
         run: sh ci/test-greeter.sh
-
-      - name: Verify search candidates and dispatch
-        run: sh ci/test-search.sh
-
-      - name: Verify package actions
-        run: sh ci/test-packages.sh
-
-      - name: Verify OpenCode pack
-        run: sh ci/test-opencode.sh
 
       - name: Run pack resolution tests
         run: bash ci/test-packs.sh

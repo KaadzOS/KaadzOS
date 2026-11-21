@@ -4,12 +4,12 @@ Status: living implementation plan for
 [`daily-driver-roadmap.md`](daily-driver-roadmap.md). Prompt 1 recorded the
 verified state below; the prompt sections are updated as each feature lands.
 Prompts 2 (core baseline) and 3 (Bluetooth and Waybar) are implemented and
-green in CI runs 44217239776 and 44250067376. Prompts 4-11 and the
+green in CI runs 44217239776 and 44250067376. Prompts 4-12 and the
 portal/session foundation are covered by green full-matrix runs 44460300130
-(`1bbf4e8`) and 44649890054 (`fea3433`), which passed `pack-test`, `repo-test`,
-`build`, `boot-test` (bios/uefi) and `install-test` (bios/uefi). Prompt 12
-(OpenCode pack) is implemented and awaits its own full-matrix run; the plan
-records the verified package choices below.
+(`1bbf4e8`), 44649890054 (`fea3433`) and 44725417530 (`3cae041`), which passed
+`pack-test`, `repo-test`, `build`, `boot-test` (bios/uefi) and `install-test`
+(bios/uefi). Prompt 13 (validation coverage) is implemented and awaits its own
+full-matrix run; the plan records the verified package choices below.
 
 Prepared: 2026-11-18, against `main` at `026091c`. Prompt 2 landed as `7a4e6e2`
 and Prompt 3 as `a316fd1` plus the diagnostic fix `1b26d0d`.
@@ -558,15 +558,16 @@ Depends on: 2 (pack system), security review. Not in base.
   the pack/hook/artifacts; missing checksum fails; unsupported architecture
   fails cleanly.
 
-Status: implemented locally on 2026-11-20. The pack pins upstream v2.3.2 with
-the amd64 and arm64 SHA-256 values from the release `SHA256SUMS` asset
-(`563b5d66…` and `9d10185a…`). The hook verifies the archive before extracting
-it, installs the desktop entry from a payload next to itself, and removes both
-files on pack removal. `kaadzos-opencode` asks for consent once per project
-directory, records only that path, validates it and opens foot; Settings,
-Search and the desktop entry call the same helper. `ci/test-opencode.sh` runs
-in both container jobs and uses local stubs for curl, checksum, install and
-zenity, so no upstream binary is downloaded during CI.
+Status: complete in full-matrix run 44725417530 (`3cae041`). The pack pins
+upstream v2.3.2 with the amd64 and arm64 SHA-256 values from the release
+`SHA256SUMS` asset (`563b5d66…` and `9d10185a…`). The hook verifies the archive
+before extracting it, installs the desktop entry from a payload next to itself,
+and removes both files on pack removal. `kaadzos-opencode` asks for consent once
+per project directory, records only that path, validates it and opens foot;
+Settings, Search and the desktop entry call the same helper.
+`ci/test-opencode.sh` runs in both container jobs and uses local stubs for
+curl, checksum, install and zenity, so no upstream binary is downloaded
+during CI.
 
 ### Prompt 13 — Complete validation and regression coverage
 
@@ -587,6 +588,16 @@ Depends on: all feature prompts. Additive only; never weaken a gate.
   `README.md`.
 - Risk: CI runtime growth; keep new checks in the existing container jobs and
   the existing two QEMU matrices.
+
+Status: implemented locally on 2026-11-20. `ci/test-helpers.sh` is the single
+syntax, shellcheck and functional entry point in both container jobs; the six
+functional suites run under `set -e` with local fakes, and no suite was removed
+from the gate. `shellcheck` 0.10.0 is installed from trixie, and all shipped
+helpers are clean under `-s sh`. Control-centre tests now drive every direct
+action with all optional commands absent, settings tests assert that repeated
+writes stay idempotent, package tests cover the passwordless-sudo fallback
+after removing the pkexec stub, and the boot/install gates require
+`KAADZOS_LAUNCHER_OK` and fail on `KAADZOS_LAUNCHER_MISSING`.
 
 ### Prompt 14 — Documentation and release readiness
 

@@ -280,5 +280,18 @@ grep -Eq 'timeout [0-9]+ gdbus call' "$session_ready" \
 grep -q 'org.freedesktop.portal.Desktop' "$session_ready" \
   || fail "kaadzos-session-ready must assert the portal bus name"
 
+for marker in KAADZOS_LAUNCHER_OK KAADZOS_LAUNCHER_MISSING; do
+  grep -q "$marker" "$session_ready" \
+    || fail "kaadzos-session-ready must emit $marker"
+  grep -q "$marker" "$root/ci/test-boot.sh" \
+    || fail "the live boot gate must handle $marker"
+  grep -q "$marker" "$root/ci/test-install.sh" \
+    || fail "the installed boot gate must handle $marker"
+done
+grep -q 'kaadzos-control.desktop' "$session_ready" \
+  || fail "the launcher check must verify desktop entries"
+grep -q 'mimeapps.list' "$session_ready" \
+  || fail "the launcher check must verify default MIME applications"
+
 [ "$failed" -eq 0 ] || exit 1
 echo "desktop configuration is valid"

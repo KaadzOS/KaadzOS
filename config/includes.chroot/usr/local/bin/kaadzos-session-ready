@@ -83,7 +83,7 @@ sleep 8
 # A swaynag error bar is spawned when the Sway config produces errors or
 # warnings (e.g. an overwritten binding). That is a polish failure, so flag it
 # explicitly for the boot test instead of shipping a desktop with a red banner.
-if ps -eo args 2>/dev/null | grep -q '[s]waynag'; then
+if pgrep -x swaynag >/dev/null 2>&1; then
   printf 'KAADZOS_SWAY_CONFIG_WARNINGS\n' > "$serial"
 fi
 
@@ -155,7 +155,7 @@ fi
 # Thunar context actions need the helper, the skel uca.xml, the archive
 # plugin and the clipboard tool. gvfs-backends (admin://) is optional because
 # it ships in the admin pack; the other pieces are in the base image.
-plugin_so=$(ls /usr/lib/*/thunarx-3/thunar-archive-plugin.so 2>/dev/null | head -n 1 || true)
+plugin_so=$(find /usr/lib -type f -path '*/thunarx-3/thunar-archive-plugin.so' -print -quit 2>/dev/null || true)
 if [ -x /usr/local/bin/kaadzos-file-action ] \
    && [ -f "${HOME:-/root}/.config/Thunar/uca.xml" ] \
    && grep -Fq 'kaadzos-file-action' "${HOME:-/root}/.config/Thunar/uca.xml" 2>/dev/null \
@@ -196,6 +196,46 @@ else
   printf 'KAADZOS_PORTAL_FAILED\n' > "$serial"
 fi
 
+launcher_home=${HOME:-/root}
+launcher_missing=''
+for launcher_bin in kaadzos kaadzos-control kaadzos-file-action \
+                    kaadzos-opencode kaadzos-packages kaadzos-search \
+                    kaadzos-settings kaadzos-sway-session; do
+  command -v "$launcher_bin" >/dev/null 2>&1 \
+    || launcher_missing="$launcher_missing $launcher_bin"
+done
+for launcher_desktop in kaadzos-control kaadzos-packages kaadzos-settings; do
+  [ -f "/usr/share/applications/$launcher_desktop.desktop" ] \
+    || launcher_missing="$launcher_missing $launcher_desktop.desktop"
+done
+launcher_sway="$launcher_home/.config/sway/config"
+for launcher_bind in \
+  "bindsym \$mod+d exec kaadzos-search" \
+  "bindsym \$mod+a exec kaadzos addons" \
+  "bindsym \$mod+x exec kaadzos-bluetooth manager" \
+  "bindsym \$mod+Shift+s exec kaadzos-control" \
+  "bindsym \$mod+comma exec kaadzos-settings" \
+  "bindsym \$mod+Shift+p exec kaadzos-packages" \
+  "bindsym \$mod+Print exec kaadzos-record"; do
+  grep -Fqx "$launcher_bind" "$launcher_sway" 2>/dev/null \
+    || launcher_missing="$launcher_missing sway:$launcher_bind"
+done
+launcher_mime="$launcher_home/.config/mimeapps.list"
+for launcher_default in \
+  'inode/directory=thunar.desktop' \
+  'text/plain=mousepad.desktop' \
+  'application/pdf=zathura.desktop' \
+  'image/png=imv-dir.desktop' \
+  'x-scheme-handler/http=org.gnome.Epiphany.desktop'; do
+  grep -Fqx "$launcher_default" "$launcher_mime" 2>/dev/null \
+    || launcher_missing="$launcher_missing mime:$launcher_default"
+done
+if [ -z "$launcher_missing" ]; then
+  printf 'KAADZOS_LAUNCHER_OK\n' > "$serial"
+else
+  printf 'KAADZOS_LAUNCHER_MISSING%s\n' "$launcher_missing" > "$serial"
+fi
+
 # Dump layout and logs between markers so the runner can parse them. The
 # installed system intentionally lacks Calamares and the live logs, so do not
 # let a missing path abort the block before the end marker is written.
@@ -209,7 +249,7 @@ set +e
   echo '=== tree ==='
   swaymsg -t get_tree 2>&1
   echo '=== processes ==='
-  ps -eo pid,args 2>/dev/null | grep -E '[w]aybar|[m]ako|[f]oot|[s]way|[g]reetd|[t]uigreet'
+  pgrep -a -f '[w]aybar|[m]ako|[f]oot|[s]way|[g]reetd|[t]uigreet' 2>&1 || true
   echo '=== bluetooth ==='
   systemctl is-enabled bluetooth.service 2>&1
   systemctl is-failed bluetooth.service 2>&1
@@ -233,6 +273,14 @@ set +e
   grep -F 'include ~/.config/sway/config.d/*.conf' \
     "$HOME/.config/sway/config" 2>&1 || true
   ls -l "$HOME/.config/sway/config.d" 2>&1
+  echo '=== launchers ==='
+  command -v kaadzos kaadzos-control kaadzos-file-action kaadzos-opencode \
+    kaadzos-packages kaadzos-search kaadzos-settings kaadzos-sway-session 2>&1
+  ls -l /usr/share/applications/kaadzos-control.desktop \
+    /usr/share/applications/kaadzos-packages.desktop \
+    /usr/share/applications/kaadzos-settings.desktop 2>&1
+  grep -F "bindsym \$mod" "$launcher_sway" 2>&1 || true
+  cat "$launcher_mime" 2>&1 || true
   echo '=== file actions ==='
   ls -l /usr/local/bin/kaadzos-file-action \
     "$HOME/.config/Thunar/uca.xml" \

@@ -318,9 +318,9 @@ while (( SECONDS < deadline )); do
     echo "The installed system is missing core commands under $firmware" >&2
     exit 1
   fi
-  if grep -Eq 'KAADZOS_BLUETOOTH_(FAILED|DISABLED|MODULE_MISSING)|KAADZOS_WAYBAR_FAILED|KAADZOS_CONTROL_MISSING|KAADZOS_SETTINGS_MISSING|KAADZOS_FILE_ACTIONS_MISSING|KAADZOS_POLKIT_AGENT_MISSING|KAADZOS_GREETER_MISSING|KAADZOS_PORTAL_FAILED' "$installed_serial" 2>/dev/null; then
+  if grep -Eq 'KAADZOS_BLUETOOTH_(FAILED|DISABLED|MODULE_MISSING)|KAADZOS_WAYBAR_FAILED|KAADZOS_CONTROL_MISSING|KAADZOS_SETTINGS_MISSING|KAADZOS_FILE_ACTIONS_MISSING|KAADZOS_POLKIT_AGENT_MISSING|KAADZOS_GREETER_MISSING|KAADZOS_PORTAL_FAILED|KAADZOS_LAUNCHER_MISSING' "$installed_serial" 2>/dev/null; then
     dump_serial_tail "$installed_serial"
-    echo "The installed system has a Bluetooth, Waybar, control centre, settings, file-actions, polkit, greeter or portal failure under $firmware" >&2
+    echo "The installed system has a Bluetooth, Waybar, control centre, settings, file-actions, polkit, greeter, portal or launcher failure under $firmware" >&2
     exit 1
   fi
 
@@ -339,7 +339,8 @@ while (( SECONDS < deadline )); do
     && grep -q 'KAADZOS_FILE_ACTIONS_OK' "$installed_serial" 2>/dev/null \
     && grep -q 'KAADZOS_POLKIT_AGENT_OK' "$installed_serial" 2>/dev/null \
     && grep -q 'KAADZOS_GREETER_OK' "$installed_serial" 2>/dev/null \
-    && grep -q 'KAADZOS_PORTAL_OK' "$installed_serial" 2>/dev/null; then
+    && grep -q 'KAADZOS_PORTAL_OK' "$installed_serial" 2>/dev/null \
+    && grep -q 'KAADZOS_LAUNCHER_OK' "$installed_serial" 2>/dev/null; then
     sleep 8
     screendump "$installed_monitor" "$installed_ppm" "$installed_png"
     if [[ ! -s "$installed_png" ]]; then

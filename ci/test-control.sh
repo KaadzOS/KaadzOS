@@ -154,6 +154,29 @@ if grep -Fq 'wpctl ' "$log"; then
   fail "cancelled menu still performed an action"
 fi
 
+saved_path=$PATH
+for stub in "$bin"/*; do
+  rm -f "$stub"
+done
+PATH="$bin"
+export PATH
+: > "$log"
+run audio-mute
+run sound
+run power-profile
+run brightness-up
+run night-light
+run network
+run bluetooth
+run reboot
+run menu
+if [ -s "$log" ]; then
+  fail "a missing optional command still produced an action"
+  sed 's/^/  got: /' "$log" >&2
+fi
+PATH="$saved_path"
+export PATH
+
 if "$helper" nonsense >/dev/null 2>&1; then
   fail "unknown action must exit nonzero"
 fi

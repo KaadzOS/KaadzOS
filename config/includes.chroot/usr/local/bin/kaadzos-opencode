@@ -30,7 +30,7 @@ case $project in
   *[[:cntrl:]]*) die "Refusing a directory with control characters." ;;
 esac
 [ -d "$project" ] || die "No such directory: $project"
-project=$(CDPATH= cd -- "$project" && pwd -P) || die "Could not open $project"
+project=$(CDPATH='' cd -- "$project" && pwd -P) || die "Could not open $project"
 
 config_home=${XDG_CONFIG_HOME:-${HOME:-/tmp}/.config}
 consent_file=$config_home/kaadzos/opencode-consent

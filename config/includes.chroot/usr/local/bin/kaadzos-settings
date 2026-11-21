@@ -167,9 +167,11 @@ dark_style() {
     error "Appearance" "gsettings is not installed."
     return 1
   fi
-  gsettings set org.gnome.desktop.interface color-scheme prefer-dark \
-    && gsettings set org.gnome.desktop.interface gtk-theme Adwaita \
-    || { error "Appearance" "Could not enable the dark style."; return 1; }
+  if ! gsettings set org.gnome.desktop.interface color-scheme prefer-dark \
+    || ! gsettings set org.gnome.desktop.interface gtk-theme Adwaita; then
+    error "Appearance" "Could not enable the dark style."
+    return 1
+  fi
   notify "Appearance" "Dark style enabled."
 }
 
@@ -178,9 +180,11 @@ light_style() {
     error "Appearance" "gsettings is not installed."
     return 1
   fi
-  gsettings set org.gnome.desktop.interface color-scheme default \
-    && gsettings set org.gnome.desktop.interface gtk-theme Adwaita \
-    || { error "Appearance" "Could not enable the light style."; return 1; }
+  if ! gsettings set org.gnome.desktop.interface color-scheme default \
+    || ! gsettings set org.gnome.desktop.interface gtk-theme Adwaita; then
+    error "Appearance" "Could not enable the light style."
+    return 1
+  fi
   notify "Appearance" "Light style enabled."
 }
 

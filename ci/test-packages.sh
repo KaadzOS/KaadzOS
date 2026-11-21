@@ -310,5 +310,29 @@ if grep -Fq 'foot [' "$log"; then
   fail "a cancelled package menu still launched an action"
 fi
 
+cat > "$bin/sudo" <<'EOF'
+#!/bin/sh
+{
+  printf 'sudo'
+  for arg in "$@"; do printf ' [%s]' "$arg"; done
+  printf '\n'
+} >> "$KAADZOS_TEST_LOG"
+while [ "${1:-}" = -n ] || [ "${1:-}" = -E ]; do shift; done
+[ "${1:-}" = true ] && exit 0
+exec "$@"
+EOF
+chmod +x "$bin/sudo"
+
+mv "$bin/pkexec" "$bin/pkexec.disabled"
+unset FAKE_ZENITY_CANCEL
+FAKE_ZENITY_ANSWER=0
+export FAKE_ZENITY_ANSWER
+: > "$log"
+run refresh
+if ! grep -Fq 'sudo [-n] [-E]' "$log"; then
+  fail "the sudo fallback was not used when pkexec is absent"
+fi
+expect 'apt-get [update]'
+
 [ "$failed" -eq 0 ] || exit 1
 echo "package actions are valid"

@@ -44,6 +44,8 @@ Both firmware screenshots and serial logs are committed to the `ci-artifacts/bio
 
 A second job, `pack-test`, resolves every pack inside a trixie container — apt names, third-party repository fields, hook syntax — and exercises the pack manager's dry-run, dependency gating, idempotency, and error paths without building an ISO. A broken pack fails in about a minute instead of at the end of a six-minute image build.
 
+Both container jobs run `ci/test-helpers.sh`: `dash -n` and `shellcheck` over every shipped helper, then the functional suites for search, Thunar file actions, control-centre absence paths, settings persistence, fake apt (including the passwordless-sudo fallback) and the OpenCode dry-run/secret scan. The guest also emits `KAADZOS_LAUNCHER_OK`, which the boot and install gates require; it proves the helper binaries, desktop entries, Sway launcher bindings and default MIME applications are all present live and after installation.
+
 ## The pack system
 
 Packs are plain `key=value` files in `packs/`, staged into the image at build time and read at runtime by `/usr/local/bin/kaadzos`.
@@ -211,6 +213,7 @@ iso-site/                    advanced-mode Pages Worker for iso.kaadzos.pages.de
 ci/test-boot.sh              QEMU boot validation (BIOS + UEFI)
 ci/test-install.sh           unattended install + installed-disk boot validation
 ci/test-packs.sh             pack resolution and CLI behaviour tests
+ci/test-helpers.sh           syntax, shellcheck and functional helper suites
 ci/build-apt-repo.sh         signed APT repository builder (Phase 8)
 ci/test-apt-repo.sh          apt consumes a throwaway signed repository
 ```

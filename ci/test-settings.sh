@@ -115,6 +115,14 @@ grep -Fq 'xkb_layout "us"' "$sway_dir/20-keyboard.conf" \
 grep -Fq 'keyboard_layout=us' "$state" \
   || fail "keyboard setting was not persisted"
 
+run keyboard de
+if [ "$(grep -c 'xkb_layout' "$sway_dir/20-keyboard.conf")" -ne 1 ]; then
+  fail "a repeated keyboard override duplicated its config.d entry"
+fi
+if [ "$(grep -c '^keyboard_layout=' "$state")" -ne 1 ]; then
+  fail "a repeated keyboard override duplicated its persisted setting"
+fi
+
 : > "$log"
 if "$helper" keyboard 'bad layout' >/dev/null 2>&1; then
   fail "an invalid keyboard layout must be rejected"
