@@ -1,4 +1,4 @@
 name=input
 description=fcitx5 input method framework with GTK, Qt and Chinese frontends
 size=20MB
-apt=fcitx5 fcitx5-configtool fcitx5-gtk fcitx5-qt fcitx5-chinese-addons
+apt=fcitx5 fcitx5-configtool fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 fcitx5-frontend-qt5 fcitx5-frontend-qt6 fcitx5-chinese-addons
