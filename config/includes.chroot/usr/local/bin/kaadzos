@@ -8,7 +8,7 @@
 #     shell-native. A single static binary would only duplicate that glue.
 set -eu
 
-VERSION="0.1.0"
+VERSION="0.4.0"
 PACKS_DIR="${KAADZOS_PACKS_DIR:-/usr/share/kaadzos/packs}"
 HOOKS_DIR="$PACKS_DIR/hooks"
 STATE_DIR="${KAADZOS_STATE_DIR:-/var/lib/kaadzos}"

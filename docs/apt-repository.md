@@ -126,8 +126,8 @@ The archive is published only for `v*` tags, after the full validation matrix
 therefore publishes an ISO and an archive from the same commit.
 
 ```sh
-git tag -a v0.2.0 -m "KaadzOS v0.2.0"
-git push origin v0.2.0
+git tag -a v0.4.0 -m "KaadzOS v0.4.0"
+git push origin v0.4.0
 ```
 
 The `apt-repo` job:

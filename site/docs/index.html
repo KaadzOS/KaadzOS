@@ -42,7 +42,7 @@
       <span aria-hidden="true">/</span>
       <span aria-current="page">Documentation</span>
     </nav>
-    <p class="mono docs-bar-meta">Release 0.3.0 · Updated 16 Nov 2026</p>
+    <p class="mono docs-bar-meta">Release 0.4.0 · Updated 21 Nov 2026</p>
   </div>
 </div>
 
@@ -64,7 +64,7 @@
       </ul>
     </div>
     <ul class="ticker mono" aria-label="Documentation facts">
-      <li>Release 0.3.0</li>
+      <li>Release 0.4.0</li>
       <li>Debian 13 · trixie</li>
       <li>amd64</li>
       <li>MIT</li>
@@ -510,7 +510,7 @@ apt=git curl wget build-essential make cmake python3 python3-venv nodejs npm neo
       <p>During the copy, Calamares unpacks the squashfs with <code>unsquashfs</code> and <code>rsync</code>, purges live-only packages before generating the initramfs, removes the live NOPASSWD sudo rule and CI configuration, writes the bootloader, and enables <code>greetd</code> for the installed system.</p>
 
       <h3 id="install-first-boot">The installed system</h3>
-      <p>It boots through greetd and tuigreet into the same Sway session. The Install button and the live sudo rule are gone. Secure Boot is supported through Debian's signed shim and GRUB; the live image itself remains unsigned and needs Secure Boot disabled. There is no in-place theme upgrade path between releases: moving from 0.2.x to 0.3.0 means installing the new image.</p>
+      <p>It boots through greetd and tuigreet into the same Sway session. The Install button and the live sudo rule are gone. Secure Boot is supported through Debian's signed shim and GRUB; the live image itself remains unsigned and needs Secure Boot disabled. There is no in-place theme upgrade path between releases: moving from 0.3.x to 0.4.0 means installing the new image.</p>
 
       <aside class="note">
         <p class="mono">The CI test</p>
@@ -896,8 +896,8 @@ bash ci/test-install.sh uefi KaadzOS-trixie-amd64.iso install-results</code></pr
         <figcaption class="code-head"><span class="mono">shell</span><button class="code-copy mono" type="button">Copy</button></figcaption>
         <pre><code>git switch main
 git pull --ff-only
-git tag -a v0.3.1 -m "KaadzOS 0.3.1"
-git push origin v0.3.1</code></pre>
+git tag -a v0.4.1 -m "KaadzOS 0.4.1"
+git push origin v0.4.1</code></pre>
       </figure>
       <ul>
         <li>Tag pushes are never path-filtered, so a release re-runs the whole matrix.</li>
@@ -945,8 +945,8 @@ docs/                        release notes, hosting and archive notes</code></pr
         <table class="docs-table">
           <thead><tr><th>Release</th><th>Date</th><th>Highlights</th></tr></thead>
           <tbody>
-            <tr><td>0.4.0 (in preparation)</td><td>21 Nov 2026</td><td>Daily-driver baseline, Bluetooth, control centre, settings, search, package helpers, helper gates, OpenCode and the security/fonts/input packs. Release notes are ready for the next tag.</td></tr>
-            <tr><td><a href="https://github.com/kaadzos/kaadzos/releases/tag/v0.3.0">0.3.0</a> (latest)</td><td>13 Nov 2026</td><td>Flat black-and-white AMOLED artwork and Inter Tight across desktop, boot and installer; baked progress slide; neutral locale map and partition bars; synthetic-click install test.</td></tr>
+            <tr><td><a href="https://github.com/kaadzos/kaadzos/releases/tag/v0.4.0">0.4.0</a> (latest)</td><td>21 Nov 2026</td><td>Daily-driver baseline, portals, Bluetooth, control centre, settings, search, package helpers, helper gates, OpenCode and the security/fonts/input packs.</td></tr>
+            <tr><td><a href="https://github.com/kaadzos/kaadzos/releases/tag/v0.3.0">0.3.0</a></td><td>13 Nov 2026</td><td>Flat black-and-white AMOLED artwork and Inter Tight across desktop, boot and installer; baked progress slide; neutral locale map and partition bars; synthetic-click install test.</td></tr>
             <tr><td><a href="https://github.com/kaadzos/kaadzos/releases/tag/v0.2.1">0.2.1</a></td><td>8 Nov 2026</td><td>Visible Install button and welcome text; hidden raw Calamares entry; preconfigured signed APT source.</td></tr>
             <tr><td><a href="https://github.com/kaadzos/kaadzos/releases/tag/v0.2.0">0.2.0</a></td><td>7 Nov 2026</td><td>Optional signed APT archive; <code>kaadzos-pack-defs</code>; release mirroring to R2.</td></tr>
             <tr><td><a href="https://github.com/kaadzos/kaadzos/releases/tag/v0.1.0">0.1.0</a></td><td>1 Nov 2026</td><td>First bootable, installable release with the release pipeline.</td></tr>

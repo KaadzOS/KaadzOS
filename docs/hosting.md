@@ -224,14 +224,15 @@ verification steps are in
   the `kaadzos` bucket for both production and preview; `iso-site/_worker.js`
   serves `/` from static assets, `/health` from the Worker, and every other
   path from R2. R2 Public Access is disabled.
-- GitHub Releases: `v0.3.0` (13 Nov 2026), published by CI from tag `v0.3.0`
-  in run [43415799583](https://github.com/KaadzOS/KaadzOS/actions/runs/43415799583).
-  Assets: ISO 1,432,977,408 bytes, its checksum, a detached signature and the
-  archive public keyring; the ISO is mirrored under `releases/v0.3.0/`.
-  The `v0.2.1`, `v0.2.0` and `v0.1.0` releases remain available.
+- GitHub Releases: `v0.4.0` (21 Nov 2026), the daily-driver release published by
+  CI from tag `v0.4.0` after the full validation matrix. Exact run and asset
+  evidence is recorded in `AGENTS.md`.
+  Assets: the ISO, its checksum, a detached signature and the archive public
+  keyring; the ISO is mirrored under `releases/v0.4.0/`.
+  The `v0.3.0`, `v0.2.1`, `v0.2.0` and `v0.1.0` releases remain available.
 - The optional APT archive is live at https://iso.kaadzos.pages.dev/apt for
-  `trixie main amd64`. The current package is `kaadzos-pack-defs` 0.3.0; its
-  `Packages` SHA-256 (`0ee4bc85…`) matches the published `.deb`, and the
+  `trixie main amd64`. The current package is `kaadzos-pack-defs` 0.4.0; its
+  `Packages` SHA-256 and publication evidence are recorded in `AGENTS.md`. The
   `InRelease` signature verifies against the archive key (fingerprint
   `7FC3 1B27 E931 570B 2D8C 3E42 9A4F 8D9E 9D5B 0C7A`). The keyring, source
   stanza, and package are all served by the Worker; no user action remains for
