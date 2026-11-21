@@ -44,9 +44,7 @@ run_apt() {
   if have pkexec; then
     pkexec env DEBIAN_FRONTEND=noninteractive apt-get "$@" >"$apt_log" 2>&1
   elif have sudo && sudo -n true >/dev/null 2>&1; then
-    sudo -n -E env DEBIAN_FRONTEND=noninteractive \
-      sh -c 'apt_log=$1; shift; exec apt-get "$@" >"$apt_log" 2>&1' \
-      sh "$apt_log" "$@"
+    sudo -n -E env DEBIAN_FRONTEND=noninteractive apt-get "$@" >"$apt_log" 2>&1
   else
     error "Packages" "Install the admin pack for pkexec, or use a passwordless sudo session."
     return 1

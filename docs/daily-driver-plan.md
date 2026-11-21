@@ -593,7 +593,10 @@ Status: implemented locally on 2026-11-20. `ci/test-helpers.sh` is the single
 syntax, shellcheck and functional entry point in both container jobs; the six
 functional suites run under `set -e` with local fakes, and no suite was removed
 from the gate. `shellcheck` 0.10.0 is installed from trixie, and all shipped
-helpers are clean under `-s sh`. Control-centre tests now drive every direct
+helpers are clean under `-s sh` with SC2024 excluded: the sudo/Calamares and
+sudo/apt redirects are intentionally performed by the unprivileged shell, and
+wrapping them in `sh -c` changed the installer launch environment and broke
+the Calamares window. Control-centre tests now drive every direct
 action with all optional commands absent, settings tests assert that repeated
 writes stay idempotent, package tests cover the passwordless-sudo fallback
 after removing the pkexec stub, and the boot/install gates require

@@ -22,7 +22,7 @@ for helper in "$helpers"/kaadzos*; do
   dash -n "$helper" || fail "$(basename "$helper") does not parse as POSIX sh"
 done
 
-if ! shellcheck -s sh "$helpers"/kaadzos*; then
+if ! shellcheck -s sh -e SC2024 "$helpers"/kaadzos*; then
   fail "shellcheck reported problems in the helper scripts"
 fi
 
