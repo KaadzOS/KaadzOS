@@ -12,7 +12,7 @@ portal/session foundation are covered by green full-matrix runs 44460300130
 (`a21100e`) failed both install tests because a shellcheck cleanup changed the
 Calamares launch environment; `ca080a1` restored it. Prompt 14 (documentation
 and release readiness) is complete: the README, manual, pack matrix, licences
-and draft `v0.4.0` release notes are updated, with green branch runs
+and `v0.4.0` release notes are updated, with green branch runs
 [44872951906](https://github.com/KaadzOS/KaadzOS/actions/runs/44872951906)
 (final commit `f85d1b5`, full build matrix) and
 [44872660750](https://github.com/KaadzOS/KaadzOS/actions/runs/44872660750)

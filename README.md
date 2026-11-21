@@ -236,7 +236,8 @@ ci/test-apt-repo.sh          apt consumes a throwaway signed repository
 | 7 — releases and hosting | done |
 | 8 — optional APT repository | done |
 | 9 — installer hotfix release | done |
-| 10 — AMOLED visual release | done |
+| 10 - AMOLED visual release | done |
+| 11 - daily driver (v0.4.0) | done |
 
 The current release, [v0.4.0](https://github.com/kaadzos/kaadzos/releases/tag/v0.4.0), is the daily-driver release: the AMOLED boot, installer, pack manager and core desktop are unchanged from 0.3.0, with portals, Bluetooth, control centre, settings, search, package helpers, helper gates, OpenCode and the security/fonts/input packs filled in. It ships the ISO, its checksum, a signed checksum and the archive keyring as GitHub release assets, and mirrors them to Cloudflare R2 under `releases/v0.4.0/`. The signed APT archive is live at https://iso.kaadzos.pages.dev/apt and carries `kaadzos-pack-defs` 0.4.0; earlier releases remain available. Releases are cut by pushing a `v*` tag; see [`docs/hosting.md`](docs/hosting.md) for the tag flow and the Cloudflare setup, and [`docs/apt-repository.md`](docs/apt-repository.md) for the optional signed package archive.
 
