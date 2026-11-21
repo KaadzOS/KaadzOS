@@ -68,7 +68,7 @@
       <li>Debian 13 · trixie</li>
       <li>amd64</li>
       <li>MIT</li>
-      <li>16 chapters</li>
+      <li>27 chapters</li>
     </ul>
   </div>
 </section>
@@ -105,13 +105,27 @@
         <a href="#install">Installing to disk</a>
       </div>
       <div class="docs-nav-group">
-        <p class="mono docs-nav-label">03 / Reference</p>
+        <p class="mono docs-nav-label">03 / Daily driver</p>
+        <a href="#bluetooth">Bluetooth</a>
+        <a href="#control">Control centre</a>
+        <a href="#settings">Settings</a>
+        <a href="#search">Search</a>
+        <a href="#packages">Package management</a>
+        <a href="#printing">Printing &amp; scanning</a>
+        <a href="#hardware">Hardware tools</a>
+        <a href="#vpn-firewall">VPN &amp; firewall</a>
+        <a href="#fonts">Fonts</a>
+        <a href="#input-methods">Input methods</a>
+        <a href="#opencode">OpenCode</a>
+      </div>
+      <div class="docs-nav-group">
+        <p class="mono docs-nav-label">04 / Reference</p>
         <a href="#apt">APT archive</a>
         <a href="#theming">Theming</a>
         <a href="#troubleshooting">Troubleshooting</a>
       </div>
       <div class="docs-nav-group">
-        <p class="mono docs-nav-label">04 / Build</p>
+        <p class="mono docs-nav-label">05 / Build</p>
         <a href="#build">Build the ISO</a>
         <a href="#ci">CI &amp; releases</a>
         <a href="#layout">Project layout</a>
@@ -120,7 +134,7 @@
       </div>
     </nav>
 
-    <p class="mono docs-side-meta">KaadzOS 0.3.0<br>Updated 16 November 2026</p>
+    <p class="mono docs-side-meta">KaadzOS 0.4.0<br>Updated 21 November 2026</p>
   </aside>
 
   <article class="docs-article" id="docs-content">
@@ -390,13 +404,21 @@ sudo dd if=KaadzOS-trixie-amd64.iso \
         <table class="docs-table packs">
           <thead><tr><th>Pack</th><th>What it installs</th><th>Size</th></tr></thead>
           <tbody>
+            <tr><td><code>admin</code></td><td>Synaptic, <code>pkexec</code>, <code>gvfs-backends</code> and the polkit agent.</td><td>~45 MB</td></tr>
             <tr><td><code>ai</code></td><td>Ollama, whisper.cpp and Piper voice helpers for a local AI stack.</td><td>~5 GB</td></tr>
             <tr><td><code>android</code></td><td>Waydroid, with Waydroid's signed trixie repository. Requires Wayland.</td><td>~3 GB</td></tr>
             <tr><td><code>cloudflare</code></td><td><code>cloudflared</code>, an architecture-matched static binary.</td><td>~60 MB</td></tr>
             <tr><td><code>creative</code></td><td>GIMP, Inkscape, Krita and Blender.</td><td>~3 GB</td></tr>
             <tr><td><code>dev</code></td><td>Git, compilers, Node, Python and Neovim.</td><td>~900 MB</td></tr>
+            <tr><td><code>fonts</code></td><td>Noto core, emoji and monospace families.</td><td>~55 MB</td></tr>
             <tr><td><code>gaming</code></td><td>Wine, winetricks, GameMode and MangoHud.</td><td>~2 GB</td></tr>
+            <tr><td><code>hardware</code></td><td>Firmware, disks, SMART, NVMe, sensors and display tools.</td><td>~300 MB</td></tr>
+            <tr><td><code>input</code></td><td>fcitx5 with GTK, Qt and Chinese frontends.</td><td>~20 MB</td></tr>
+            <tr><td><code>network</code></td><td>VPN plugins, WireGuard and NetworkManager connection tools.</td><td>~40 MB</td></tr>
+            <tr><td><code>opencode</code></td><td>Pinned upstream OpenCode coding agent, consent-gated.</td><td>~250 MB</td></tr>
+            <tr><td><code>printing</code></td><td>CUPS, printer drivers, scanning and network discovery.</td><td>~250 MB</td></tr>
             <tr><td><code>privacy</code></td><td>Tor, Unbound and MAC randomisation.</td><td>~150 MB</td></tr>
+            <tr><td><code>security</code></td><td><code>ufw</code> and <code>gufw</code> firewall configuration.</td><td>~10 MB</td></tr>
             <tr><td><code>windows</code></td><td>Wine, the Bottles stack, flatpak and i386 multiarch.</td><td>~4 GB</td></tr>
           </tbody>
         </table>
@@ -493,6 +515,185 @@ apt=git curl wget build-essential make cmake python3 python3-venv nodejs npm neo
       <aside class="note">
         <p class="mono">The CI test</p>
         <p>The install test creates a 12 GB sparse disk, drives the pages with synthetic Sway clicks and <code>wtype</code>, powers off, then boots the installed disk without the ISO. It fails unless <code>KAADZOS_MODE installed</code>, <code>KAADZOS_FIRSTBOOT_DONE</code>, <code>KAADZOS_LIVE_SUDOERS_ABSENT</code> and <code>KAADZOS_CALAMARES_ABSENT</code> all appear, and the session has no <code>swaynag</code> warning.</p>
+      </aside>
+    </section>
+
+    <section id="bluetooth" aria-labelledby="bluetooth-title">
+      <h2 id="bluetooth-title">Bluetooth</h2>
+      <p>Bluetooth is part of the base image: BlueZ, Blueman, <code>dconf-gsettings-backend</code> and <code>libglib2.0-bin</code>. The explicit GLib packages matter because apt recommends are off. A build hook enables <code>bluetooth.service</code>, but Debian's unit carries <code>ConditionPathIsDirectory=/sys/class/bluetooth</code>: on a machine without an adapter the unit is skipped rather than failed, and udev pulls in <code>bluetooth.target</code> when hardware appears.</p>
+
+      <h3 id="bluetooth-waybar">The bar module</h3>
+      <p>Waybar's built-in <code>bluetooth</code> module is in the generated bar. It is muted when the adapter is off, unavailable or absent; white when powered on or connected; shows the connected device name and battery percentage when BlueZ exposes it; and adds a <code>discovering</code> class while scanning. Left-click opens Blueman, right-click toggles adapter power, and <kbd>Super</kbd>+<kbd>X</kbd> opens Blueman from the keyboard.</p>
+
+      <figure class="code">
+        <figcaption class="code-head"><span class="mono">shell</span><button class="code-copy mono" type="button">Copy</button></figcaption>
+        <pre><code>kaadzos-bluetooth manager
+kaadzos-bluetooth toggle
+kaadzos-bluetooth on
+kaadzos-bluetooth off
+kaadzos-bluetooth status</code></pre>
+      </figure>
+
+      <aside class="note">
+        <p class="mono">Bounded probes</p>
+        <p>Every <code>bluetoothctl</code> call is wrapped in <code>timeout</code>. Without an adapter <code>bluetoothctl</code> otherwise waits for a daemon that Debian correctly skipped, which used to stall the session gate. The boot and install gates require <code>KAADZOS_BLUETOOTH_OK</code>, <code>KAADZOS_BLUETOOTH_MODULE_OK</code> and <code>KAADZOS_WAYBAR_OK</code>.</p>
+      </aside>
+    </section>
+
+    <section id="control" aria-labelledby="control-title">
+      <h2 id="control-title">Control centre</h2>
+      <p><code>kaadzos-control</code> is one POSIX-sh helper behind the gear in Waybar, <kbd>Super</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> and the <strong>Control Centre</strong> desktop entry. It adds no daemon of its own. Every optional command is probed before a row is offered, so a missing tool disables one item instead of breaking the menu.</p>
+
+      <div class="table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Section</th><th>Tool used when present</th></tr></thead>
+          <tbody>
+            <tr><td>Sound</td><td><code>wpctl</code> / WirePlumber</td></tr>
+            <tr><td>Network</td><td><code>nm-connection-editor</code>, falling back to <code>nmcli</code></td></tr>
+            <tr><td>Brightness</td><td><code>brightnessctl</code></td></tr>
+            <tr><td>Power profile</td><td><code>powerprofilesctl</code></td></tr>
+            <tr><td>Night light</td><td><code>wlsunset</code></td></tr>
+            <tr><td>Battery</td><td><code>upower</code></td></tr>
+            <tr><td>Bluetooth</td><td>Blueman / <code>kaadzos-bluetooth</code></td></tr>
+            <tr><td>Session</td><td>Reboot and power off, confirmed with zenity</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The base image adds <code>upower</code>, <code>power-profiles-daemon</code>, <code>wlsunset</code> and <code>zenity</code> so those rows are useful on a laptop. The generated bar gains <code>backlight</code>, <code>power-profiles-daemon</code>, <code>idle_inhibitor</code> and <code>custom/control</code>; battery left-click opens the power section and network left-click falls back to the control centre when the connection editor is absent. The session marker is <code>KAADZOS_CONTROL_OK</code>.</p>
+    </section>
+
+    <section id="settings" aria-labelledby="settings-title">
+      <h2 id="settings-title">Settings</h2>
+      <p><code>kaadzos-settings</code> is the single zenity-backed settings helper behind <kbd>Super</kbd>+<kbd>,</kbd> and the <strong>Settings</strong> desktop entry. It covers appearance (wallpaper, night light, dark/light style, interface font, icon theme), input (keyboard layout, touchpad tap), display, network, Bluetooth, sound, power, default browser/file manager and About. Each row probes its command before it is shown.</p>
+
+      <h3 id="settings-storage">Where changes are stored</h3>
+      <p>Wallpaper, keyboard and touchpad overrides are written atomically through <code>kaadzos-file-action</code> into <code>~/.config/sway/config.d/</code>. Only <code>*.conf</code> files are included; an inert README and default file explain the directory. Preferences such as style and night-light state live in <code>~/.config/kaadzos/settings.conf</code>. Regenerating the theme never overwrites these user overrides.</p>
+
+      <h3 id="settings-safety">Filename safety</h3>
+      <p><code>kaadzos-file-action</code> takes paths as arguments, never evaluates them, and refuses empty values, leading dashes, control characters, <code>$</code> and backticks. The helper is shared by Thunar and Settings, so the same rule protects wallpaper changes and custom actions. The session marker is <code>KAADZOS_SETTINGS_OK</code>.</p>
+    </section>
+
+    <section id="search" aria-labelledby="search-title">
+      <h2 id="search-title">Search</h2>
+      <p><kbd>Super</kbd>+<kbd>D</kbd> runs <code>kaadzos-search</code>. It builds one TAB-separated list from desktop entries, recent files, the 200 newest files under <code>$HOME</code>, settings pages, installed/available packs and a fixed command map, then passes the selected line to <code>fuzzel --dmenu</code>. <kbd>Super</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> keeps the plain launcher.</p>
+
+      <div class="table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Selection</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td>Desktop entry</td><td><code>gio launch</code></td></tr>
+            <tr><td>File</td><td><code>xdg-open</code></td></tr>
+            <tr><td>Settings page</td><td><code>kaadzos-settings &lt;section&gt;</code></td></tr>
+            <tr><td>Pack</td><td><code>kaadzos add &lt;pack&gt;</code> in foot</td></tr>
+            <tr><td>Command</td><td>Dispatch from a fixed map</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The home scan is depth-limited and bounded by <code>timeout 2</code>. Recent files are decoded from <code>$XDG_DATA_HOME/recently-used.xbel</code>, and a missing state file is fine. The scan prunes <code>.ssh</code>, <code>.gnupg</code>, keyrings, browser profiles, trash, caches, <code>node_modules</code> and <code>.git</code>; names with control characters or newlines are dropped and leading-dash values are refused. Nothing is evaluated as shell, and cancelling fuzzel does nothing.</p>
+    </section>
+
+    <section id="packages" aria-labelledby="packages-title">
+      <h2 id="packages-title">Package management</h2>
+      <p><code>kaadzos-packages</code> is the base front page behind <kbd>Super</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, the Waybar package module, the <strong>Packages</strong> desktop entry and the Settings row. It opens Synaptic when the optional <code>admin</code> pack is installed, offers that pack when it is not, refreshes apt indexes, and lists the declarative packs. apt is called through <code>pkexec</code>, or passwordless <code>sudo</code> in the live session; no privileged daemon is added.</p>
+
+      <h3 id="packages-install-deb">Local packages</h3>
+      <p><code>kaadzos-packages install-deb PATH</code> requires one absolute, readable <code>.deb</code>. It warns that maintainer scripts run as root, asks for confirmation with zenity, and keeps failed apt output in <code>~/.cache/kaadzos/apt.log</code>. Install and remove validate the package name and pass it as one argv; remove defaults to cancel. A locked dpkg is reported separately from an unreachable archive.</p>
+
+      <aside class="note">
+        <p class="mono">Why Synaptic is optional</p>
+        <p>Synaptic, <code>pkexec</code> and <code>gvfs-backends</code> live in the <code>admin</code> pack. The base image stays small while the helper still covers apt refreshes, pack state and local <code>.deb</code> installs. <code>ci/test-packages.sh</code> stubs apt, pkexec, zenity, Synaptic and the pack CLI to cover both privilege paths.</p>
+      </aside>
+    </section>
+
+    <section id="printing" aria-labelledby="printing-title">
+      <h2 id="printing-title">Printing &amp; scanning</h2>
+      <p>Printing is not in the base ISO. Install the <code>printing</code> pack to get CUPS, <code>cups-filters</code>, <code>printer-driver-all</code>, <code>system-config-printer</code>, <code>cups-browsed</code>, Avahi/mDNS, <code>sane-utils</code>, <code>sane-airscan</code> and <code>simple-scan</code>. A pack hook enables the services after installation.</p>
+
+      <figure class="code">
+        <figcaption class="code-head"><span class="mono">shell</span><button class="code-copy mono" type="button">Copy</button></figcaption>
+        <pre><code>kaadzos add printing
+system-config-printer
+simple-scan</code></pre>
+      </figure>
+
+      <p>Network printers are discovered through Avahi and <code>libnss-mdns</code>; AirScan and SANE cover most network and USB scanners. Nothing in the boot or session gates depends on CUPS, so a machine without printers pays no runtime cost.</p>
+    </section>
+
+    <section id="hardware" aria-labelledby="hardware-title">
+      <h2 id="hardware-title">Hardware tools</h2>
+      <p>The <code>hardware</code> pack collects tools that are useful on some machines but pointless in a minimal base: <code>fwupd</code> with Debian's signed firmware metadata, <code>gnome-firmware</code>, <code>gnome-disk-utility</code>, GParted, <code>nwg-displays</code>, <code>smartmontools</code>, <code>nvme-cli</code>, <code>gsmartcontrol</code>, <code>lm-sensors</code>, <code>testdisk</code> and filesystem tools for NTFS, exFAT, btrfs and XFS.</p>
+
+      <p>Display configuration is deliberately here rather than in the base. Wayland output layout is normally handled by Sway and the Settings display row; <code>nwg-displays</code> is available when a graphical editor is useful. Firmware updates, SMART checks and disk repair all require hardware access and are therefore opt-in. <code>ci/test-packs.sh</code> resolves every name in a trixie container and runs the pack hook without building an ISO.</p>
+    </section>
+
+    <section id="vpn-firewall" aria-labelledby="vpn-firewall-title">
+      <h2 id="vpn-firewall-title">VPN &amp; firewall</h2>
+      <p>The <code>network</code> pack adds NetworkManager's OpenVPN and OpenConnect plugins, WireGuard tools, <code>nm-connection-editor</code> and <code>network-manager-gnome</code>. Connections are then managed from the Network panel in the control centre or from <code>nmcli</code>; no VPN is configured or started by default.</p>
+
+      <p>The <code>security</code> pack adds <code>ufw</code> and its GTK front end <code>gufw</code>. It is also opt-in: enabling a firewall changes network behaviour, so the base image does not do it for you. A typical server-style default is deny incoming and allow outgoing:</p>
+
+      <figure class="code">
+        <figcaption class="code-head"><span class="mono">shell</span><button class="code-copy mono" type="button">Copy</button></figcaption>
+        <pre><code>kaadzos add security
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw enable
+gufw</code></pre>
+      </figure>
+
+      <p>Rules persist on an installed system. In the live session they disappear on reboot because the root filesystem is ephemeral. The pack contains no keys, credentials, daemon beyond ufw's own service, or preconfigured profile.</p>
+    </section>
+
+    <section id="fonts" aria-labelledby="fonts-title">
+      <h2 id="fonts-title">Fonts</h2>
+      <p>The interface face is <strong>Inter Tight</strong>. Debian's <code>fonts-inter</code> ships Inter and InterDisplay but not the Tight variable family, so the OFL-licensed variable TTFs are vendored into <code>/usr/share/fonts/truetype/kaadzos/</code>. <code>KAADZ_FONT_UI="Inter Tight"</code> is wired through Sway, Waybar, foot, fuzzel, mako, swaylock, GTK/Qt and the Calamares QSS. Terminals use JetBrains Mono and fall back to DejaVu Sans.</p>
+
+      <p>Wider language coverage is a pack, not a base dependency. <code>kaadzos add fonts</code> installs <code>fonts-noto-core</code>, <code>fonts-noto-color-emoji</code> and <code>fonts-noto-mono</code>. The website self-hosts the same Inter Tight variable font, and its React Bits licence is recorded in <code>site/src/components/LICENSE.md</code>.</p>
+    </section>
+
+    <section id="input-methods" aria-labelledby="input-methods-title">
+      <h2 id="input-methods-title">Input methods</h2>
+      <p>Keyboard layout and touchpad tap-to-click are base Settings rows written through atomic Sway <code>config.d</code> files; they need no extra daemon. Non-Latin text entry is optional. The <code>input</code> pack installs fcitx5, <code>fcitx5-configtool</code>, the GTK and Qt frontends and <code>fcitx5-chinese-addons</code>.</p>
+
+      <figure class="code">
+        <figcaption class="code-head"><span class="mono">shell</span><button class="code-copy mono" type="button">Copy</button></figcaption>
+        <pre><code>kaadzos add input
+fcitx5-configtool</code></pre>
+      </figure>
+
+      <p>Add these variables to <code>~/.config/environment.d/60-kaadzos-fcitx.conf</code>, then log out and back in so the compositor and toolkits pick them up:</p>
+
+      <figure class="code">
+        <figcaption class="code-head"><span class="mono">60-kaadzos-fcitx.conf</span><button class="code-copy mono" type="button">Copy</button></figcaption>
+        <pre><code>GTK_IM_MODULE=fcitx
+QT_IM_MODULE=fcitx
+XMODIFIERS=@im=fcitx</code></pre>
+      </figure>
+
+      <p>fcitx5 does not start automatically and has no privileged component. Wayland-native GTK applications use the frontend through XWayland where needed; pure Sway keybindings are unaffected.</p>
+    </section>
+
+    <section id="opencode" aria-labelledby="opencode-title">
+      <h2 id="opencode-title">OpenCode</h2>
+      <p>OpenCode is an optional coding agent, not part of the base image. <code>kaadzos add opencode</code> downloads a pinned <code>v2.3.2</code> archive over HTTPS, verifies its SHA-256 before extraction, and installs <code>/usr/local/bin/opencode</code> plus a desktop entry. There is no <code>latest</code> URL, install script, apt repo, key, credential, sudo rule, daemon or auto-start. amd64 and arm64 are the only supported architectures.</p>
+
+      <div class="table-wrap">
+        <table class="docs-table">
+          <thead><tr><th>Asset</th><th>SHA-256</th></tr></thead>
+          <tbody>
+            <tr><td><code>opencode-linux-x64.tar.gz</code></td><td><code>563b5d663637226b6e3bb4bb6803281bc39b0d2cd88db06d674b6420aab009b0</code></td></tr>
+            <tr><td><code>opencode-linux-arm64.tar.gz</code></td><td><code>9d10185acdb72336e086e699ca363a6065f410fd3c1caed0dc8046e95ac06ccb</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The desktop entry, Settings row and Search result all run <code>kaadzos-opencode [DIRECTORY]</code>. On first use the helper asks for per-directory zenity consent, states that the agent can read and change files and run commands in that directory, and records only the accepted path in <code>~/.config/kaadzos/opencode-consent</code>. Cancel changes nothing. Paths are validated and never evaluated as shell.</p>
+
+      <aside class="note">
+        <p class="mono">Trust boundary</p>
+        <p>OpenCode is upstream MIT-licensed software. Once started, it has the permissions of your user in the consented directory. KaadzOS does not add credentials, network tunnels or elevated privileges. <code>docs/opencode.md</code> records the digests, update policy and boundaries; <code>ci/test-opencode.sh</code> checks the pins, fixture install, checksum failure, consent gate and secret scan.</p>
       </aside>
     </section>
 
@@ -744,6 +945,7 @@ docs/                        release notes, hosting and archive notes</code></pr
         <table class="docs-table">
           <thead><tr><th>Release</th><th>Date</th><th>Highlights</th></tr></thead>
           <tbody>
+            <tr><td>0.4.0 (in preparation)</td><td>21 Nov 2026</td><td>Daily-driver baseline, Bluetooth, control centre, settings, search, package helpers, helper gates, OpenCode and the security/fonts/input packs. Release notes are ready for the next tag.</td></tr>
             <tr><td><a href="https://github.com/kaadzos/kaadzos/releases/tag/v0.3.0">0.3.0</a> (latest)</td><td>13 Nov 2026</td><td>Flat black-and-white AMOLED artwork and Inter Tight across desktop, boot and installer; baked progress slide; neutral locale map and partition bars; synthetic-click install test.</td></tr>
             <tr><td><a href="https://github.com/kaadzos/kaadzos/releases/tag/v0.2.1">0.2.1</a></td><td>8 Nov 2026</td><td>Visible Install button and welcome text; hidden raw Calamares entry; preconfigured signed APT source.</td></tr>
             <tr><td><a href="https://github.com/kaadzos/kaadzos/releases/tag/v0.2.0">0.2.0</a></td><td>7 Nov 2026</td><td>Optional signed APT archive; <code>kaadzos-pack-defs</code>; release mirroring to R2.</td></tr>
@@ -755,6 +957,7 @@ docs/                        release notes, hosting and archive notes</code></pr
       <h3 id="releases-limits">Known limitations</h3>
       <ul>
         <li>No persistence in the live session; install to disk for a durable system.</li>
+        <li>No dock: the Wayland dock candidates are not in trixie, so Waybar is the supported bar.</li>
         <li>The APT archive currently carries only <code>kaadzos-pack-defs</code>, not a replacement Debian archive.</li>
         <li>The live image is unsigned and requires Secure Boot to be off. The installed system supports Secure Boot.</li>
         <li>AMD64 only.</li>

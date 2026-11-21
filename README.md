@@ -52,18 +52,21 @@ Packs are plain `key=value` files in `packs/`, staged into the image at build ti
 
 | Pack | What it installs | Size |
 |---|---|---|
-| `admin` | Synaptic, `pkexec` and the polkit authentication agent | ~30 MB |
+| `admin` | Synaptic, `pkexec`, `gvfs-backends` and the polkit agent | ~45 MB |
 | `ai` | Ollama, whisper.cpp, Piper voice helpers | ~5 GB |
 | `android` | Waydroid (signed third-party repo) | ~3 GB |
 | `cloudflare` | `cloudflared` static binary | ~60 MB |
 | `creative` | Image, vector and 3D studio (GIMP, Inkscape, Krita, Blender) | ~3 GB |
 | `dev` | Git, compilers, editors, Node, Python | ~900 MB |
+| `fonts` | Noto core, emoji and monospace families | ~55 MB |
 | `gaming` | Wine, winetricks, GameMode, MangoHud | ~2 GB |
 | `hardware` | Firmware, disks, partitioning, SMART and sensors | ~300 MB |
+| `input` | fcitx5 with GTK/Qt and Chinese frontends | ~20 MB |
 | `network` | VPN plugins, WireGuard and NetworkManager tools | ~40 MB |
 | `opencode` | Pinned upstream OpenCode coding agent (opt-in) | ~250 MB |
 | `printing` | CUPS, printer drivers, scanning and mDNS discovery | ~250 MB |
 | `privacy` | Tor, Unbound, MAC randomisation | ~150 MB |
+| `security` | `ufw` and `gufw` firewall configuration | ~10 MB |
 | `windows` | Wine and Bottles (i386 multiarch) | ~4 GB |
 
 ```sh
@@ -74,6 +77,8 @@ kaadzos --dry-run add ai  # print every command without running it
 ```
 
 `$mod+a` opens the same list as a fuzzel menu. State lives in `/var/lib/kaadzos/installed`, so `add` and `remove` are safe to repeat.
+
+**Base versus packs.** The base ISO carries the session, theming, installer, portals, Bluetooth stack, Thunar and its safe actions, settings/search/package helpers, default lean applications, zram and the CLI. Hardware-dependent and heavy pieces are optional: printing/scanning, firmware/disk/SMART tools, VPN plugins and firewall configuration, fonts, input methods, Synaptic, local AI, Android, Windows compatibility, creative/gaming/dev stacks, and OpenCode. Bluetooth, backlight, night light, battery and Wi-Fi are hardware-dependent even in the base: the helpers probe commands and services and hide or explain an item when the machine lacks the device. There is no dock: the Wayland dock candidates are not in trixie, and adding an X11 dock or vendored Go binary would break the minimal-Wayland rule. Waybar is the supported bar.
 
 ## Bluetooth
 
@@ -166,7 +171,7 @@ Two changes came out of that: the lock binding moved to `$mod+Shift+x`, and the 
 
 ## Base image contents
 
-The base image is deliberately small. It contains the kernel and firmware, NetworkManager, BlueZ and Blueman, the control centre (upower, power-profiles-daemon, wlsunset and zenity), the settings helper, the Thunar context actions with archive/clipboard support and gvfs/udisks/thumbnail integration, the desktop portals (xdg-desktop-portal with GTK and WLR backends), Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `fdisk`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `7zip`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, hardware tools, docks, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`.
+The base image is deliberately small. It contains the kernel and firmware, NetworkManager, BlueZ and Blueman, the control centre (upower, power-profiles-daemon, wlsunset and zenity), the settings helper, the Thunar context actions with archive/clipboard support and gvfs/udisks/thumbnail integration, the desktop portals (xdg-desktop-portal with GTK and WLR backends), Sway and its companion tools, Waybar, foot, fuzzel, mako, the Calamares installer and its runtime dependencies, greetd/tuigreet, the lean default applications (GNOME Web, Thunar, Mousepad, imv, zathura), Plymouth, zram, and an explicit core command-line baseline (`bash`, `dash`, `zsh`, `coreutils`, `util-linux`, `findutils`, `grep`, `gawk`, `tar`, `gzip`, `xz-utils`, `zstd`, `e2fsprogs`, `fdisk`, `file`, `less`, `man-db`, `manpages`, `rsync`, `tree`, `pciutils`, `usbutils`, `procps`, `lsof`, `7zip`, `unzip`, `zip`, and others). Heavier features (AI, Android, Windows, dev toolchains, printing, scanners, VPNs, hardware tools, fonts, input methods, firewall configuration, GUI package management, and OpenCode) are optional packs installed with `kaadzos add`. There is no dock pack: Waybar is the supported bar.
 
 ## Build it yourself
 
@@ -237,4 +242,4 @@ The current release, [v0.3.0](https://github.com/kaadzos/kaadzos/releases/tag/v0
 
 ## Licence
 
-Debian components retain their own licences. The build configuration, theme generator, pack manager, installer glue, and CI harness in this repository are MIT.
+Debian components retain their own licences. The build configuration, theme generator, pack manager, installer glue, and CI harness in this repository are MIT. Inter Tight is bundled under the SIL Open Font License; the vendored React Bits accents in `site/src/components/` are MIT + Commons Clause (full notice in `site/src/components/LICENSE.md`); OpenCode is upstream MIT-licensed software fetched only by the opt-in pack. No non-free runtime dependency is added to the ISO.

@@ -11,8 +11,9 @@ portal/session foundation are covered by green full-matrix runs 44460300130
 (bios/uefi) and `install-test` (bios/uefi). The intermediate 44852495532
 (`a21100e`) failed both install tests because a shellcheck cleanup changed the
 Calamares launch environment; `ca080a1` restored it. Prompt 14 (documentation
-and release readiness) is next; the plan records the verified package choices
-below.
+and release readiness) is implemented: the README, manual, pack matrix,
+licences and draft `v0.4.0` release notes are updated, and the branch CI run
+is pending. The plan records the verified package choices below.
 
 Prepared: 2026-11-18, against `main` at `026091c`. Prompt 2 landed as `7a4e6e2`
 and Prompt 3 as `a316fd1` plus the diagnostic fix `1b26d0d`.
@@ -623,6 +624,15 @@ Depends on: 13 green.
   budget, and `sha256sum --check` on the release artifact.
 - Exit: tag push runs the full matrix and the release publishes only a green
   image.
+
+Done: README separates base, optional and hardware-dependent features, keeps
+the no-dock decision, records OpenCode and licence boundaries, and lists all
+packs. The manual has 27 static chapters and no-JavaScript reading path.
+Added `security`, `fonts` and `input` packs; their trixie package names were
+verified before editing. `docs/release-notes/v0.4.0.md` is ready for the next
+tag. No generated theme file was hand-edited, no secret or non-free runtime
+dependency was added, and `apt-recommends=false` remains in `auto/config`.
+A branch CI run verifies the final tree; the tag run remains the release gate.
 
 ## 5. Base vs pack summary
 

@@ -5,8 +5,8 @@ daily-driver system. It is a planning document only; no implementation changes
 are implied by its presence. The verified, dependency-ordered output of
 Prompt 1 lives in [`daily-driver-plan.md`](daily-driver-plan.md), which carries
 the live status. Prompts 2-13 and the portal/session foundation are green in
-CI; Prompt 14 (documentation and release readiness) is next; Prompt 8 keeps
-Waybar and declines a Wayland dock.
+CI; Prompt 14 (documentation and release readiness) is implemented and awaiting
+its final CI verification; Prompt 8 keeps Waybar and declines a Wayland dock.
 
 ## Principles
 
