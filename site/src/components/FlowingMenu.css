@@ -56,7 +56,7 @@
   text-decoration: none;
   outline: none;
   cursor: pointer;
-  transition: opacity 0.45s ease;
+  transition: opacity var(--motion-base, 320ms) var(--ease-state, cubic-bezier(0.4, 0, 0.2, 1));
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -65,7 +65,17 @@
 }
 
 .flowing-menu__item[data-dimmed] .flowing-menu__link {
-  opacity: 0.3;
+  opacity: 0.24;
+  transition-delay: var(--dim-delay, 0ms);
+}
+
+.flowing-menu__item[data-current] .flowing-menu__index,
+.flowing-menu__item[data-current] .flowing-menu__meta {
+  color: var(--white);
+}
+
+.flowing-menu__item[data-current] .flowing-menu__index {
+  opacity: 1;
 }
 
 .flowing-menu__link:focus-visible {
@@ -144,6 +154,9 @@
   overflow: hidden;
   visibility: hidden;
   pointer-events: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.92);
   clip-path: inset(50% 0 50% 0);
 }
 
@@ -164,10 +177,27 @@
 
 .flowing-menu__part-text {
   padding: 0 0.4em;
-  font-size: clamp(14px, calc(52cqh * var(--flowing-menu-band, 1)), 90px);
+  font-size: clamp(14px, calc(50cqh * var(--flowing-menu-band, 1)), 82px);
   font-weight: 620;
   line-height: 1;
   letter-spacing: -0.035em;
+  white-space: nowrap;
+}
+
+.flowing-menu__part-prefix {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.flowing-menu__copy {
+  padding: 0 0.7em;
+  border-left: 1px solid rgba(255, 255, 255, 0.34);
+  color: rgba(255, 255, 255, 0.58);
+  font-family: var(--mono);
+  font-size: clamp(8px, 14cqh, 11px);
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
@@ -211,6 +241,72 @@
   height: 25%;
   container-type: size;
   will-change: transform, opacity;
+}
+
+/* The pack grid mounts with data-entrance="pending" and flips to "in" when it
+   first enters the viewport. Outside the pack grid these selectors do nothing. */
+@keyframes pack-label-in {
+  from { opacity: 0; transform: translate3d(0, 110%, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes pack-fade-in {
+  from { opacity: 0; transform: translate3d(0, 6px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes pack-rule-in {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.packs-menu__columns[data-entrance='pending'] .flowing-menu__label-text {
+  transform: translate3d(0, 110%, 0);
+}
+
+.packs-menu__columns[data-entrance='pending'] .flowing-menu__divider {
+  transform: scaleX(0);
+}
+
+.packs-menu__columns[data-entrance='pending'] .flowing-menu__index,
+.packs-menu__columns[data-entrance='pending'] .flowing-menu__end,
+.packs-menu__columns[data-entrance='pending'] .pack-group-label {
+  opacity: 0;
+  transform: translate3d(0, 6px, 0);
+}
+
+.packs-menu__columns[data-entrance='in'] .flowing-menu__label-text {
+  animation: pack-label-in 680ms var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)) calc(var(--enter-delay, 0ms) + var(--row-delay, 0ms)) both;
+}
+
+.packs-menu__columns[data-entrance='in'] .flowing-menu__divider {
+  animation: pack-rule-in 760ms var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)) calc(var(--enter-delay, 0ms) + var(--row-delay, 0ms)) both;
+}
+
+.packs-menu__columns[data-entrance='in'] .flowing-menu__index,
+.packs-menu__columns[data-entrance='in'] .flowing-menu__end {
+  animation: pack-fade-in 440ms var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)) calc(var(--enter-delay, 0ms) + var(--row-delay, 0ms)) both;
+}
+
+.packs-menu__columns[data-entrance='in'] .pack-group-label {
+  animation: pack-fade-in 460ms var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)) var(--enter-delay, 0ms) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .packs-menu__columns[data-entrance='pending'] .flowing-menu__label-text {
+    transform: none;
+  }
+
+  .packs-menu__columns[data-entrance='pending'] .flowing-menu__divider {
+    transform: none;
+  }
+
+  .packs-menu__columns[data-entrance='pending'] .flowing-menu__index,
+  .packs-menu__columns[data-entrance='pending'] .flowing-menu__end,
+  .packs-menu__columns[data-entrance='pending'] .pack-group-label {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (max-width: 620px) {

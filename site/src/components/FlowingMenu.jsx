@@ -19,6 +19,8 @@ const BAND = 'flowing-menu__band';
 const TRACK = 'flowing-menu__track';
 const PART = 'flowing-menu__part';
 const PART_TEXT = 'flowing-menu__part-text';
+const PART_PREFIX = 'flowing-menu__part-prefix';
+const COPY = 'flowing-menu__copy';
 const IMAGE = 'flowing-menu__image';
 const FLOAT = 'flowing-menu__float';
 const FLOAT_LAYER = 'flowing-menu__float-layer';
@@ -55,6 +57,8 @@ function FlowingMenu({
   align = 'center',
   showIndex = false,
   showArrow = false,
+  bandPrefix = '',
+  showCopy = false,
   imageShape = 'pill',
   intro = true,
   startIndex = 0,
@@ -120,8 +124,13 @@ function FlowingMenu({
       if (!row?.item) return;
       if (index === b.index) row.item.setAttribute('data-current', '');
       else row.item.removeAttribute('data-current');
-      if (dim && index !== b.index) row.item.setAttribute('data-dimmed', '');
-      else row.item.removeAttribute('data-dimmed');
+      if (dim && index !== b.index) {
+        row.item.style.setProperty('--dim-delay', `${Math.min(Math.abs(index - b.index) * 16, 180)}ms`);
+        row.item.setAttribute('data-dimmed', '');
+      } else {
+        row.item.style.removeProperty('--dim-delay');
+        row.item.removeAttribute('data-dimmed');
+      }
     });
   };
 
@@ -601,6 +610,7 @@ function FlowingMenu({
                 rows.current[index] = { ...rows.current[index], item: node };
               }}
               className={ITEM}
+              style={{ '--row': index, '--row-delay': `${index * 34}ms` }}
             >
               {dividers && index > 0 && <span className={DIVIDER} data-intro-rule="" aria-hidden="true" />}
               {item.link ? (
@@ -640,7 +650,11 @@ function FlowingMenu({
                 >
                   {Array.from({ length: copies[index] ?? 3 }, (_, copy) => (
                     <div className={PART} key={copy}>
-                      <span className={PART_TEXT}>{item.marquee ?? item.text}</span>
+                      <span className={PART_TEXT}>
+                        {bandPrefix ? <span className={PART_PREFIX}>{bandPrefix}</span> : null}
+                        {item.marquee ?? item.text}
+                      </span>
+                      {showCopy && <span className={COPY}>Copy</span>}
                       {item.image && <span className={IMAGE} style={{ backgroundImage: `url(${item.image})` }} />}
                     </div>
                   ))}
@@ -676,7 +690,11 @@ function FlowingMenu({
                   {item &&
                     Array.from({ length: copies[slots[slot]] ?? 3 }, (_, copy) => (
                       <div className={PART} key={copy}>
-                        <span className={PART_TEXT}>{item.marquee ?? item.text}</span>
+                        <span className={PART_TEXT}>
+                          {bandPrefix ? <span className={PART_PREFIX}>{bandPrefix}</span> : null}
+                          {item.marquee ?? item.text}
+                        </span>
+                        {showCopy && <span className={COPY}>Copy</span>}
                         {item.image && <span className={IMAGE} style={{ backgroundImage: `url(${item.image})` }} />}
                       </div>
                     ))}

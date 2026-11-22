@@ -10,7 +10,7 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="KaadzOS — An operating system that proves itself">
   <meta property="og:description" content="A minimal Debian 13 live image with a Sway/Wayland desktop. Built, booted on both firmwares and installed unattended in CI before anything ships.">
-  <meta property="og:image" content="https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png">
+  <meta property="og:image" content="https://kaadzos.pages.dev/shots/desktop.png">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/fonts/inter-tight-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/style.css">
@@ -23,12 +23,16 @@
 <header class="masthead" id="top">
   <div class="shell masthead-row">
     <a class="wordmark" href="/">KAADZOS</a>
-    <p class="mono masthead-meta">Debian 13 · Trixie · amd64</p>
+    <p class="mono masthead-meta">
+      <span class="masthead-current" id="masthead-current">00 / Top</span>
+      <span class="masthead-meta-os">Debian 13 · Trixie · amd64</span>
+    </p>
     <nav class="mono masthead-nav" aria-label="Primary">
       <a href="/docs/">Docs</a>
-      <a href="https://github.com/kaadzos/kaadzos/releases/latest">Download</a>
-      <a href="https://github.com/kaadzos/kaadzos">Source</a>
-      <a href="https://github.com/kaadzos/kaadzos/actions/workflows/build.yml">CI</a>
+      <a href="#packs">Packs</a>
+      <a href="#download">Download</a>
+      <a class="masthead-nav__secondary" href="https://github.com/kaadzos/kaadzos">Source</a>
+      <a class="masthead-nav__secondary" href="https://github.com/kaadzos/kaadzos/actions/workflows/build.yml">CI</a>
     </nav>
   </div>
 </header>
@@ -74,10 +78,21 @@
   </div>
 
   <figure class="shot">
-    <img src="https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png"
-         alt="The KaadzOS live session: Sway with Waybar, a floating terminal and the AMOLED black wallpaper"
-         width="1280" height="800">
-    <figcaption class="mono shell">Fig. 01 — KaadzOS live session, captured from the QEMU framebuffer by CI. Not staged. The run fails on any Sway warning.</figcaption>
+    <picture>
+      <source type="image/avif"
+              srcset="/shots/desktop-640.avif 640w, /shots/desktop.avif 1280w"
+              sizes="100vw">
+      <source type="image/webp"
+              srcset="/shots/desktop-640.webp 640w, /shots/desktop.webp 1280w"
+              sizes="100vw">
+      <img src="/shots/desktop.png"
+           alt="The KaadzOS live session: Sway with Waybar, a floating terminal and the AMOLED black wallpaper"
+           width="1280" height="800" loading="lazy" decoding="async">
+    </picture>
+    <figcaption class="mono shell shot-caption">
+      <span>Fig. 01 — KaadzOS live session, captured from the QEMU framebuffer by CI. Not staged. The run fails on any Sway warning.</span>
+      <span class="shot-verified">Last verified · 2026-11-21 · BIOS + UEFI</span>
+    </figcaption>
   </figure>
 
   <div class="shell">
@@ -145,27 +160,54 @@
     <section class="chapter" id="packs" aria-labelledby="packs-title">
       <p class="mono chapter-index">03 / The packs</p>
       <div class="chapter-body reveal">
-        <h2 id="packs-title">Sixteen packs,<br>one command.</h2>
+        <div class="packs-head">
+          <h2 id="packs-title">Sixteen packs,<br>one command.</h2>
+          <p class="mono packs-hint">Tap a pack to copy its install command.</p>
+        </div>
 
         <div class="packs-menu" id="packs-menu">
-          <ul class="packs packs-fallback" aria-label="Available packs">
-            <li><span class="mono pack-index" aria-hidden="true">01</span>admin</li>
-            <li><span class="mono pack-index" aria-hidden="true">02</span>ai</li>
-            <li><span class="mono pack-index" aria-hidden="true">03</span>android</li>
-            <li><span class="mono pack-index" aria-hidden="true">04</span>cloudflare</li>
-            <li><span class="mono pack-index" aria-hidden="true">05</span>creative</li>
-            <li><span class="mono pack-index" aria-hidden="true">06</span>dev</li>
-            <li><span class="mono pack-index" aria-hidden="true">07</span>fonts</li>
-            <li><span class="mono pack-index" aria-hidden="true">08</span>gaming</li>
-            <li><span class="mono pack-index" aria-hidden="true">09</span>hardware</li>
-            <li><span class="mono pack-index" aria-hidden="true">10</span>input</li>
-            <li><span class="mono pack-index" aria-hidden="true">11</span>network</li>
-            <li><span class="mono pack-index" aria-hidden="true">12</span>opencode</li>
-            <li><span class="mono pack-index" aria-hidden="true">13</span>printing</li>
-            <li><span class="mono pack-index" aria-hidden="true">14</span>privacy</li>
-            <li><span class="mono pack-index" aria-hidden="true">15</span>security</li>
-            <li><span class="mono pack-index" aria-hidden="true">16</span>windows</li>
-          </ul>
+          <div class="packs-menu__columns packs-fallback" aria-label="Available packs">
+            <div class="packs-column">
+              <section class="pack-group" aria-labelledby="pack-group-build">
+                <p class="mono pack-group-label" id="pack-group-build">Build</p>
+                <ul class="packs">
+                  <li><span class="mono pack-index" aria-hidden="true">01</span>ai</li>
+                  <li><span class="mono pack-index" aria-hidden="true">02</span>dev</li>
+                  <li><span class="mono pack-index" aria-hidden="true">03</span>opencode</li>
+                  <li><span class="mono pack-index" aria-hidden="true">04</span>cloudflare</li>
+                </ul>
+              </section>
+              <section class="pack-group" aria-labelledby="pack-group-play">
+                <p class="mono pack-group-label" id="pack-group-play">Play</p>
+                <ul class="packs">
+                  <li><span class="mono pack-index" aria-hidden="true">05</span>gaming</li>
+                  <li><span class="mono pack-index" aria-hidden="true">06</span>creative</li>
+                  <li><span class="mono pack-index" aria-hidden="true">07</span>android</li>
+                  <li><span class="mono pack-index" aria-hidden="true">08</span>windows</li>
+                </ul>
+              </section>
+            </div>
+            <div class="packs-column">
+              <section class="pack-group" aria-labelledby="pack-group-tune">
+                <p class="mono pack-group-label" id="pack-group-tune">Tune</p>
+                <ul class="packs">
+                  <li><span class="mono pack-index" aria-hidden="true">09</span>admin</li>
+                  <li><span class="mono pack-index" aria-hidden="true">10</span>hardware</li>
+                  <li><span class="mono pack-index" aria-hidden="true">11</span>network</li>
+                  <li><span class="mono pack-index" aria-hidden="true">12</span>printing</li>
+                </ul>
+              </section>
+              <section class="pack-group" aria-labelledby="pack-group-extend">
+                <p class="mono pack-group-label" id="pack-group-extend">Extend</p>
+                <ul class="packs">
+                  <li><span class="mono pack-index" aria-hidden="true">13</span>privacy</li>
+                  <li><span class="mono pack-index" aria-hidden="true">14</span>security</li>
+                  <li><span class="mono pack-index" aria-hidden="true">15</span>fonts</li>
+                  <li><span class="mono pack-index" aria-hidden="true">16</span>input</li>
+                </ul>
+              </section>
+            </div>
+          </div>
         </div>
 
         <p class="afternote">
@@ -182,10 +224,26 @@
         <h2 id="proof-title">Nothing ships<br>unproven.</h2>
 
         <div class="stats">
-          <div class="stat"><b>07</b><span class="mono">Jobs per push</span></div>
-          <div class="stat"><b>02</b><span class="mono">Firmwares booted</span></div>
-          <div class="stat"><b>02</b><span class="mono">Installs driven</span></div>
-          <div class="stat"><b>00</b><span class="mono">Warnings tolerated</span></div>
+          <div class="stat">
+            <b>07</b>
+            <span class="mono">Jobs per push</span>
+            <p class="stat-note">Build · pack · repo · boot · install · release</p>
+          </div>
+          <div class="stat">
+            <b>02</b>
+            <span class="mono">Firmwares booted</span>
+            <p class="stat-note">Syslinux BIOS · GRUB under UEFI</p>
+          </div>
+          <div class="stat">
+            <b>02</b>
+            <span class="mono">Installs driven</span>
+            <p class="stat-note">Blank disk · unattended</p>
+          </div>
+          <div class="stat">
+            <b>00</b>
+            <span class="mono">Warnings tolerated</span>
+            <p class="stat-note">Sway IPC gate · no swaynag</p>
+          </div>
         </div>
 
         <p class="afternote">
@@ -200,12 +258,54 @@
     </section>
 
     <section class="chapter download" id="download" aria-labelledby="download-title">
-      <div class="grid-stage-mount" id="cursor-grid">
-        <div class="grid-fallback" aria-hidden="true"></div>
+      <div class="waypoint-field" id="waypoint-field" aria-hidden="true">
+        <div class="waypoint-field__fallback"></div>
       </div>
       <p class="mono chapter-index">05 / Download</p>
       <div class="chapter-body reveal">
-        <h2 id="download-title">Take it<br>for a drive.</h2>
+        <div class="download-head">
+          <div class="download-intro">
+            <h2 id="download-title">Take it<br>for a drive.</h2>
+            <p class="download-lede">
+              One hybrid image. Boot it live, install it to disk, or write it
+              to a stick. The same checksum verifies every copy.
+            </p>
+          </div>
+
+          <aside class="release-plate" aria-label="Release 0.4.0">
+            <div class="release-plate__head">
+              <span class="mono release-badge"><span class="release-dot" aria-hidden="true"></span>Latest stable</span>
+              <span class="mono release-version">v0.4.0</span>
+            </div>
+            <dl class="release-meta">
+              <div>
+                <dt class="mono">Image</dt>
+                <dd>Hybrid ISO · amd64</dd>
+              </div>
+              <div>
+                <dt class="mono">Size</dt>
+                <dd>1.4 GB</dd>
+              </div>
+              <div>
+                <dt class="mono">Published</dt>
+                <dd>2026-11-21</dd>
+              </div>
+            </dl>
+            <div class="release-hash">
+              <div class="release-hash__value">
+                <span class="mono">SHA-256</span>
+                <code>21165ce6…25baa</code>
+              </div>
+              <button class="copy-btn mono" type="button"
+                      data-copy="21165ce683c34c2e1e8c7f4211889a1f4dd09c638e482ef67ee6d0a2fa125baa"
+                      aria-label="Copy the SHA-256 checksum">Copy</button>
+            </div>
+            <p class="mono release-verified">
+              <span class="release-dot" aria-hidden="true"></span>
+              Last verified · 2026-11-21 · BIOS + UEFI
+            </p>
+          </aside>
+        </div>
 
         <div class="actions download-actions">
           <a class="btn" href="https://github.com/kaadzos/kaadzos/releases/latest">Download the ISO</a>
@@ -213,15 +313,25 @@
         </div>
 
         <div class="codes">
-          <div>
-            <p class="mono code-label">Verify</p>
+          <div class="console">
+            <div class="console-head">
+              <p class="mono code-label">Verify the download</p>
+              <button class="copy-btn mono" type="button"
+                      data-copy="sha256sum --check KaadzOS-trixie-amd64.iso.sha256"
+                      aria-label="Copy the verification command">Copy</button>
+            </div>
             <pre><code>sha256sum --check \
   KaadzOS-trixie-amd64.iso.sha256
 
 KaadzOS-trixie-amd64.iso: OK</code></pre>
           </div>
-          <div>
-            <p class="mono code-label">Write</p>
+          <div class="console">
+            <div class="console-head">
+              <p class="mono code-label">Write to a USB stick</p>
+              <button class="copy-btn mono" type="button"
+                      data-copy="sudo dd if=KaadzOS-trixie-amd64.iso of=/dev/sdX bs=4M status=progress oflag=sync"
+                      aria-label="Copy the write command">Copy</button>
+            </div>
             <pre><code># replace sdX — this erases it
 sudo dd if=KaadzOS-trixie-amd64.iso \
   of=/dev/sdX bs=4M status=progress \
@@ -267,6 +377,7 @@ sudo dd if=KaadzOS-trixie-amd64.iso \
           <li><a href="#desktop">The desktop</a></li>
           <li><a href="#packs">The packs</a></li>
           <li><a href="#proof">The proof</a></li>
+          <li><a href="#download">Download</a></li>
           <li><a href="#top">Top ↑</a></li>
         </ul>
       </div>
@@ -279,6 +390,10 @@ sudo dd if=KaadzOS-trixie-amd64.iso \
           <li><a href="https://github.com/kaadzos/kaadzos/blob/main/docs/release-notes/v0.4.0.md">Release v0.4.0</a></li>
         </ul>
       </div>
+    </div>
+    <div class="footer-cta">
+      <span class="mono">Latest release · v0.4.0</span>
+      <a href="#download">Download the hybrid ISO <span aria-hidden="true">→</span></a>
     </div>
     <p class="colophon mono">
       <span>Set in Inter Tight · Built and tested in GitHub Actions · Hosted on Cloudflare Pages</span>

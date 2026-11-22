@@ -10,7 +10,7 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="KaadzOS Documentation">
   <meta property="og:description" content="The manual for KaadzOS: install, packs, theming, the APT archive, building and CI.">
-  <meta property="og:image" content="https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png">
+  <meta property="og:image" content="https://kaadzos.pages.dev/shots/desktop.png">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/fonts/inter-tight-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/style.css">
@@ -266,7 +266,7 @@ sudo dd if=KaadzOS-trixie-amd64.iso \
       </ol>
 
       <figure class="docs-figure">
-        <img src="https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png"
+        <img src="/shots/desktop.png" loading="lazy" decoding="async"
              alt="The KaadzOS live session: Sway with Waybar, a floating terminal and the AMOLED black wallpaper"
              width="1280" height="800" loading="lazy">
         <figcaption class="mono">Fig. 01 — The live session, captured from the QEMU framebuffer by CI. The run fails on any Sway warning.</figcaption>
@@ -969,7 +969,7 @@ docs/                        release notes, hosting and archive notes</code></pr
     <section id="licence" aria-labelledby="licence-title">
       <h2 id="licence-title">Licence</h2>
       <p>Debian components retain their own licences. The live-build configuration, theme generator, pack manager, installer glue and CI harness in this repository are MIT.</p>
-      <p>The website is MIT except for the three vendored React Bits accents — <code>GradientASCII</code>, <code>CursorGrid</code> and <code>TechText</code> — which are MIT + Commons Clause (Copyright © 2026 David Haz), and the self-hosted Inter Tight font, which is licensed under the SIL Open Font License. The image ships the same Inter Tight family under the OFL. The full component notice is in <code>site/src/components/LICENSE.md</code>; the font licence is in <code>site/public/fonts/OFL.txt</code> and <code>config/includes.chroot/usr/share/fonts/truetype/kaadzos/OFL.txt</code>.</p>
+      <p>The website is MIT except for the three vendored React Bits accents — <code>GradientASCII</code>, <code>FlowingMenu</code> and <code>TechText</code> — which are MIT + Commons Clause (Copyright © 2026 David Haz). The download chapter's waypoint field is hand-authored and MIT-licensed, as is the self-hosted Inter Tight font, which is licensed under the SIL Open Font License. The image ships the same Inter Tight family under the OFL. The full component notice is in <code>site/src/components/LICENSE.md</code>; the font licence is in <code>site/public/fonts/OFL.txt</code> and <code>config/includes.chroot/usr/share/fonts/truetype/kaadzos/OFL.txt</code>.</p>
       <p>KaadzOS is an independent project. Debian is a registered trademark of Software in the Public Interest, Inc.</p>
     </section>
 

@@ -1,9 +1,11 @@
+import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import CursorGrid from './components/CursorGrid';
 import FlowingMenu from './components/FlowingMenu';
 import GradientASCII from './components/GradientASCII';
 import TechText from './components/TechText';
+import WaypointField from './components/WaypointField';
+import { setupSiteMotion } from './motion';
 
 const asciiMount = document.getElementById('ascii-hero');
 if (asciiMount) {
@@ -35,50 +37,86 @@ if (asciiMount) {
   );
 }
 
-const gridMount = document.getElementById('cursor-grid');
-if (gridMount) {
-  createRoot(gridMount).render(
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      <CursorGrid
-        cellSize={36}
-        color="#ffffff"
-        highlight="area"
-        gridStyle="lines"
-        radius={150}
-        holdTime={500}
-        fadeDuration={1100}
-        fillOpacity={0.025}
-        gridOpacity={0.03}
-        spotlight={0.8}
-        ambient={0.015}
-        edgeFade={0.24}
-        intro={false}
-        clickPulse
-      />
-    </div>
+const waypointMount = document.getElementById('waypoint-field');
+if (waypointMount) {
+  createRoot(waypointMount).render(
+    <WaypointField spacing={34} radius={190} baseOpacity={0.22} pointerOpacity={0.62} revealDuration={700} />
   );
 }
 
-const packItems = [
-  { text: 'admin', meta: '~45 MB', ariaLabel: 'Admin pack, about 45 MB. Copy the install command.' },
-  { text: 'ai', meta: '~5 GB', ariaLabel: 'AI pack, about 5 GB. Copy the install command.' },
-  { text: 'android', meta: '~3 GB', ariaLabel: 'Android pack, about 3 GB. Copy the install command.' },
-  { text: 'cloudflare', meta: '~60 MB', ariaLabel: 'Cloudflare pack, about 60 MB. Copy the install command.' },
-  { text: 'creative', meta: '~3 GB', ariaLabel: 'Creative pack, about 3 GB. Copy the install command.' },
-  { text: 'dev', meta: '~900 MB', ariaLabel: 'Dev pack, about 900 MB. Copy the install command.' },
-  { text: 'fonts', meta: '~55 MB', ariaLabel: 'Fonts pack, about 55 MB. Copy the install command.' },
-  { text: 'gaming', meta: '~2 GB', ariaLabel: 'Gaming pack, about 2 GB. Copy the install command.' },
-  { text: 'hardware', meta: '~300 MB', ariaLabel: 'Hardware pack, about 300 MB. Copy the install command.' },
-  { text: 'input', meta: '~20 MB', ariaLabel: 'Input pack, about 20 MB. Copy the install command.' },
-  { text: 'network', meta: '~40 MB', ariaLabel: 'Network pack, about 40 MB. Copy the install command.' },
-  { text: 'opencode', meta: '~250 MB', ariaLabel: 'OpenCode pack, about 250 MB. Copy the install command.' },
-  { text: 'printing', meta: '~250 MB', ariaLabel: 'Printing pack, about 250 MB. Copy the install command.' },
-  { text: 'privacy', meta: '~150 MB', ariaLabel: 'Privacy pack, about 150 MB. Copy the install command.' },
-  { text: 'security', meta: '~10 MB', ariaLabel: 'Security pack, about 10 MB. Copy the install command.' },
-  { text: 'windows', meta: '~4 GB', ariaLabel: 'Windows pack, about 4 GB. Copy the install command.' }
+const pack = (text, meta) => ({
+  text,
+  meta,
+  ariaLabel: `${text} pack, about ${meta}. Copy the install command.`
+});
+
+const packGroups = [
+  {
+    label: 'Build',
+    startIndex: 0,
+    items: [
+      pack('ai', '~5 GB'),
+      pack('dev', '~900 MB'),
+      pack('opencode', '~250 MB'),
+      pack('cloudflare', '~60 MB')
+    ]
+  },
+  {
+    label: 'Play',
+    startIndex: 4,
+    items: [
+      pack('gaming', '~2 GB'),
+      pack('creative', '~3 GB'),
+      pack('android', '~3 GB'),
+      pack('windows', '~4 GB')
+    ]
+  },
+  {
+    label: 'Tune',
+    startIndex: 8,
+    items: [
+      pack('admin', '~45 MB'),
+      pack('hardware', '~300 MB'),
+      pack('network', '~40 MB'),
+      pack('printing', '~250 MB')
+    ]
+  },
+  {
+    label: 'Extend',
+    startIndex: 12,
+    items: [
+      pack('privacy', '~150 MB'),
+      pack('security', '~10 MB'),
+      pack('fonts', '~55 MB'),
+      pack('input', '~20 MB')
+    ]
+  }
 ];
 
-const packColumns = [packItems.slice(0, 8), packItems.slice(8)];
+const packMenuProps = {
+  speed: 55,
+  stretch: 0.24,
+  magnet: 0.04,
+  followCursor: 0.3,
+  textColor: '#ffffff',
+  bgColor: '#000000',
+  marqueeBgColor: '#070707',
+  marqueeTextColor: '#ffffff',
+  borderColor: 'rgba(255, 255, 255, 0.16)',
+  direction: 'alternate',
+  duration: 0.38,
+  bandInset: 0,
+  bandRadius: 0,
+  carryContent: false,
+  dividers: true,
+  dimInactive: true,
+  align: 'left',
+  showIndex: true,
+  showArrow: false,
+  intro: false,
+  bandPrefix: 'kaadzos add ',
+  showCopy: true
+};
 
 let packStatusTimer;
 const copyPackCommand = async item => {
@@ -124,45 +162,64 @@ const copyPackCommand = async item => {
   }, 3600);
 };
 
-const packMenuProps = {
-  speed: 75,
-  stretch: 0.3,
-  magnet: 0.06,
-  followCursor: 0.4,
-  textColor: '#ffffff',
-  bgColor: '#000000',
-  marqueeBgColor: '#ffffff',
-  marqueeTextColor: '#000000',
-  borderColor: 'rgba(255, 255, 255, 0.16)',
-  direction: 'alternate',
-  duration: 0.45,
-  bandInset: 0,
-  bandRadius: 0,
-  carryContent: false,
-  dividers: true,
-  dimInactive: true,
-  align: 'left',
-  showIndex: true,
-  showArrow: false,
-  intro: false
-};
+function PacksMenu() {
+  const rootRef = useRef(null);
+  const [entered, setEntered] = useState(false);
 
-const packsMount = document.getElementById('packs-menu');
-if (packsMount) {
-  createRoot(packsMount).render(
-    <div className="packs-menu__columns">
-      {packColumns.map((items, column) => (
-        <FlowingMenu
-          key={column}
-          items={items}
-          startIndex={column * 8}
-          ariaLabel={`Packs ${column * 8 + 1} to ${column * 8 + items.length}. Select a pack to copy its install command.`}
-          {...packMenuProps}
-          onItemClick={copyPackCommand}
-        />
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return undefined;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      setEntered(true);
+      return undefined;
+    }
+    const observer = new IntersectionObserver(
+      entries => {
+        if (!entries.some(entry => entry.isIntersecting)) return;
+        setEntered(true);
+        observer.disconnect();
+      },
+      { rootMargin: '0px 0px -12% 0px', threshold: 0.12 }
+    );
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={rootRef} className="packs-menu__columns" data-entrance={entered ? 'in' : 'pending'}>
+      {[0, 1].map(column => (
+        <div className="packs-column" key={column}>
+          {packGroups.slice(column * 2, column * 2 + 2).map((group, index) => {
+            const groupIndex = column * 2 + index;
+            return (
+              <section
+                className="pack-group"
+                key={group.label}
+                style={{ '--enter-delay': `${groupIndex * 90}ms` }}
+                aria-labelledby={`pack-group-${group.label.toLowerCase()}`}
+              >
+                <p className="mono pack-group-label" id={`pack-group-${group.label.toLowerCase()}`}>
+                  {group.label}
+                </p>
+                <FlowingMenu
+                  items={group.items}
+                  startIndex={group.startIndex}
+                  ariaLabel={`${group.label} packs. Select a pack to copy its install command.`}
+                  {...packMenuProps}
+                  onItemClick={copyPackCommand}
+                />
+              </section>
+            );
+          })}
+        </div>
       ))}
     </div>
   );
+}
+
+const packsMount = document.getElementById('packs-menu');
+if (packsMount) {
+  createRoot(packsMount).render(<PacksMenu />);
 }
 
 const footerMount = document.getElementById('footer-tech');
@@ -198,3 +255,5 @@ if (footerMount) {
     />
   );
 }
+
+setupSiteMotion();

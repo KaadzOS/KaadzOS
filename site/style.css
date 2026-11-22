@@ -1,9 +1,10 @@
 /* KaadzOS website — hand-authored editorial stylesheet.
    Pure black, pure white, one grotesk. No cards, no decoration that does not
-   carry information. Four React Bits accents (an ASCII gradient at the top, a
-   flowing pack menu, a cursor-driven grid behind the download chapter and a
-   dashed-path wordmark above the footer) are mounted by src/main.jsx and
-   degrade to the static markup in index.html when JavaScript is unavailable. */
+   carry information. Three React Bits accents (an ASCII gradient at the top, a
+   flowing pack menu and a dashed-path wordmark above the footer) sit beside a
+   hand-authored waypoint field behind the download chapter. They are mounted
+   by src/main.jsx and degrade to the static markup in index.html when
+   JavaScript is unavailable. */
 
 @font-face {
   font-family: "Inter Tight";
@@ -30,6 +31,12 @@
     "Liberation Mono", monospace;
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
     "Times New Roman", serif;
+
+  --motion-fast: 160ms;
+  --motion-base: 320ms;
+  --motion-slow: 800ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-state: cubic-bezier(0.4, 0, 0.2, 1);
 
   --pad: clamp(18px, 4.4vw, 72px);
   --maxw: 1560px;
@@ -171,7 +178,29 @@ img { max-width: 100%; }
   letter-spacing: 0.1em;
 }
 
-.masthead-meta { margin: 0; }
+.masthead-meta {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.8vw, 22px);
+  margin: 0;
+}
+
+.masthead-current {
+  color: var(--white);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.masthead-current::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin-right: 8px;
+  border-radius: 999px;
+  background: currentColor;
+  vertical-align: 0.18em;
+}
 
 .masthead-nav {
   display: flex;
@@ -183,7 +212,7 @@ img { max-width: 100%; }
   display: inline-flex;
   align-items: center;
   padding: 4px 0;
-  transition: color 0.2s ease;
+  transition: color var(--motion-fast) var(--ease-state);
 }
 
 .masthead-nav a::after {
@@ -196,14 +225,16 @@ img { max-width: 100%; }
   background: currentColor;
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition: transform var(--motion-base) var(--ease-out);
 }
 
 .masthead-nav a:hover::after,
-.masthead-nav a:focus-visible::after { transform: scaleX(1); }
+.masthead-nav a:focus-visible::after,
+.masthead-nav a[aria-current="location"]::after { transform: scaleX(1); }
 
 .masthead-nav a:hover,
-.masthead-nav a:focus-visible { color: var(--white); }
+.masthead-nav a:focus-visible,
+.masthead-nav a[aria-current="location"] { color: var(--white); }
 
 /* ------------------------------------------------------------- ascii hero */
 .ascii-stage {
@@ -354,10 +385,13 @@ h1 .serif {
   border-bottom: 1px solid var(--line);
 }
 
+.shot picture { display: block; }
+
 .shot img {
   display: block;
   width: 100%;
   height: auto;
+  background: var(--black);
 }
 
 .shot figcaption {
@@ -366,29 +400,46 @@ h1 .serif {
   padding-block: 14px;
 }
 
-/* ------------------------------------------------- cursor grid background */
-/* CursorGrid (src/main.jsx) fills the download chapter behind its content:
-   cells light under the cursor, hold, then fade. */
+.shot-caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 28px;
+}
+
+.shot-verified {
+  max-width: 100%;
+  color: var(--white);
+}
+
+.shot-verified::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin-right: 8px;
+  border-radius: 999px;
+  background: currentColor;
+  vertical-align: 0.18em;
+}
+
+/* ------------------------------------------------------- download field */
+/* WaypointField (src/main.jsx) fills the download chapter with a sparse dot
+   lattice that brightens under the pointer and fades at the edges. It is
+   static when idle, matching the OS wallpaper rather than a generic effect. */
 .chapter.download {
   position: relative;
   isolation: isolate;
+  overflow: clip;
 }
 
-.grid-stage-mount {
+.waypoint-field {
   position: absolute;
   inset: 0;
   z-index: -1;
+  overflow: hidden;
   pointer-events: none;
-}
-
-/* Static fallback: the same 30px hairline grid the component draws. React
-   clears it once CursorGrid mounts. */
-.grid-fallback {
-  position: absolute;
-  inset: 0;
-  background-image:
-    repeating-linear-gradient(to right, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 30px),
-    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 30px);
 }
 
 /* -------------------------------------------------------------- chapters */
@@ -475,63 +526,93 @@ code {
 }
 
 /* ----------------------------------------------------------------- packs */
-.packs-menu {
-  height: clamp(440px, 46vw, 520px);
-  margin-top: clamp(28px, 4vw, 44px);
+.packs-head h2 { margin-bottom: 14px; }
+
+.packs-hint {
+  margin: 0 0 clamp(20px, 3vw, 32px);
+  color: var(--grey);
 }
+
+.packs-menu { margin-top: clamp(18px, 2.5vw, 26px); }
 
 .packs-menu__columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  height: 100%;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
 
-.packs-menu__columns > .flowing-menu {
-  height: 100%;
-  border-top: 0;
+.packs-column {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: clamp(16px, 2.2vw, 26px);
+  padding-block: clamp(14px, 2vw, 22px);
+}
+
+.packs-column + .packs-column { border-left: 1px solid var(--line); }
+
+.pack-group {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 9px;
+  padding-inline: clamp(12px, 1.8vw, 22px);
+}
+
+.pack-group-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: var(--grey-dim);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+}
+
+.pack-group-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.pack-group .flowing-menu {
+  height: clamp(172px, 15vw, 216px);
+  border-top: 1px solid var(--line);
   border-bottom: 0;
 }
 
-.packs-menu__columns > .flowing-menu + .flowing-menu {
-  border-left: 1px solid var(--line);
-}
+.packs-menu .flowing-menu__link { cursor: copy; }
 
-.packs-fallback {
-  height: 100%;
-  margin: 0;
-  grid-auto-rows: 1fr;
-}
-
-.packs {
+.packs-fallback .packs {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin: clamp(26px, 4vw, 44px) 0 0;
+  grid-template-columns: 1fr;
+  margin: 0;
   padding: 0;
   list-style: none;
   border-top: 1px solid var(--line);
-  border-left: 1px solid var(--line);
-  font-size: clamp(2rem, 4.2vw, 3.6rem);
+  font-size: clamp(1.2rem, 2.2vw, 2rem);
   line-height: 1;
   letter-spacing: -0.045em;
   font-weight: 720;
 }
 
-.packs li {
+.packs-fallback .packs li {
   display: flex;
   align-items: baseline;
   gap: 0.42em;
   min-width: 0;
-  padding: clamp(12px, 1.4vw, 20px);
-  border-right: 1px solid var(--line);
+  padding: 10px 0;
   border-bottom: 1px solid var(--line);
 }
+
+.packs-fallback .packs li:last-child { border-bottom: 0; }
 
 .pack-index {
   flex: none;
   color: var(--grey-dim);
-  font-size: 0.24em;
+  font-size: 0.56rem;
   letter-spacing: 0.06em;
   transform: translateY(-0.12em);
 }
@@ -597,10 +678,147 @@ code {
   color: var(--grey-dim);
 }
 
+.stat-note {
+  max-width: 22ch;
+  margin: 12px 0 0;
+  color: var(--grey);
+  font-size: 0.68rem;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+}
+
 /* -------------------------------------------------------------- download */
+.download-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: end;
+}
+
+.download-intro h2 { margin-bottom: clamp(18px, 2.4vw, 28px); }
+
+.download-lede {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--grey);
+  font-size: clamp(1rem, 1.25vw, 1.18rem);
+  line-height: 1.5;
+  letter-spacing: -0.008em;
+}
+
+.release-plate {
+  padding: clamp(18px, 2.2vw, 26px);
+  border: 1px solid var(--line);
+  border-top-color: var(--line-strong);
+  background: var(--black);
+}
+
+.release-plate__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.release-badge,
+.release-version,
+.release-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.release-badge { color: var(--white); }
+
+.release-version { color: var(--white); }
+
+.release-dot {
+  display: block;
+  width: 5px;
+  height: 5px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+
+.release-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding-block: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.release-meta dt {
+  margin: 0 0 6px;
+  color: var(--grey-dim);
+  font-size: 0.58rem;
+}
+
+.release-meta dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.3;
+}
+
+.release-hash {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  padding-top: 16px;
+}
+
+.release-hash__value {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.release-hash__value code {
+  overflow-wrap: anywhere;
+  font-size: 0.7rem;
+  letter-spacing: -0.01em;
+}
+
+.release-verified {
+  margin: 16px 0 0;
+  color: var(--grey);
+  font-size: 0.6rem;
+}
+
+.copy-btn {
+  padding: 6px 9px;
+  border: 1px solid var(--line-strong);
+  background: var(--black);
+  color: var(--white);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  cursor: copy;
+  transition:
+    background var(--motion-fast) var(--ease-state),
+    border-color var(--motion-fast) var(--ease-state),
+    color var(--motion-fast) var(--ease-state);
+}
+
+.copy-btn:hover,
+.copy-btn:focus-visible,
+.copy-btn.is-copied {
+  border-color: var(--white);
+  background: var(--white);
+  color: var(--black);
+}
+
 .download-actions {
   justify-content: flex-start;
-  margin-bottom: clamp(34px, 5vw, 60px);
+  margin-block: clamp(30px, 4.5vw, 52px);
 }
 
 .codes {
@@ -609,8 +827,26 @@ code {
   gap: clamp(16px, 3vw, 44px);
 }
 
-.code-label {
-  margin: 0 0 10px;
+.console {
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: var(--black);
+  transition: border-color var(--motion-base) var(--ease-state);
+}
+
+.console:hover { border-color: var(--line-strong); }
+
+.console-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.console-head .code-label {
+  margin: 0;
   color: var(--grey-dim);
 }
 
@@ -618,16 +854,12 @@ pre {
   margin: 0;
   padding: clamp(16px, 2vw, 22px);
   overflow-x: auto;
-  border: 1px solid var(--line);
-  background: var(--black);
+  background: transparent;
   font-family: var(--mono);
   font-size: clamp(0.76rem, 0.85vw, 0.84rem);
   line-height: 1.65;
   color: var(--ink);
-  transition: border-color 0.2s ease;
 }
-
-pre:hover { border-color: var(--line-strong); }
 
 pre code {
   border: 0;
@@ -693,6 +925,39 @@ pre code {
 .footer-grid a:hover,
 .footer-grid a:focus-visible { color: var(--white); border-color: var(--white); }
 
+.footer-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px 28px;
+  margin-top: clamp(32px, 5vw, 56px);
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.footer-cta > .mono { margin: 0; }
+
+.footer-cta a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4em;
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  font-weight: 620;
+  letter-spacing: -0.025em;
+  border-bottom: 1px solid var(--line-strong);
+  padding-bottom: 4px;
+  transition: border-color var(--motion-fast) var(--ease-state);
+}
+
+.footer-cta a span {
+  transition: transform var(--motion-base) var(--ease-out);
+}
+
+.footer-cta a:hover { border-color: var(--white); }
+
+.footer-cta a:hover span { transform: translateX(5px); }
+
 .colophon {
   display: flex;
   flex-wrap: wrap;
@@ -706,40 +971,35 @@ pre code {
 }
 
 /* --------------------------------------------------------------- motion */
-@keyframes rise {
-  from { opacity: 0; transform: translateY(22px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes hero-rise {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-@keyframes progress {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+@keyframes wordmark-in {
+  from { opacity: 0; transform: scale(1.035) translate3d(0, 10px, 0); }
+  to { opacity: 1; transform: scale(1) translate3d(0, 0, 0); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .kicker { animation: rise 0.7s cubic-bezier(0.22, 0.7, 0.24, 1) 0.02s both; }
-  h1 .line { animation: rise 0.7s cubic-bezier(0.22, 0.7, 0.24, 1) both; }
-  h1 .line:nth-child(1) { animation-delay: 0.06s; }
-  h1 .line:nth-child(2) { animation-delay: 0.12s; }
-  h1 .line:nth-child(3) { animation-delay: 0.18s; }
-  .lede { animation: rise 0.7s cubic-bezier(0.22, 0.7, 0.24, 1) 0.28s both; }
-  .hero-foot .actions { animation: rise 0.7s cubic-bezier(0.22, 0.7, 0.24, 1) 0.34s both; }
-  .ticker { animation: rise 0.7s cubic-bezier(0.22, 0.7, 0.24, 1) 0.4s both; }
-}
-
-/* Scroll-driven reveals are a progressive enhancement; without support the
-   content simply stays visible. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .reveal {
-      animation: rise linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 40%;
-    }
+  .ascii-wordmark {
+    animation: wordmark-in 1.35s var(--ease-out) 0.1s both;
   }
+
+  .kicker { animation: hero-rise 0.72s var(--ease-out) 0.34s both; }
+
+  h1 .line { animation: hero-rise 0.86s var(--ease-out) both; }
+  h1 .line:nth-child(1) { animation-delay: 0.44s; }
+  h1 .line:nth-child(2) { animation-delay: 0.52s; }
+  h1 .line:nth-child(3) { animation-delay: 0.6s; }
+
+  .lede { animation: hero-rise 0.76s var(--ease-out) 0.84s both; }
+  .hero-foot .actions { animation: hero-rise 0.76s var(--ease-out) 0.92s both; }
+  .ticker { animation: hero-rise 0.76s var(--ease-out) 1s both; }
 }
 
-/* A one-pixel reading rule across the bottom of the masthead. */
+/* The reading rule follows a custom property set by the masthead observer.
+   Without JavaScript it stays at zero, exactly like the old no-support state. */
 .masthead::after {
   content: "";
   position: absolute;
@@ -748,18 +1008,9 @@ pre code {
   bottom: -1px;
   height: 1px;
   background: var(--white);
-  transform: scaleX(0);
+  transform: scaleX(var(--scroll-progress, 0));
   transform-origin: 0 50%;
   pointer-events: none;
-}
-
-@supports (animation-timeline: scroll()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .masthead::after {
-      animation: progress linear both;
-      animation-timeline: scroll(root);
-    }
-  }
 }
 
 /* ----------------------------------------------------------- responsive */
@@ -775,6 +1026,8 @@ pre code {
   .stat:nth-child(1),
   .stat:nth-child(2) { border-bottom: 1px solid var(--line); }
   .stat:nth-child(3) { padding-left: 0; }
+  .download-head { grid-template-columns: 1fr; align-items: start; }
+  .release-plate { max-width: 620px; }
   .codes { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .masthead-meta { display: none; }
@@ -783,18 +1036,41 @@ pre code {
 @media (max-width: 620px) {
   .ascii-hero { height: 320px; }
   .footer-tech { height: 280px; }
-  .masthead-nav { gap: 14px; }
+  .masthead-nav { gap: 12px; }
+  .masthead-nav a.masthead-nav__secondary { display: none; }
   .ticker { gap: 8px 0; }
   .ticker li { padding-right: 12px; margin-right: 12px; }
-  .packs-menu { height: clamp(420px, 112vw, 500px); }
+
+  .packs-column {
+    gap: 14px;
+    padding-block: 12px;
+  }
+
+  .pack-group {
+    gap: 8px;
+    padding-inline: 8px;
+  }
+
+  .pack-group-label {
+    gap: 8px;
+    font-size: 8px;
+    letter-spacing: 0.12em;
+  }
+
+  .pack-group .flowing-menu { height: clamp(148px, 40vw, 184px); }
+
   .packs-menu__columns .flowing-menu__index,
   .packs-menu__columns .flowing-menu__meta { display: none; }
-  .packs-menu__columns .flowing-menu__link { grid-template-columns: 1fr; padding-inline: 10px; }
-  .packs-menu__columns .flowing-menu__label { font-size: clamp(0.95rem, 34cqh, 1.55rem); }
-  .packs { font-size: clamp(1.15rem, 5.6vw, 1.7rem); }
-  .packs li { gap: 0.35em; padding: 10px 12px 12px; }
-  .pack-index { font-size: 0.28em; }
+  .packs-menu__columns .flowing-menu__link { grid-template-columns: 1fr; padding-inline: 4px; }
+  .packs-menu__columns .flowing-menu__label { font-size: clamp(0.92rem, 30cqh, 1.35rem); }
+
+  .packs-fallback .packs { font-size: clamp(1.05rem, 4.8vw, 1.35rem); }
+  .packs-fallback .packs li { gap: 0.35em; padding: 9px 0; }
+  .pack-index { font-size: 0.52rem; }
+
+  .release-meta { grid-template-columns: 1fr 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
+  .footer-cta { flex-direction: column; align-items: flex-start; }
   .colophon { flex-direction: column; }
 }
 
