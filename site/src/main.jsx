@@ -1,5 +1,4 @@
 import { createRoot } from 'react-dom/client';
-import { useState } from 'react';
 
 import CursorGrid from './components/CursorGrid';
 import FlowingMenu from './components/FlowingMenu';
@@ -15,16 +14,16 @@ if (asciiMount) {
       characters=" =+xX0S8#@"
       cellSize={18}
       density={0.8}
-      glyphOpacity={0.78}
-      glow={0.08}
+      glyphOpacity={0.85}
+      glow={0.2}
       depthOfField={0}
-      flicker={0.08}
+      flicker={0.2}
       softness={0.5}
       scale={1}
       flow={0.5}
-      speed={0.7}
-      gradientOpacity={0.72}
-      grain={0.04}
+      speed={1}
+      gradientOpacity={0.9}
+      grain={0.08}
       variation={0}
       mouseInteraction
       scrambleRadius={0.1}
@@ -45,16 +44,16 @@ if (gridMount) {
         color="#ffffff"
         highlight="area"
         gridStyle="lines"
-        radius={140}
-        holdTime={280}
-        fadeDuration={700}
-        fillOpacity={0.02}
-        gridOpacity={0.035}
-        spotlight={0.45}
-        ambient={0}
+        radius={150}
+        holdTime={500}
+        fadeDuration={1100}
+        fillOpacity={0.025}
+        gridOpacity={0.03}
+        spotlight={0.8}
+        ambient={0.015}
         edgeFade={0.24}
         intro={false}
-        clickPulse={false}
+        clickPulse
       />
     </div>
   );
@@ -78,6 +77,8 @@ const packItems = [
   { text: 'security', meta: '~10 MB', ariaLabel: 'Security pack, about 10 MB. Copy the install command.' },
   { text: 'windows', meta: '~4 GB', ariaLabel: 'Windows pack, about 4 GB. Copy the install command.' }
 ];
+
+const packColumns = [packItems.slice(0, 8), packItems.slice(8)];
 
 let packStatusTimer;
 const copyPackCommand = async item => {
@@ -120,22 +121,22 @@ const copyPackCommand = async item => {
     packStatusTimer = setTimeout(() => {
       status.textContent = '';
     }, 300);
-  }, copied ? 1800 : 3600);
+  }, 3600);
 };
 
 const packMenuProps = {
-  speed: 42,
-  stretch: 0.28,
-  magnet: 0.05,
-  followCursor: 0.22,
+  speed: 75,
+  stretch: 0.3,
+  magnet: 0.06,
+  followCursor: 0.4,
   textColor: '#ffffff',
   bgColor: '#000000',
   marqueeBgColor: '#ffffff',
   marqueeTextColor: '#000000',
   borderColor: 'rgba(255, 255, 255, 0.16)',
   direction: 'alternate',
-  duration: 0.42,
-  bandInset: 2,
+  duration: 0.45,
+  bandInset: 0,
   bandRadius: 0,
   carryContent: false,
   dividers: true,
@@ -143,42 +144,25 @@ const packMenuProps = {
   align: 'left',
   showIndex: true,
   showArrow: false,
-  intro: true,
-  columns: 2
+  intro: false
 };
-
-function PacksMenu() {
-  const [copied, setCopied] = useState('');
-
-  const items = packItems.map(item => {
-    const command = `kaadzos add ${item.text}`;
-    const active = copied === item.text;
-    return {
-      ...item,
-      marquee: active ? command : item.text
-    };
-  });
-
-  return (
-    <FlowingMenu
-      items={items}
-      startIndex={0}
-      ariaLabel="Packs 1 to 16. Select a pack to copy its install command."
-      {...packMenuProps}
-      onItemClick={item => {
-        copyPackCommand(item);
-        setCopied(item.text);
-        window.setTimeout(() => {
-          setCopied(current => (current === item.text ? '' : current));
-        }, 1600);
-      }}
-    />
-  );
-}
 
 const packsMount = document.getElementById('packs-menu');
 if (packsMount) {
-  createRoot(packsMount).render(<PacksMenu />);
+  createRoot(packsMount).render(
+    <div className="packs-menu__columns">
+      {packColumns.map((items, column) => (
+        <FlowingMenu
+          key={column}
+          items={items}
+          startIndex={column * 8}
+          ariaLabel={`Packs ${column * 8 + 1} to ${column * 8 + items.length}. Select a pack to copy its install command.`}
+          {...packMenuProps}
+          onItemClick={copyPackCommand}
+        />
+      ))}
+    </div>
+  );
 }
 
 const footerMount = document.getElementById('footer-tech');
@@ -186,15 +170,15 @@ if (footerMount) {
   createRoot(footerMount).render(
     <TechText
       text="KAADZOS"
-      fontWeight={800}
+      fontWeight={600}
       fontSize={150}
       reveal="letter"
       dashLength={4}
       dashGap={2}
-      specks={0}
+      specks={15}
       intro="none"
       introDuration={2}
-      clickKick={false}
+      clickKick
       guides={false}
       fontFamily=""
       letterSpacing={-0.05}
@@ -204,13 +188,13 @@ if (footerMount) {
       lineStyle="dashed"
       strokeWidth={1.5}
       speed={1}
-      bounce={0.2}
+      bounce={0.4}
       selection
-      labels={false}
+      labels
       color="currentColor"
       align="center"
-      draggable={false}
-      sweep={false}
+      draggable
+      sweep
     />
   );
 }

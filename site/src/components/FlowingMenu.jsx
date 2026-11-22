@@ -57,7 +57,6 @@ function FlowingMenu({
   showArrow = false,
   imageShape = 'pill',
   intro = true,
-  columns = 1,
   startIndex = 0,
   activeIndex,
   onItemClick,
@@ -73,24 +72,16 @@ function FlowingMenu({
   const band = useRef({
     top: 0,
     bottom: 0,
-    left: 0,
-    right: 0,
     vTop: 0,
     vBottom: 0,
-    vLeft: 0,
-    vRight: 0,
     toTop: 0,
     toBottom: 0,
-    toLeft: 0,
-    toRight: 0,
-    leadY: 1,
-    leadX: 1,
+    lead: 1,
     shown: false,
     index: -1,
-    restY: 0,
-    restX: 0
+    rest: 0
   });
-  const cursor = useRef({ x: 0, lx: 0, y: null, t: 0, vx: 0 });
+  const cursor = useRef({ x: 0, y: null, t: 0, vx: 0 });
   const engine = useRef({ raf: 0, last: 0, timers: [], touched: false, touch: false });
   const [copies, setCopies] = useState([]);
   const floatRef = useRef(null);
@@ -110,7 +101,6 @@ function FlowingMenu({
     bandRadius: Math.max(0, bandRadius),
     carryContent,
     dimInactive,
-    columns: Math.max(1, Math.round(columns) || 1),
     onItemClick
   };
   const settingsRef = useRef(settings);
@@ -187,22 +177,14 @@ function FlowingMenu({
       state.covered = false;
       const from = Math.max(b.top, m.top);
       const to = Math.min(b.bottom, m.top + m.height);
-      const overlapX = Math.min(b.right, m.left + m.width) - Math.max(b.left, m.left);
-      if (s.carryContent || !b.shown || to - from < 0.25 || overlapX < 0.25) {
+      if (s.carryContent || !b.shown || to - from < 0.25) {
         row.band.style.visibility = 'hidden';
       } else {
-        const radius = Math.min(
-          s.bandRadius,
-          height / 2,
-          Math.max(0, (b.right - b.left) / 2, (row.item?.clientWidth ?? 0) / 2)
-        );
-        const clipTop = Math.max(0, b.top - m.top);
-        const clipRight = Math.max(0, m.left + m.width - b.right);
-        const clipBottom = Math.max(0, m.top + m.height - b.bottom);
-        const clipLeft = Math.max(0, b.left - m.left);
+        const side = Math.min(s.bandInset, Math.max(0, m.height / 2 - 2));
+        const radius = Math.min(s.bandRadius, height / 2, Math.max(0, (row.item?.clientWidth ?? 0) / 2 - side));
         row.band.style.visibility = 'visible';
-        row.band.style.clipPath = `inset(${clipTop.toFixed(2)}px ${clipRight.toFixed(2)}px ${clipBottom.toFixed(2)}px ${clipLeft.toFixed(2)}px round ${radius.toFixed(2)}px)`;
-        state.covered = (to - from) / m.height > 0.04 && overlapX / m.width > 0.04;
+        row.band.style.clipPath = `inset(${(b.top - m.top).toFixed(2)}px ${side}px ${(m.top + m.height - b.bottom).toFixed(2)}px ${side}px round ${radius.toFixed(2)}px)`;
+        state.covered = (to - from) / m.height > 0.04;
       }
       if (row.track) row.track.style.transform = `translate3d(${state.x.toFixed(2)}px, 0, 0)`;
     });
@@ -225,82 +207,52 @@ function FlowingMenu({
       const current = b.index >= 0 ? metrics.current[b.index] : null;
       if (current) {
         const inset = insetFor(current.height);
-        const side = Math.min(s.bandInset, Math.max(0, current.width / 2 - 2));
-        const leanY =
+        const lean =
           c.y === null || reduced
             ? 0
             : clamp((c.y - (current.top + current.height / 2)) * s.magnet, -current.height * 0.3, current.height * 0.3);
-        const leanX =
-          reduced
-            ? 0
-            : clamp((c.lx - (current.left + current.width / 2)) * s.magnet, -current.width * 0.3, current.width * 0.3);
-        b.toTop = current.top + inset + leanY;
-        b.toBottom = current.top + current.height - inset + leanY;
-        b.toLeft = current.left + side + leanX;
-        b.toRight = current.left + current.width - side + leanX;
+        b.toTop = current.top + inset + lean;
+        b.toBottom = current.top + current.height - inset + lean;
       } else if (b.index < 0) {
-        b.toTop = b.toBottom = b.restY;
-        b.toLeft = b.toRight = b.restX;
+        b.toTop = b.toBottom = b.rest;
       }
-      const gapY = (b.toTop + b.toBottom) / 2 - (b.top + b.bottom) / 2;
-      const gapX = (b.toLeft + b.toRight) / 2 - (b.left + b.right) / 2;
-      if (Math.abs(gapY) > 2) b.leadY = gapY > 0 ? 1 : -1;
-      if (Math.abs(gapX) > 2) b.leadX = gapX > 0 ? 1 : -1;
+      const gap = (b.toTop + b.toBottom) / 2 - (b.top + b.bottom) / 2;
+      if (Math.abs(gap) > 2) b.lead = gap > 0 ? 1 : -1;
       if (reduced) {
         b.top = b.toTop;
         b.bottom = b.toBottom;
-        b.left = b.toLeft;
-        b.right = b.toRight;
-        b.vTop = b.vBottom = b.vLeft = b.vRight = 0;
+        b.vTop = b.vBottom = 0;
       } else {
         const omega = (Math.PI * 2) / s.duration;
         const fast = omega * (1 + 1.1 * s.stretch);
         const slow = omega * (1 - 0.4 * s.stretch);
         const zeta = 1 - 0.3 * s.stretch;
-        const wTop = b.leadY > 0 ? slow : fast;
-        const wBottom = b.leadY > 0 ? fast : slow;
-        const wLeft = b.leadX > 0 ? slow : fast;
-        const wRight = b.leadX > 0 ? fast : slow;
+        const wTop = b.lead > 0 ? slow : fast;
+        const wBottom = b.lead > 0 ? fast : slow;
         const steps = Math.max(1, Math.ceil(elapsed / (1 / 240)));
         const dt = elapsed / steps;
         for (let i = 0; i < steps; i++) {
           b.vTop += (-wTop * wTop * (b.top - b.toTop) - 2 * zeta * wTop * b.vTop) * dt;
           b.vBottom += (-wBottom * wBottom * (b.bottom - b.toBottom) - 2 * zeta * wBottom * b.vBottom) * dt;
-          b.vLeft += (-wLeft * wLeft * (b.left - b.toLeft) - 2 * zeta * wLeft * b.vLeft) * dt;
-          b.vRight += (-wRight * wRight * (b.right - b.toRight) - 2 * zeta * wRight * b.vRight) * dt;
           b.top += b.vTop * dt;
           b.bottom += b.vBottom * dt;
-          b.left += b.vLeft * dt;
-          b.right += b.vRight * dt;
           if (b.bottom < b.top) {
             const mid = (b.top + b.bottom) / 2;
             const v = (b.vTop + b.vBottom) / 2;
             b.top = b.bottom = mid;
             b.vTop = b.vBottom = v;
           }
-          if (b.right < b.left) {
-            const mid = (b.left + b.right) / 2;
-            const v = (b.vLeft + b.vRight) / 2;
-            b.left = b.right = mid;
-            b.vLeft = b.vRight = v;
-          }
         }
       }
       const resting =
         Math.abs(b.top - b.toTop) < 0.1 &&
         Math.abs(b.bottom - b.toBottom) < 0.1 &&
-        Math.abs(b.left - b.toLeft) < 0.1 &&
-        Math.abs(b.right - b.toRight) < 0.1 &&
         Math.abs(b.vTop) < 2 &&
-        Math.abs(b.vBottom) < 2 &&
-        Math.abs(b.vLeft) < 2 &&
-        Math.abs(b.vRight) < 2;
+        Math.abs(b.vBottom) < 2;
       if (resting) {
         b.top = b.toTop;
         b.bottom = b.toBottom;
-        b.left = b.toLeft;
-        b.right = b.toRight;
-        b.vTop = b.vBottom = b.vLeft = b.vRight = 0;
+        b.vTop = b.vBottom = 0;
         if (b.index < 0 && b.bottom - b.top < 0.5) b.shown = false;
       } else busy = true;
     }
@@ -314,14 +266,9 @@ function FlowingMenu({
     c.vx *= Math.exp(-elapsed / 0.3);
     const push = clamp(c.vx * s.followCursor * 0.55, -1600, 1600);
 
-    const settled =
-      !b.shown ||
-      (Math.abs(b.vTop) + Math.abs(b.vBottom) + Math.abs(b.vLeft) + Math.abs(b.vRight) < 40 &&
-        Math.abs(b.top - b.toTop) + Math.abs(b.left - b.toLeft) < 8);
-
     marquees.current.forEach((state, index) => {
       if (!state) return;
-      const goal = !state.covered ? 0 : settled ? 1 : 0.12;
+      const goal = state.covered ? 1 : 0;
       state.spin += (goal - state.spin) * (1 - Math.exp(-elapsed / 0.35));
       if (Math.abs(goal - state.spin) < 0.002) state.spin = goal;
       if (!state.covered && state.spin === 0) return;
@@ -348,11 +295,8 @@ function FlowingMenu({
     if (!m) return;
     const b = band.current;
     const inset = insetFor(m.height);
-    const side = Math.min(settingsRef.current.bandInset, Math.max(0, m.width / 2 - 2));
     const top = m.top + inset;
     const bottom = m.top + m.height - inset;
-    const left = m.left + side;
-    const right = m.left + m.width - side;
     const r = roll.current;
     const showing = r.slots[r.current];
     if (settingsRef.current.carryContent && showing !== index) {
@@ -371,23 +315,16 @@ function FlowingMenu({
       setSlots([...r.slots]);
     }
     if (!b.shown) {
-      const startY = from === 'bottom' ? bottom : from === 'center' ? (top + bottom) / 2 : top;
-      const startX =
-        cursor.current.lx < m.left + m.width / 2 ? left : right;
-      b.top = b.bottom = startY;
-      b.left = b.right = startX;
-      b.vTop = b.vBottom = b.vLeft = b.vRight = 0;
+      const start = from === 'bottom' ? bottom : from === 'center' ? (top + bottom) / 2 : top;
+      b.top = b.bottom = start;
+      b.vTop = b.vBottom = 0;
       b.shown = true;
     }
-    const shiftY = (top + bottom) / 2 - (b.top + b.bottom) / 2;
-    const shiftX = (left + right) / 2 - (b.left + b.right) / 2;
-    if (Math.abs(shiftY) > 0.5) b.leadY = shiftY > 0 ? 1 : -1;
-    else b.leadY = from === 'bottom' ? -1 : 1;
-    if (Math.abs(shiftX) > 0.5) b.leadX = shiftX > 0 ? 1 : -1;
+    const shift = (top + bottom) / 2 - (b.top + b.bottom) / 2;
+    if (Math.abs(shift) > 0.5) b.lead = shift > 0 ? 1 : -1;
+    else b.lead = from === 'bottom' ? -1 : 1;
     b.toTop = top;
     b.toBottom = bottom;
-    b.toLeft = left;
-    b.toRight = right;
     b.index = index;
     markRows();
     kick();
@@ -396,28 +333,21 @@ function FlowingMenu({
   const release = toward => {
     const b = band.current;
     if (!b.shown) return;
-    const pointY = toward === 'top' ? b.toTop : toward === 'bottom' ? b.toBottom : (b.toTop + b.toBottom) / 2;
-    const pointX = (b.toLeft + b.toRight) / 2;
-    b.leadY = toward === 'top' ? -1 : 1;
-    b.restY = pointY;
-    b.restX = pointX;
-    b.toTop = b.toBottom = pointY;
-    b.toLeft = b.toRight = pointX;
+    const point = toward === 'top' ? b.toTop : toward === 'bottom' ? b.toBottom : (b.toTop + b.toBottom) / 2;
+    b.lead = toward === 'top' ? -1 : 1;
+    b.rest = point;
+    b.toTop = b.toBottom = point;
     b.index = -1;
     cursor.current.y = null;
     markRows();
     kick();
   };
 
-  const rowAt = (clientX, clientY) => {
+  const rowAt = clientY => {
     const list = listRef.current;
     if (!list) return -1;
-    const rect = list.getBoundingClientRect();
-    const y = clientY - rect.top;
-    const x = clientX - rect.left;
-    return metrics.current.findIndex(
-      m => m && y >= m.top && y < m.top + m.height && x >= m.left && x < m.left + m.width
-    );
+    const y = clientY - list.getBoundingClientRect().top;
+    return metrics.current.findIndex(m => m && y >= m.top && y < m.top + m.height);
   };
 
   const halfOf = (clientY, index) => {
@@ -437,14 +367,7 @@ function FlowingMenu({
   const measure = () => {
     const list = listRef.current;
     metrics.current = rows.current.map(row =>
-      row?.item
-        ? {
-            top: row.item.offsetTop,
-            height: row.item.offsetHeight,
-            left: row.item.offsetLeft,
-            width: row.item.offsetWidth
-          }
-        : null
+      row?.item ? { top: row.item.offsetTop, height: row.item.offsetHeight } : null
     );
     if (list && metrics.current[0]) {
       const height = metrics.current[0].height;
@@ -470,11 +393,8 @@ function FlowingMenu({
       const m = metrics.current[b.index];
       if (m) {
         const inset = insetFor(m.height);
-        const side = Math.min(settingsRef.current.bandInset, Math.max(0, m.width / 2 - 2));
         b.toTop = m.top + inset;
         b.toBottom = m.top + m.height - inset;
-        b.toLeft = m.left + side;
-        b.toRight = m.left + m.width - side;
       }
     }
     paint();
@@ -511,73 +431,54 @@ function FlowingMenu({
     if (!intro || prefersReduced()) return undefined;
     const root = rootRef.current;
     if (!root) return undefined;
-
-    const play = () => {
-      if (engine.current.touched) return;
-      root.querySelectorAll('[data-intro-line]').forEach((node, index) => {
-        node.animate([{ transform: 'translateY(110%)' }, { transform: 'none' }], {
-          duration: 900,
-          delay: index * 70,
-          easing: EASE,
-          fill: 'backwards'
-        });
+    root.querySelectorAll('[data-intro-line]').forEach((node, index) => {
+      node.animate([{ transform: 'translateY(110%)' }, { transform: 'none' }], {
+        duration: 900,
+        delay: index * 70,
+        easing: EASE,
+        fill: 'backwards'
       });
-      root.querySelectorAll('[data-intro-fade]').forEach((node, index) => {
-        node.animate([{ opacity: 0 }, { opacity: 1 }], {
-          duration: 700,
-          delay: 200 + index * 40,
-          easing: 'ease',
-          fill: 'backwards'
-        });
+    });
+    root.querySelectorAll('[data-intro-fade]').forEach((node, index) => {
+      node.animate([{ opacity: 0 }, { opacity: 1 }], {
+        duration: 700,
+        delay: 200 + index * 40,
+        easing: 'ease',
+        fill: 'backwards'
       });
-      root.querySelectorAll('[data-intro-rule]').forEach((node, index) => {
-        node.animate([{ transform: 'scaleX(0)' }, { transform: 'none' }], {
-          duration: 1100,
-          delay: index * 70,
-          easing: EASE,
-          fill: 'backwards'
-        });
+    });
+    root.querySelectorAll('[data-intro-rule]').forEach((node, index) => {
+      node.animate([{ transform: 'scaleX(0)' }, { transform: 'none' }], {
+        duration: 1100,
+        delay: index * 70,
+        easing: EASE,
+        fill: 'backwards'
       });
-      const loop = engine.current;
-      const count = rows.current.filter(Boolean).length;
-      const cols = Math.max(1, settingsRef.current.columns);
-      const demo = Math.min(count, Math.ceil(count / cols));
-      const start = 400 + demo * 40;
-      for (let index = 0; index < demo; index++) {
-        loop.timers.push(
-          setTimeout(() => {
-            if (!loop.touched) goToRef.current(index, 'top');
-          }, start + index * 140)
-        );
-      }
+    });
+    const loop = engine.current;
+    const count = rows.current.filter(Boolean).length;
+    const start = 650 + count * 70;
+    for (let index = 0; index < count; index++) {
       loop.timers.push(
-        setTimeout(() => {
-          if (!loop.touched) releaseRef.current('bottom');
-        }, start + demo * 140 + 180)
+        setTimeout(
+          () => {
+            if (!loop.touched) goToRef.current(index, 'top');
+          },
+          start + index * 170
+        )
       );
-    };
-
-    if (typeof IntersectionObserver === 'undefined') {
-      play();
-      return () => {
-        engine.current.timers.forEach(clearTimeout);
-        engine.current.timers = [];
-      };
     }
-
-    const observer = new IntersectionObserver(
-      entries => {
-        if (!entries.some(entry => entry.isIntersecting && entry.intersectionRatio >= 0.28)) return;
-        observer.disconnect();
-        play();
-      },
-      { threshold: [0.28] }
+    loop.timers.push(
+      setTimeout(
+        () => {
+          if (!loop.touched) releaseRef.current('bottom');
+        },
+        start + count * 170 + 120
+      )
     );
-    observer.observe(root);
     return () => {
-      observer.disconnect();
-      engine.current.timers.forEach(clearTimeout);
-      engine.current.timers = [];
+      loop.timers.forEach(clearTimeout);
+      loop.timers = [];
     };
   }, []);
 
@@ -614,12 +515,8 @@ function FlowingMenu({
     c.x = event.clientX;
     c.t = now;
     const list = listRef.current;
-    if (list) {
-      const rect = list.getBoundingClientRect();
-      c.lx = event.clientX - rect.left;
-      c.y = event.clientY - rect.top;
-    }
-    const index = rowAt(event.clientX, event.clientY);
+    if (list) c.y = event.clientY - list.getBoundingClientRect().top;
+    const index = rowAt(event.clientY);
     if (index >= 0 && index !== band.current.index) goTo(index, halfOf(event.clientY, index));
     else kick();
   };
@@ -665,18 +562,10 @@ function FlowingMenu({
     <nav
       ref={rootRef}
       className={[ROOT, className].filter(Boolean).join(' ')}
-      style={{
-        backgroundColor: bgColor,
-        color: textColor,
-        '--flowing-menu-border': borderColor,
-        '--flowing-menu-rows': String(Math.ceil(items.length / Math.max(1, settings.columns))),
-        '--t-move': `${settings.duration}s`,
-        ...style
-      }}
+      style={{ backgroundColor: bgColor, color: textColor, '--flowing-menu-border': borderColor, ...style }}
       aria-label={ariaLabel}
       data-align={align === 'left' ? 'left' : 'center'}
       data-shape={shape}
-      data-columns={String(settings.columns)}
     >
       <ul ref={listRef} className={LIST} onPointerMove={onPointerMove} onPointerLeave={onPointerLeave}>
         {items.map((item, index) => {
@@ -689,7 +578,7 @@ function FlowingMenu({
               </span>
               <span className={LABEL}>
                 <span className={LABEL_TEXT} data-intro-line="">
-                  {item.label ?? item.text}
+                  {item.text}
                 </span>
                 {active && <span className={DOT} aria-hidden="true" />}
               </span>
@@ -713,11 +602,7 @@ function FlowingMenu({
               }}
               className={ITEM}
             >
-              {dividers &&
-                index > 0 &&
-                index % Math.ceil(items.length / Math.max(1, settings.columns)) !== 0 && (
-                  <span className={DIVIDER} data-intro-rule="" aria-hidden="true" />
-                )}
+              {dividers && index > 0 && <span className={DIVIDER} data-intro-rule="" aria-hidden="true" />}
               {item.link ? (
                 <a
                   className={LINK}

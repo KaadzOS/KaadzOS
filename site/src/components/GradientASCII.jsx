@@ -751,7 +751,7 @@ const GradientASCII = ({
       }
       updateInput(dt);
       draw();
-      const busy = introClock < 1 || clicks.length > 0 || trail.length > 0 || pointer.inside;
+      const busy = !reduce || introClock < 1 || clicks.length > 0 || trail.length > 0;
       if (busy) raf = requestAnimationFrame(frame);
       else last = 0;
     };
