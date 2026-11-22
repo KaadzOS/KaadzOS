@@ -212,7 +212,7 @@ img { max-width: 100%; }
   display: inline-flex;
   align-items: center;
   padding: 4px 0;
-  transition: color var(--motion-fast) var(--ease-state);
+  transition: none;
 }
 
 .masthead-nav a::after {
@@ -338,7 +338,7 @@ h1 .serif {
   font-size: 0.95rem;
   letter-spacing: -0.008em;
   line-height: 1;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: none;
 }
 
 .btn:hover,
@@ -351,7 +351,7 @@ h1 .serif {
   padding-bottom: 5px;
   color: var(--white);
   border-bottom: 1px solid var(--line-strong);
-  transition: border-color 0.15s ease;
+  transition: none;
 }
 
 .arrow-link:hover { border-color: var(--white); }
@@ -512,7 +512,7 @@ code {
 
 .spec dt {
   padding-top: 0.35em;
-  transition: color 0.2s ease;
+  transition: none;
 }
 
 .spec-row:hover dt { color: var(--white); }
@@ -802,10 +802,7 @@ code {
   letter-spacing: 0.12em;
   line-height: 1;
   cursor: copy;
-  transition:
-    background var(--motion-fast) var(--ease-state),
-    border-color var(--motion-fast) var(--ease-state),
-    color var(--motion-fast) var(--ease-state);
+  transition: none;
 }
 
 .copy-btn:hover,
@@ -831,7 +828,7 @@ code {
   min-width: 0;
   border: 1px solid var(--line);
   background: var(--black);
-  transition: border-color var(--motion-base) var(--ease-state);
+  transition: none;
 }
 
 .console:hover { border-color: var(--line-strong); }
@@ -919,7 +916,7 @@ pre code {
   color: var(--ink);
   border-bottom: 1px solid var(--line);
   padding-bottom: 2px;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition: none;
 }
 
 .footer-grid a:hover,
@@ -947,7 +944,7 @@ pre code {
   letter-spacing: -0.025em;
   border-bottom: 1px solid var(--line-strong);
   padding-bottom: 4px;
-  transition: border-color var(--motion-fast) var(--ease-state);
+  transition: none;
 }
 
 .footer-cta a span {
