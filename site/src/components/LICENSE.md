@@ -3,7 +3,7 @@ MIT + Commons Clause License Condition v1.0
 Copyright (c) 2026 David Haz
 
 This notice covers the React Bits components vendored in this directory:
-GradientASCII, FlowingMenu and TechText.
+GradientASCII, FlowingMenu, TechText and FaultyTerminal.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

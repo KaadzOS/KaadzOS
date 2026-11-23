@@ -1,3 +1,14 @@
+/*
+ * Vendored from React Bits — https://reactbits.dev
+ *
+ * MIT + Commons Clause License Condition v1.0
+ * Copyright (c) 2026 David Haz
+ *
+ * See ./LICENSE.md for the full licence. This component is used as part of
+ * the KaadzOS website; it is not sold, sublicensed, or redistributed on its
+ * own, in a bundle, or as a ported version.
+ */
+
 'use client';
 
 import { useEffect, useRef } from 'react';

@@ -10,7 +10,7 @@ A bootable Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop,
 
 ![KaadzOS live session, captured by CI](https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png)
 
-*This screenshot is not staged. It is captured from the QEMU framebuffer by the boot test on every push to `main`, and the run fails if the desktop shows a configuration warning.*
+*This screenshot is not staged. It is captured from the QEMU framebuffer by the boot test on every push to `main` that changes the image, and the run fails if the desktop shows a configuration warning.*
 
 ---
 
@@ -25,7 +25,7 @@ It is an operating system I actually boot, not a config-file collection: the rep
 Most of the interesting decisions here are forced by the environment, and that is the point:
 
 - **No Hyprland.** It is not in Debian stable, and this image builds from the archive with `--apt-recommends false`. Sway is in trixie, so Sway is what the desktop is built around.
-- **The pack manager is POSIX `sh`, not Python or Go.** The base image ships no language runtime, and the CLI only orchestrates `apt`, `dpkg`, `curl`, and `systemctl`. A compiled binary or an interpreter would add payload to a 1 GB image to do work the shell already does.
+- **The pack manager is POSIX `sh`, not Python or Go.** The CLI only orchestrates `apt`, `dpkg`, `curl`, and `systemctl`; the base carries `python3` and `python3-toml` solely because Calamares and the install finaliser need them. A compiled binary or an interpreter for the pack manager would add payload to a 1 GB image to do work the shell already does.
 - **Nothing is assumed about the build machine.** The ISO cannot be built or booted on the development machine, so the build, the package-resolution test, the boot test, and the install test all run in GitHub Actions against `debian:trixie`.
 - **The theme has one source of truth.** `theme/palette` holds the colours; `theme/generate.sh` renders Sway, Waybar, foot, fuzzel, mako, swaylock, GTK3/4, Qt6ct, the wallpaper, the console palette, the Plymouth splash, and the Calamares branding from it. The boot-menu artwork and overrides are hand-authored from the same values. Changing a colour is a one-file edit. The OS uses a true-black AMOLED palette with a white accent, mirroring the website's black-and-white editorial design.
 - **Third-party software is opt-in and signed.** The Android pack adds Waydroid's repository and key; the Cloudflare pack fetches an architecture-matched static binary. Neither is in the base image.
@@ -158,9 +158,9 @@ The base image does not need it: publishing is credential-gated, and the ISO
 only enables the archive when the R2 credentials and signing key exist at build
 time.
 
-The repository is built and consumed by `repo-test` on every push with an
-ephemeral key, so the signing path is tested even without Cloudflare. The
-setup checklist and the user-facing source stanza are in
+The repository is built and consumed by `repo-test` in every ISO matrix run
+with an ephemeral key, so the signing path is tested even without Cloudflare.
+The setup checklist and the user-facing source stanza are in
 [`docs/apt-repository.md`](docs/apt-repository.md).
 
 ## What actually broke

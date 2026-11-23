@@ -52,6 +52,94 @@ function plain(status, body, extraHeaders = {}) {
   });
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function formatSize(bytes) {
+  if (!Number.isFinite(bytes)) return "";
+  if (bytes < 1024) return `${bytes} B`;
+
+  const units = ["KB", "MB", "GB", "TB"];
+  let value = bytes / 1024;
+  let unit = 0;
+  while (value >= 1024 && unit < units.length - 1) {
+    value /= 1024;
+    unit += 1;
+  }
+
+  return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[unit]}`;
+}
+
+function directoryIndex(path, listing) {
+  const title = `Index of /${path}/`;
+  const items = [];
+
+  for (const prefix of listing.delimitedPrefixes ?? []) {
+    const name = prefix.slice(path.length + 1).replace(/\/$/, "");
+    if (!name) continue;
+    items.push(
+      `<li><a href="${encodeURIComponent(name)}/">${escapeHtml(name)}/</a></li>`
+    );
+  }
+
+  for (const object of listing.objects ?? []) {
+    if (!object.key.startsWith(`${path}/`)) continue;
+    const name = object.key.slice(path.length + 1);
+    if (!name || name.includes("/")) continue;
+    items.push(
+      `<li><a href="${encodeURIComponent(name)}">${escapeHtml(name)}</a>` +
+        `<span>${formatSize(object.size)}</span></li>`
+    );
+  }
+
+  const body = items.length
+    ? `<ul>${items.join("")}</ul>`
+    : "<p>No objects under this prefix.</p>";
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escapeHtml(title)}</title>
+<style>
+:root { color-scheme: dark; }
+body { margin: 0; padding: 2rem; background: #000; color: #f5f5f5; font: 16px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+h1 { margin: 0 0 1.5rem; font-size: 1.1rem; font-weight: 500; }
+ul { margin: 0; padding: 0; list-style: none; border-top: 1px solid #333; }
+li { display: flex; gap: 1rem; justify-content: space-between; padding: 0.55rem 0; border-bottom: 1px solid #333; }
+a { color: #fff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+span { color: #888; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<h1>${escapeHtml(title)}</h1>
+${body}
+</body>
+</html>`;
+}
+
+function htmlResponse(body) {
+  return new Response(body, {
+    status: 200,
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=300",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "referrer-policy": "no-referrer",
+      "content-security-policy":
+        "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'",
+    },
+  });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -109,7 +197,38 @@ export default {
       return plain(502, "Storage error\n", { "retry-after": "30" });
     }
 
-    if (object === null) return plain(404, "Not found\n");
+    if (object === null) {
+      // Release folders and the APT root are prefixes, not objects. Return a
+      // small index instead of a 404, and redirect the slashless form so the
+      // links in README and the release notes keep working.
+      let listing;
+      try {
+        listing = await env.R2_BUCKET.list({
+          prefix: `${key}/`,
+          delimiter: "/",
+          limit: 1000,
+        });
+      } catch {
+        return plain(502, "Storage error\n", { "retry-after": "30" });
+      }
+
+      const hasEntries =
+        (listing.objects?.length ?? 0) > 0 ||
+        (listing.delimitedPrefixes?.length ?? 0) > 0;
+
+      if (hasEntries) {
+        if (!pathname.endsWith("/")) {
+          return Response.redirect(
+            `${url.origin}${pathname}/${url.search}`,
+            301
+          );
+        }
+        const page = directoryIndex(key, listing);
+        return htmlResponse(request.method === "HEAD" ? null : page);
+      }
+
+      return plain(404, "Not found\n");
+    }
 
     const headers = new Headers();
     object.writeHttpMetadata(headers);

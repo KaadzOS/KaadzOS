@@ -69,13 +69,15 @@ Gaps this plan closes:
   file pickers, screen sharing and some GTK integrations degraded. Closed by
   the portal/session foundation below.
 - Bluetooth, the control centre and the settings application were missing;
-  all three are now implemented. A search helper, GUI package management,
-  dock and context-menu helpers remain missing.
+  all three are now implemented. The search helper, GUI package management and
+  safe context-menu actions have since shipped; the dock is a recorded no-op,
+  with Waybar remaining the bar.
 - Waybar originally had workspaces/clock/network/audio/battery/tray only;
   Bluetooth, backlight, power profile, idle inhibitor and the control centre
   have since landed.
 - Printing, scanning, firmware/disk tools, VPN/firewall, Noto fonts, input
-  methods and OpenCode are not represented as packs.
+  methods and OpenCode are now represented by the `printing`, `hardware`,
+  `network`, `security`, `fonts`, `input` and `opencode` packs.
 
 ## 3. Package verification
 
@@ -428,8 +430,8 @@ Wayland docks are not in trixie. Do not add an X11 dock and do not vendor a Go
 binary into the base. Keep Waybar as the supported bar; revisit only if a
 trixie package appears. Record the decision in README/docs (Prompt 14).
 
-Status: decision recorded locally on 2026-11-19. No package or binary was
-added; the user-facing README note remains part of the Prompt 14 pass.
+Status: decision recorded on 2026-11-19 and shipped in the README and manual
+with the 0.4.0 documentation pass. No package or binary was added.
 
 ### Prompt 9 — GUI package management
 
@@ -664,7 +666,7 @@ points at `cd0a7e9`, and tag run 44881594815 passed the full matrix including
 | Noto core + emoji + mono | `fonts` pack | 55 MB |
 | fcitx5 + frontends + config | `input` pack | 20 MB |
 | synaptic + pkexec + gvfs-backends + polkit agent | `admin` pack | 45 MB |
-| OpenCode | `opencode` pack | ~100 MB |
+| OpenCode | `opencode` pack | ~250 MB |
 | dock | none (not packaged) | — |
 
 Base growth is about 40 MB installed, or roughly 15–20 MB of ISO. That keeps
@@ -691,15 +693,14 @@ the ISO near 1.46 GB before packs.
 - **Scope**: 14 prompts is a lot of surface; each prompt should land as its
   own green run, not a batch.
 
-## 7. Open decisions for the owner
+## 7. Decisions (resolved)
 
-1. Bluetooth and power-profiles-daemon in base (recommended, ~9 MB) or in a
-   `bluetooth`/`power` pack?
-2. Keep tuigreet for Prompt 6 (recommended) or invest in a compositor wrapper
-   for `nwg-hello`/`gtkgreet`?
-3. No dock (recommended, trixie has no Wayland dock package) or vendor an
-   upstream binary in an optional pack?
-4. `fonts-noto-cjk` (91 MB) and `fonts-noto-extra` (334 MB) in the `fonts`
-   pack, or keep the pack at core + emoji + mono?
-5. OpenCode distribution: pinned GitHub release binary (recommended) versus
-   upstream install script executed at pack-install time?
+1. Bluetooth and power-profiles-daemon are in the base, as recommended
+   (~9 MB).
+2. tuigreet stays for Prompt 6; no compositor greeter wrapper was added.
+3. No dock. trixie has no Wayland dock package and no binary is vendored;
+   Waybar remains the bar.
+4. The `fonts` pack stays at Noto core + emoji + mono; `fonts-noto-cjk` and
+   `fonts-noto-extra` remain optional manual installs.
+5. OpenCode ships as a pinned GitHub release binary installed by the
+   `opencode` hook, not the upstream install script.

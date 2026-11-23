@@ -98,14 +98,16 @@ Tight variable font (`site/public/fonts/`, SIL OFL), and hand-authored
 `site/style.css`. `site/index.html` carries the editorial content; the palette
 governs the OS surfaces, not the website.
 
-Three React Bits accents are layered on top as progressive enhancements:
-`GradientASCII` (an interactive ASCII horizon) sits below the masthead,
-`CursorGrid` (a cursor-reactive grid) sits behind the download chapter, and
-`TechText` (a dashed-path `KAADZOS` wordmark) sits above the footer. The
-component sources are vendored under `site/src/components/` (MIT + Commons
-Clause, Copyright (c) 2026 David Haz; see the licence file there) and mounted by
-`site/src/main.jsx`. All mount points keep static fallback markup, so the page
-still reads with JavaScript disabled.
+Three React Bits accents and one hand-authored canvas are layered on top as
+progressive enhancements: `GradientASCII` (an interactive ASCII horizon) sits
+below the masthead, `FlowingMenu` drives the sixteen-pack menu, the
+hand-authored `WaypointField` canvas sits behind the download chapter, and
+`TechText` (a dashed-path `KAADZOS` wordmark) sits above the footer. The React
+Bits sources are vendored under `site/src/components/` (MIT + Commons Clause,
+Copyright (c) 2026 David Haz; see the licence file there) and mounted by
+`site/src/main.jsx`; the manual's heading also mounts the vendored
+`FaultyTerminal` from `site/src/docs-terminal.jsx`. All mount points keep
+static fallback markup, so the page still reads with JavaScript disabled.
 
 The manual lives at `/docs/` in `site/docs/` and is built as a second Vite
 page. It reuses the landing page's tokens, masthead and footer, then adds the
@@ -120,12 +122,13 @@ npm run build      # writes site/dist/ and site/dist/docs/
 ```
 
 `site/public/` holds the files that must land at the deployment root:
-`_headers`, `favicon.svg` and `fonts/`. `site/public/_headers` sets
+`_headers`, `favicon.svg`, `fonts/` and `shots/`. `site/public/_headers` sets
 `default-src 'none'`, `script-src 'self'`, `style-src 'self' 'unsafe-inline'`
-(the components set inline styles), `font-src 'self'` and images from self plus
-the CI screenshot host, along with `nosniff`, `no-referrer` and frame denial.
-The repository ignores `site/node_modules/` and `site/dist/`; the workflow
-builds on every run and deploys only the generated directory.
+(the components set inline styles), `font-src 'self'` and `img-src 'self'`
+(the screenshots and Open Graph image are served from the site itself), along
+with `nosniff`, `no-referrer` and frame denial. The repository ignores
+`site/node_modules/` and `site/dist/`; the workflow builds on every run and
+deploys only the generated directory.
 
 The deploy workflow is a green no-op when either secret is missing:
 
@@ -223,7 +226,9 @@ verification steps are in
   branch alias of the same project. The project has an `R2_BUCKET` binding to
   the `kaadzos` bucket for both production and preview; `iso-site/_worker.js`
   serves `/` from static assets, `/health` from the Worker, and every other
-  path from R2. R2 Public Access is disabled.
+  path from R2; object misses at a directory-style prefix return a generated
+  index of the files and subdirectories beneath it. R2 Public Access is
+  disabled.
 - GitHub Releases: `v0.4.0` (21 Nov 2026), the daily-driver release published by
   CI from tag `v0.4.0` after the full validation matrix. Exact run and asset
   evidence is recorded in `AGENTS.md`.
@@ -238,11 +243,14 @@ verification steps are in
   stanza, and package are all served by the Worker; no user action remains for
   publishing.
 - The site builds with React 19 + Vite: `site.yml` runs `npm ci` and
-  `npm run build` in `site/` on every push and deploys `site/dist/`. The
-  editorial landing page keeps its hand-authored design; three vendored React
-  Bits accents are mounted by `site/src/main.jsx`: `GradientASCII` below the
-  masthead, `CursorGrid` behind the download chapter, and the `TechText`
-  `KAADZOS` wordmark above the footer. The documentation page at `/docs/`
-  is the second Vite input (`site/docs/` → `site/dist/docs/`) and reuses the
-  landing tokens and chrome with a docs-specific layout. The CSP permits
-  `script-src 'self'` and `style-src 'self' 'unsafe-inline'`.
+  `npm run build` in `site/` on pushes that touch `site/**`, `iso-site/**` or
+  the workflow file, and deploys `site/dist/`. The editorial landing page keeps
+  its hand-authored design; `site/src/main.jsx` mounts three vendored React
+  Bits accents (`GradientASCII` below the masthead, `FlowingMenu` for the
+  sixteen packs, `TechText` above the footer) plus the hand-authored
+  `WaypointField` canvas behind the download chapter, and
+  `site/src/docs-terminal.jsx` mounts the vendored `FaultyTerminal` behind the
+  manual's heading. The documentation page at `/docs/` is the second Vite
+  input (`site/docs/` → `site/dist/docs/`) and reuses the landing tokens and
+  chrome with a docs-specific layout. The CSP permits `script-src 'self'` and
+  `style-src 'self' 'unsafe-inline'`.

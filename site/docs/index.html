@@ -171,11 +171,11 @@
         </div>
         <div class="spec-row">
           <dt class="mono">POSIX sh</dt>
-          <dd>The pack manager is a shell script at <code>/usr/local/bin/kaadzos</code>. The base image ships no language runtime, and the CLI only orchestrates <code>apt</code>, <code>dpkg</code>, <code>curl</code> and <code>systemctl</code>.</dd>
+          <dd>The pack manager is a shell script at <code>/usr/local/bin/kaadzos</code>. The base carries <code>python3</code> only for Calamares and the install finaliser; the CLI itself only orchestrates <code>apt</code>, <code>dpkg</code>, <code>curl</code> and <code>systemctl</code>.</dd>
         </div>
         <div class="spec-row">
           <dt class="mono">CI-only</dt>
-          <dd>The ISO is not built on a development machine. Every push builds it, boots it under both firmwares, and drives an unattended install. A tag ships only what that matrix proved.</dd>
+          <dd>The ISO is not built on a development machine. Every push that changes the image builds it, boots it under both firmwares, and drives an unattended install. A tag ships only what that matrix proved.</dd>
         </div>
         <div class="spec-row">
           <dt class="mono">One palette</dt>
@@ -870,13 +870,13 @@ bash ci/test-install.sh uefi KaadzOS-trixie-amd64.iso install-results</code></pr
         <table class="docs-table">
           <thead><tr><th>Job</th><th>When</th><th>What it proves</th></tr></thead>
           <tbody>
-            <tr><td><code>pack-test</code></td><td>Every push</td><td>Every pack resolves against trixie; dry-run, requirement gating, idempotency and error paths work.</td></tr>
-            <tr><td><code>repo-test</code></td><td>Every push</td><td>A throwaway signed APT repository builds, apt installs from it, and <code>gpgv</code> rejects a tampered Release file.</td></tr>
-            <tr><td><code>build</code></td><td>Every push</td><td>The ISO builds from scratch and its SHA-256 file matches.</td></tr>
-            <tr><td><code>boot-test (bios)</code></td><td>Every push</td><td>The exact ISO boots to a working Sway session under Syslinux.</td></tr>
-            <tr><td><code>boot-test (uefi)</code></td><td>Every push</td><td>The exact ISO boots to a working Sway session under GRUB/OVMF.</td></tr>
-            <tr><td><code>install-test (bios)</code></td><td>Every push</td><td>Calamares installs unattended and the installed disk boots without the ISO.</td></tr>
-            <tr><td><code>install-test (uefi)</code></td><td>Every push</td><td>The same, under UEFI, with the live-only state removed.</td></tr>
+            <tr><td><code>pack-test</code></td><td>Image-affecting push</td><td>Every pack resolves against trixie; dry-run, requirement gating, idempotency and error paths work.</td></tr>
+            <tr><td><code>repo-test</code></td><td>Image-affecting push</td><td>A throwaway signed APT repository builds, apt installs from it, and <code>gpgv</code> rejects a tampered Release file.</td></tr>
+            <tr><td><code>build</code></td><td>Image-affecting push</td><td>The ISO builds from scratch and its SHA-256 file matches.</td></tr>
+            <tr><td><code>boot-test (bios)</code></td><td>Image-affecting push</td><td>The exact ISO boots to a working Sway session under Syslinux.</td></tr>
+            <tr><td><code>boot-test (uefi)</code></td><td>Image-affecting push</td><td>The exact ISO boots to a working Sway session under GRUB/OVMF.</td></tr>
+            <tr><td><code>install-test (bios)</code></td><td>Image-affecting push</td><td>Calamares installs unattended and the installed disk boots without the ISO.</td></tr>
+            <tr><td><code>install-test (uefi)</code></td><td>Image-affecting push</td><td>The same, under UEFI, with the live-only state removed.</td></tr>
             <tr><td><code>apt-repo</code></td><td><code>v*</code> tags</td><td>Builds and publishes the signed archive and <code>kaadzos-pack-defs</code> to R2.</td></tr>
             <tr><td><code>release</code></td><td><code>v*</code> tags</td><td>Re-verifies the checksum, signs it, publishes the release assets and mirrors them to R2.</td></tr>
           </tbody>
@@ -969,7 +969,7 @@ docs/                        release notes, hosting and archive notes</code></pr
     <section id="licence" aria-labelledby="licence-title">
       <h2 id="licence-title">Licence</h2>
       <p>Debian components retain their own licences. The live-build configuration, theme generator, pack manager, installer glue and CI harness in this repository are MIT.</p>
-      <p>The website is MIT except for the three vendored React Bits accents — <code>GradientASCII</code>, <code>FlowingMenu</code> and <code>TechText</code> — which are MIT + Commons Clause (Copyright © 2026 David Haz). The download chapter's waypoint field is hand-authored and MIT-licensed, as is the self-hosted Inter Tight font, which is licensed under the SIL Open Font License. The image ships the same Inter Tight family under the OFL. The full component notice is in <code>site/src/components/LICENSE.md</code>; the font licence is in <code>site/public/fonts/OFL.txt</code> and <code>config/includes.chroot/usr/share/fonts/truetype/kaadzos/OFL.txt</code>.</p>
+      <p>The website is MIT except for the four vendored React Bits components — <code>GradientASCII</code>, <code>FlowingMenu</code>, <code>TechText</code> and <code>FaultyTerminal</code> — which are MIT + Commons Clause (Copyright © 2026 David Haz). The download chapter's waypoint field is hand-authored and MIT-licensed, as is the self-hosted Inter Tight font, which is licensed under the SIL Open Font License. The image ships the same Inter Tight family under the OFL. The full component notice is in <code>site/src/components/LICENSE.md</code>; the font licence is in <code>site/public/fonts/OFL.txt</code> and <code>config/includes.chroot/usr/share/fonts/truetype/kaadzos/OFL.txt</code>.</p>
       <p>KaadzOS is an independent project. Debian is a registered trademark of Software in the Public Interest, Inc.</p>
     </section>
 

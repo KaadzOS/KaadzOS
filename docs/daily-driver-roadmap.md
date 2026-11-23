@@ -111,7 +111,7 @@ Everything else becomes a pack:
 | Fonts (Noto, emoji) | `fonts` pack |
 | Portal (xdg-desktop-portal + GTK/WLR backends) | base (implemented) |
 | Input methods (fcitx5) | `input` pack |
-| Dock | optional pack with Waybar fallback |
+| Dock | none (no-op; Waybar remains the bar) |
 | GUI package manager | optional pack |
 | OpenCode client | optional pack |
 | Spotlight search | base (shell + fuzzel) |
@@ -165,10 +165,9 @@ Handle spaces, Unicode, no results, sensitive-directory exclusions, and missing
 optional commands. Add quoting/path tests.
 
 ### 8. Wayland-compatible dock
-Check `nwg-dock`, `nwg-panel`, and other Wayland docks in trixie. Do not add
-X11-only docks. Preferred behavior: pinned apps, running apps, auto-hide,
-keyboard access, multi-monitor, AMOLED theme, no fullscreen overlap, single
-instance. If unavailable, implement as optional pack with Waybar fallback.
+Decision: no dock. `nwg-dock`, `nwg-panel` and the other Wayland docks are not
+in trixie, so the image does not add an X11 dock or a vendored binary. Waybar
+remains the supported bar.
 
 ### 9. GUI package management
 Use apt only; reuse `kaadzos` where possible. Support search, installed view,
