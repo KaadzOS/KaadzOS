@@ -2,13 +2,31 @@
   <img src="https://raw.githubusercontent.com/KaadzOS/.github/main/assets/kaadzoslogo.png" alt="KaadzOS" width="100%">
 </div>
 
-A bootable Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop, a pure-black AMOLED theme, and an on-demand package system — built and boot-tested entirely in CI, with no build machine involved.
+<p align="center">
+  <sub>DEBIAN 13 &nbsp;·&nbsp; SWAY / WAYLAND &nbsp;·&nbsp; AMD64</sub>
+</p>
 
-[![Build ISO](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml/badge.svg)](https://github.com/kaadzos/kaadzos/actions/workflows/build.yml)
+<p align="center">
+  <strong>A small operating system that proves itself.</strong><br>
+  Minimal by default. Black by design. Built and tested entirely in CI.
+</p>
 
-**Download:** [latest release](https://github.com/kaadzos/kaadzos/releases/latest) · **Website:** [kaadzos.pages.dev](https://kaadzos.pages.dev) · **ISO mirror:** [iso.kaadzos.pages.dev](https://iso.kaadzos.pages.dev)
+<p align="center">
+  <a href="https://kaadzos.pages.dev">Website</a> &nbsp;·&nbsp;
+  <a href="https://kaadzos.pages.dev/docs/">Manual</a> &nbsp;·&nbsp;
+  <a href="https://github.com/KaadzOS/KaadzOS/releases/latest">Download</a> &nbsp;·&nbsp;
+  <a href="https://iso.kaadzos.pages.dev">ISO mirror</a>
+</p>
 
-**Organization:** [KaadzOS](https://github.com/KaadzOS) · [Brand kit](https://github.com/KaadzOS/kaadzos-brand) · [Archive keyring](https://github.com/KaadzOS/kaadzos-archive-keyring)
+<p align="center">
+  <a href="https://github.com/KaadzOS/KaadzOS/actions/workflows/build.yml"><img src="https://github.com/kaadzos/kaadzos/actions/workflows/build.yml/badge.svg" alt="Build ISO"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/KaadzOS">Organization</a> &nbsp;·&nbsp;
+  <a href="https://github.com/KaadzOS/kaadzos-brand">Brand kit</a> &nbsp;·&nbsp;
+  <a href="https://github.com/KaadzOS/kaadzos-archive-keyring">Archive keyring</a>
+</p>
 
 ![KaadzOS live session, captured by CI](https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png)
 
@@ -247,6 +265,7 @@ The current release, [v0.4.0](https://github.com/kaadzos/kaadzos/releases/tag/v0
 
 - [Contributing](https://github.com/KaadzOS/.github/blob/main/CONTRIBUTING.md) · [Code of conduct](https://github.com/KaadzOS/.github/blob/main/CODE_OF_CONDUCT.md) · [Support](https://github.com/KaadzOS/.github/blob/main/SUPPORT.md) · [Security policy](https://github.com/KaadzOS/.github/blob/main/SECURITY.md)
 - Bug reports and feature requests use the shared [issue forms](https://github.com/KaadzOS/.github/tree/main/.github/ISSUE_TEMPLATE); pull requests use the [review checklist](https://github.com/KaadzOS/.github/blob/main/PULL_REQUEST_TEMPLATE.md).
+- Stable addresses: [website](https://github.com/KaadzOS/kaadzos-website) · [manual](https://github.com/KaadzOS/kaadzos-docs) · [pack definitions](https://github.com/KaadzOS/kaadzos-pack-defs) · [packages](https://github.com/KaadzOS/kaadzos-packages) · [awesome list](https://github.com/KaadzOS/kaadzos-awesome).
 
 ## Licence
 
