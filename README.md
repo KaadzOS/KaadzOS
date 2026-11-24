@@ -246,7 +246,7 @@ The current release, [v0.4.0](https://github.com/kaadzos/kaadzos/releases/tag/v0
 ## Community
 
 - [Contributing](https://github.com/KaadzOS/.github/blob/main/CONTRIBUTING.md) · [Code of conduct](https://github.com/KaadzOS/.github/blob/main/CODE_OF_CONDUCT.md) · [Support](https://github.com/KaadzOS/.github/blob/main/SUPPORT.md) · [Security policy](https://github.com/KaadzOS/.github/blob/main/SECURITY.md)
-- Bug reports and feature requests use the shared [issue forms](https://github.com/KaadzOS/.github/tree/main/ISSUE_TEMPLATE); pull requests use the [review checklist](https://github.com/KaadzOS/.github/blob/main/PULL_REQUEST_TEMPLATE.md).
+- Bug reports and feature requests use the shared [issue forms](https://github.com/KaadzOS/.github/tree/main/.github/ISSUE_TEMPLATE); pull requests use the [review checklist](https://github.com/KaadzOS/.github/blob/main/PULL_REQUEST_TEMPLATE.md).
 
 ## Licence
 
