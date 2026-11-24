@@ -1,0 +1,265 @@
+KAADZOS_FIRSTBOOT_DONE
+KAADZOS_MODE installed
+KAADZOS_SWAY_WAIT
+KAADZOS_SWAY_READY
+KAADZOS_CFG /home/kaadzos/.config/sway/config bytes=7043
+KAADZOS_CFG /home/kaadzos/.config/waybar/style.css bytes=1585
+KAADZOS_CFG /home/kaadzos/.config/foot/foot.ini bytes=380
+KAADZOS_LIVE_SUDOERS_ABSENT
+KAADZOS_CALAMARES_ABSENT
+KAADZOS_GREETER_OK
+KAADZOS_FIRSTBOOT_DONE
+KAADZOS_COMMANDS_OK
+KAADZOS_BLUETOOTH_OK
+KAADZOS_WAYBAR_OK
+KAADZOS_BLUETOOTH_MODULE_OK
+KAADZOS_CONTROL_OK
+KAADZOS_SETTINGS_OK
+KAADZOS_FILE_ACTIONS_OK
+KAADZOS_POLKIT_AGENT_OK
+KAADZOS_PORTAL_OK
+KAADZOS_LAUNCHER_OK
+KAADZOS_DIAG_BEGIN
+=== mode ===
+installed
+=== outputs ===
+Output Virtual-1 'Red Hat, Inc. QEMU Monitor Unknown' (focused)
+  Current mode: 1280x800 @ 74.994 Hz
+  Power: on
+  Position: 0,0
+  Scale factor: 1.000000
+  Scale filter: nearest
+  Subpixel hinting: unknown
+  Transform: normal
+  Workspace: 1
+  Max render time: off
+  Adaptive sync: disabled
+  Allow tearing: no
+  Available modes:
+    1280x800 @ 74.994 Hz
+    5120x2160 @ 50.000 Hz (64:27)
+    4096x2160 @ 50.000 Hz (256:135)
+    3840x2160 @ 60.000 Hz (16:9)
+    3840x2160 @ 59.940 Hz (16:9)
+    3840x2160 @ 50.000 Hz (16:9)
+    1920x1440 @ 60.000 Hz
+    2560x1080 @ 50.000 Hz (64:27)
+    1856x1392 @ 59.995 Hz
+    1792x1344 @ 60.000 Hz
+    2048x1152 @ 60.000 Hz
+    1920x1200 @ 59.885 Hz
+    1920x1080 @ 60.000 Hz
+    1920x1080 @ 50.000 Hz (16:9)
+    1600x1200 @ 60.000 Hz
+    1680x1050 @ 59.954 Hz
+    1400x1050 @ 59.978 Hz
+    1280x1024 @ 60.020 Hz
+    1440x900 @ 59.887 Hz
+    1280x960 @ 60.000 Hz
+    1360x768 @ 60.015 Hz
+    1280x768 @ 59.870 Hz
+    1024x768 @ 60.004 Hz
+    800x600 @ 60.317 Hz
+    640x480 @ 60.000 Hz (4:3)
+    640x480 @ 59.940 Hz
+
+=== tree ===
+#1: root "root"
+  #2147483647: output "__i3"
+    #2147483646: workspace "__i3_scratch"
+  #3: output "Virtual-1"
+    #4: workspace "1"
+=== processes ===
+906 greetd
+907 /usr/sbin/greetd --session-worker 11
+941 /bin/sh /usr/local/bin/kaadzos-sway-session
+951 dbus-run-session -- sway
+953 sway
+978 swaybg -o * -i /usr/share/backgrounds/kaadzos/wallpaper.png -m fill
+990 sh -c swayidle -w timeout 600 'swaylock -f' lock 'swaylock -f' before-sleep 'swaylock -f'
+992 swayidle -w timeout 600 swaylock -f lock swaylock -f before-sleep swaylock -f
+998 sh -c waybar >/tmp/waybar.log 2>&1
+1002 waybar
+1003 sh -c mako >/tmp/mako.log 2>&1
+1007 mako
+=== bluetooth ===
+enabled
+inactive
+○ bluetooth.service - Bluetooth service
+     Loaded: loaded (/usr/lib/systemd/system/bluetooth.service; enabled; preset: enabled)
+     Active: inactive (dead)
+       Docs: man:bluetoothd(8)
+=== portals ===
+()
+org.freedesktop.impl.portal.PermissionStore  1073 xdg-permission- kaadzos :1.10         session-1.scope 1       -
+org.freedesktop.impl.portal.desktop.gtk      1090 xdg-desktop-por kaadzos :1.12         session-1.scope 1       -
+org.freedesktop.impl.portal.desktop.wlr      1100 xdg-desktop-por kaadzos :1.16         session-1.scope 1       -
+org.freedesktop.portal.Desktop               1067 xdg-desktop-por kaadzos :1.9          session-1.scope 1       -
+org.freedesktop.portal.Documents             1079 xdg-document-po kaadzos :1.11         session-1.scope 1       -
+=== greeter ===
+[terminal]
+vt = 7
+
+[default_session]
+command = "tuigreet --remember --time --issue --asterisks --cmd /usr/local/bin/kaadzos-sway-session --theme 'border=white;text=white;time=white;container=black;title=white;greet=gray;prompt=white;input=white;action=gray;button=white' --greeting 'KaadzOS' --time-format '%a %d %b  %H:%M'"
+user = "_greetd"
+
+[initial_session]
+command = "/usr/local/bin/kaadzos-sway-session"
+user = "kaadzos"
+=== settings ===
+-rwxr-xr-x 1 root root 16950 Nov 24 07:12 /usr/local/bin/kaadzos-settings
+-rw-r--r-- 1 root root   327 Nov 24 07:12 /usr/share/applications/kaadzos-settings.desktop
+include ~/.config/sway/config.d/*.conf
+total 8
+-rw-r--r-- 1 kaadzos kaadzos 261 Nov 24 07:12 00-default.conf
+-rw-r--r-- 1 kaadzos kaadzos 729 Nov 24 07:12 README
+=== launchers ===
+/usr/local/bin/kaadzos
+-rw-r--r-- 1 root root 288 Nov 24 07:12 /usr/share/applications/kaadzos-control.desktop
+-rw-r--r-- 1 root root 266 Nov 24 07:12 /usr/share/applications/kaadzos-packages.desktop
+-rw-r--r-- 1 root root 327 Nov 24 07:12 /usr/share/applications/kaadzos-settings.desktop
+bindsym $mod+Return exec $term
+bindsym $mod+d exec kaadzos-search
+bindsym $mod+Shift+d exec $launcher
+bindsym $mod+a exec kaadzos addons
+bindsym $mod+i exec sh -c 'command -v kaadzos-install >/dev/null 2>&1 && kaadzos-install'
+bindsym $mod+x exec kaadzos-bluetooth manager
+bindsym $mod+Shift+s exec kaadzos-control
+bindsym $mod+comma exec kaadzos-settings
+bindsym $mod+Shift+p exec kaadzos-packages
+bindsym $mod+q kill
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
+bindsym $mod+Shift+x exec $lock
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r exec swaymsg restart
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+bindsym $mod+b splith
+bindsym $mod+v splitv
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+f fullscreen
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10
+bindsym $mod+Tab workspace next
+bindsym $mod+Shift+Tab workspace prev
+bindsym $mod+Print exec kaadzos-record
+bindsym $mod+r mode "resize"
+[Default Applications]
+inode/directory=thunar.desktop
+text/plain=mousepad.desktop
+application/pdf=zathura.desktop
+image/png=imv-dir.desktop
+image/jpeg=imv-dir.desktop
+image/gif=imv-dir.desktop
+image/webp=imv-dir.desktop
+image/bmp=imv-dir.desktop
+x-scheme-handler/http=org.gnome.Epiphany.desktop
+x-scheme-handler/https=org.gnome.Epiphany.desktop
+text/html=org.gnome.Epiphany.desktop
+
+[Added Associations]
+inode/directory=thunar.desktop
+text/plain=mousepad.desktop
+application/pdf=zathura.desktop
+image/png=imv-dir.desktop
+image/jpeg=imv-dir.desktop
+image/gif=imv-dir.desktop
+image/webp=imv-dir.desktop
+image/bmp=imv-dir.desktop
+text/html=org.gnome.Epiphany.desktop
+=== file actions ===
+-rw-r--r-- 1 kaadzos kaadzos  2583 Nov 24 07:12 /home/kaadzos/.config/Thunar/uca.xml
+-rw-r--r-- 1 root    root    34728 Feb  4  2025 /usr/lib/x86_64-linux-gnu/thunarx-3/thunar-archive-plugin.so
+-rwxr-xr-x 1 root    root     4832 Nov 24 07:12 /usr/local/bin/kaadzos-file-action
+/usr/bin/wl-copy
+1011 lxpolkit
+=== installer ===
+total 8
+-rw-r--r-- 1 root root 21 Nov 24 07:38 firstboot-done
+-rw-r--r-- 1 root root 48 Nov 24 07:37 installed
+2026-11-24T12:38:10Z
+ls: cannot access '/etc/calamares': No such file or directory
+ls: cannot access '/etc/calamares-ci': No such file or directory
+ls: cannot access '/etc/live': No such file or directory
+=== /tmp/sway.log ===
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.1' (uid=1000 pid=1005 comm="dbus-update-activation-environment --systemd WAYLA")
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+2026-11-24 07:38:18 - [main.c:282] Found config * for output Virtual-1 (Red Hat, Inc. QEMU Monitor)
+
+(lxpolkit:1011): dbind-WARNING **: 07:38:19.541: AT-SPI: Error retrieving accessibility bus address: org.freedesktop.DBus.Error.ServiceUnknown: The name org.a11y.Bus was not provided by any .service files
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Activating service name='org.gtk.vfs.Daemon' requested by ':1.3' (uid=1000 pid=1011 comm="lxpolkit")
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Successfully activated service 'org.gtk.vfs.Daemon'
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Activating service name='org.freedesktop.portal.Desktop' requested by ':1.5' (uid=1000 pid=1002 comm="waybar")
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Activating service name='org.freedesktop.impl.portal.PermissionStore' requested by ':1.9' (uid=1000 pid=1067 comm="/usr/libexec/xdg-desktop-portal")
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.PermissionStore'
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Activating service name='org.freedesktop.portal.Documents' requested by ':1.9' (uid=1000 pid=1067 comm="/usr/libexec/xdg-desktop-portal")
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Successfully activated service 'org.freedesktop.portal.Documents'
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.gtk' requested by ':1.9' (uid=1000 pid=1067 comm="/usr/libexec/xdg-desktop-portal")
+
+(xdg-desktop-portal-gtk:1090): dbind-WARNING **: 07:38:20.623: AT-SPI: Error retrieving accessibility bus address: org.freedesktop.DBus.Error.ServiceUnknown: The name org.a11y.Bus was not provided by any .service files
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.desktop.gtk'
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.wlr' requested by ':1.9' (uid=1000 pid=1067 comm="/usr/libexec/xdg-desktop-portal")
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.desktop.wlr'
+dbus-daemon[952]: [session uid=1000 pid=952 pidfd=5] Successfully activated service 'org.freedesktop.portal.Desktop'
+=== /tmp/waybar.log ===
+
+(waybar:1002): dbind-WARNING **: 07:38:19.728: AT-SPI: Error retrieving accessibility bus address: org.freedesktop.DBus.Error.ServiceUnknown: The name org.a11y.Bus was not provided by any .service files
+[2026-11-24 07:38:20.067] [info] Using configuration file /home/kaadzos/.config/waybar/config
+[2026-11-24 07:38:21.503] [info] Using CSS file /home/kaadzos/.config/waybar/style.css
+[2026-11-24 07:38:22.240] [warning] no bluetooth controller found
+[2026-11-24 07:38:22.258] [warning] module backlight: Disabling module "backlight", No backlight found
+[2026-11-24 07:38:22.285] [warning] No batteries.
+[2026-11-24 07:38:22.619] [info] Bar configured (width: 1280, height: 34) for output: Virtual-1
+=== /tmp/mako.log ===
+=== /tmp/calamares-ci.log ===
+cat: /tmp/calamares-ci.log: No such file or directory
+=== memory ===
+               total        used        free      shared  buff/cache   available
+Mem:            1971         339        1474          18         322        1632
+Swap:            985           0         985
+=== swaps ===
+Filename				Type		Size		Used		Priority
+/dev/zram0                              partition	1009460		0		100
+=== zram ===
+NAME       ALGORITHM DISKSIZE DATA COMPR TOTAL STREAMS MOUNTPOINT
+/dev/zram0 zstd        985.8M   4K   59B   20K       2 [SWAP]
+=== vm tuning ===
+swappiness=180 page-cluster=0
+=== boot timing ===
+Startup finished in 11.281s (kernel) + 27.143s (userspace) = 38.424s 
+graphical.target reached after 27.131s in userspace.
+KAADZOS_IDLE_RAM used=339 total=1971 zram_devices=1 zram_size_kb=1009460
+KAADZOS_DIAG_END
