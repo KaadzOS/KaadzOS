@@ -11,6 +11,7 @@ on:
     # Website, ISO-host and documentation edits cannot change the ISO. Path
     # filters are not evaluated for tag pushes, so releases still run every job.
     paths-ignore:
+      - 'LICENSE'
       - 'site/**'
       - 'iso-site/**'
       - '.github/workflows/site.yml'

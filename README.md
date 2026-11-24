@@ -8,6 +8,8 @@ A bootable Debian 13 (trixie) live image with a hand-built Sway/Wayland desktop,
 
 **Download:** [latest release](https://github.com/kaadzos/kaadzos/releases/latest) · **Website:** [kaadzos.pages.dev](https://kaadzos.pages.dev) · **ISO mirror:** [iso.kaadzos.pages.dev](https://iso.kaadzos.pages.dev)
 
+**Organization:** [KaadzOS](https://github.com/KaadzOS) · [Brand kit](https://github.com/KaadzOS/kaadzos-brand) · [Archive keyring](https://github.com/KaadzOS/kaadzos-archive-keyring)
+
 ![KaadzOS live session, captured by CI](https://raw.githubusercontent.com/kaadzos/kaadzos/ci-artifacts/bios/bios.png)
 
 *This screenshot is not staged. It is captured from the QEMU framebuffer by the boot test on every push to `main` that changes the image, and the run fails if the desktop shows a configuration warning.*
@@ -241,6 +243,11 @@ ci/test-apt-repo.sh          apt consumes a throwaway signed repository
 
 The current release, [v0.4.0](https://github.com/kaadzos/kaadzos/releases/tag/v0.4.0), is the daily-driver release: the AMOLED boot, installer, pack manager and core desktop are unchanged from 0.3.0, with portals, Bluetooth, control centre, settings, search, package helpers, helper gates, OpenCode and the security/fonts/input packs filled in. It ships the ISO, its checksum, a signed checksum and the archive keyring as GitHub release assets, and mirrors them to Cloudflare R2 under `releases/v0.4.0/`. The signed APT archive is live at https://iso.kaadzos.pages.dev/apt and carries `kaadzos-pack-defs` 0.4.0; earlier releases remain available. Releases are cut by pushing a `v*` tag; see [`docs/hosting.md`](docs/hosting.md) for the tag flow and the Cloudflare setup, and [`docs/apt-repository.md`](docs/apt-repository.md) for the optional signed package archive.
 
+## Community
+
+- [Contributing](https://github.com/KaadzOS/.github/blob/main/CONTRIBUTING.md) · [Code of conduct](https://github.com/KaadzOS/.github/blob/main/CODE_OF_CONDUCT.md) · [Support](https://github.com/KaadzOS/.github/blob/main/SUPPORT.md) · [Security policy](https://github.com/KaadzOS/.github/blob/main/SECURITY.md)
+- Bug reports and feature requests use the shared [issue forms](https://github.com/KaadzOS/.github/tree/main/ISSUE_TEMPLATE); pull requests use the [review checklist](https://github.com/KaadzOS/.github/blob/main/PULL_REQUEST_TEMPLATE.md).
+
 ## Licence
 
-Debian components retain their own licences. The build configuration, theme generator, pack manager, installer glue, and CI harness in this repository are MIT. Inter Tight is bundled under the SIL Open Font License; the vendored React Bits accents in `site/src/components/` are MIT + Commons Clause (full notice in `site/src/components/LICENSE.md`); OpenCode is upstream MIT-licensed software fetched only by the opt-in pack. No non-free runtime dependency is added to the ISO.
+Debian components retain their own licences. The build configuration, theme generator, pack manager, installer glue, CI harness and documentation in this repository are MIT; the full text is in [`LICENSE`](LICENSE). The [brand kit](https://github.com/KaadzOS/kaadzos-brand) and [archive keyring](https://github.com/KaadzOS/kaadzos-archive-keyring) repositories carry their own copies. Inter Tight is bundled under the SIL Open Font License; the vendored React Bits accents in `site/src/components/` are MIT + Commons Clause (full notice in `site/src/components/LICENSE.md`); OpenCode is upstream MIT-licensed software fetched only by the opt-in pack. No non-free runtime dependency is added to the ISO.
