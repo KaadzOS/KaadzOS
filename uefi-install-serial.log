@@ -1,0 +1,351 @@
+[2J[001;001H[=3h[2J[001;001H[2J[001;001H[8;042;160t[2J[001;001H[2J[001;001H[8;056;240t[2J[001;001HBdsDxe: loading Boot0002 "UEFI QEMU DVD-ROM QM00001 " from PciRoot(0x0)/Pci(0x1F,0x2)/Sata(0x0,0xFFFF,0x0)
+BdsDxe: starting Boot0002 "UEFI QEMU DVD-ROM QM00001 " from PciRoot(0x0)/Pci(0x1F,0x2)/Sata(0x0,0xFFFF,0x0)
+[0;21;33mmtrr: your CPUs had inconsistent fixed MTRR settings[0m
+[0;21;33mmtrr: your CPUs had inconsistent variable MTRR settings[0m
+[0;21;33mmtrr: your CPUs had inconsistent MTRRdefType settings[0m
+[0;21;33mamd_pstate: the _CPC object is not present in SBIOS or ACPI disabled[0m
+[0;21;33mata3.00: LPM support broken, forcing max_power[0m
+[0;21;33mata1.00: LPM support broken, forcing max_power[0m
+[0;21;33mata1.00: LPM support broken, forcing max_power[0m
+[0;21;33mata3.00: LPM support broken, forcing max_power[0m
+[!p]104[?7h[[0;32m  OK  [0m] Finished [0;1;39mplymouth-read-write.servi…[0mPlymouth To Write Out Runtime Data.
+         Mounting [0;1;39mproc-sys-fs-binfmt_misc.m…[0mcutable File Formats File System...
+[[0;32m  OK  [0m] Mounted [0;1;39mproc-sys-fs-binfmt_misc.mo…[0mxecutable File Formats File System.
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-binfmt.service[0m - Set Up Additional Binary Formats.
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup.se…[0mreate System Files and Directories.
+[[0;32m  OK  [0m] Started [0;1;39msystemd-udevd.service[0m - Ru…anager for Device Events and Files.
+         Starting [0;1;39mldconfig.service[0m - Rebuild Dynamic Linker Cache...
+         Starting [0;1;39mlive-config.service[0m - liv…e boot process (late userspace)....
+         Starting [0;1;39mplymouth-start.service[0m - Show Plymouth Boot Screen...
+         Starting [0;1;39msystemd-journal-catalog-u…ervice[0m - Rebuild Journal Catalog...
+[[0;32m  OK  [0m] Finished [0;1;39mnetworking.service[0m - Raise network interfaces.
+[[0;32m  OK  [0m] Started [0;1;39mplymouth-start.service[0m - Show Plymouth Boot Screen.
+[[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-plymo…[0mquests to Plymouth Directory Watch.
+[[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+         Starting [0;1;39mkaadzos-quit-plymouth.ser…[0m the KaadzOS Plymouth bootsplash...
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-catalog-u….service[0m - Rebuild Journal Catalog.
+[!p]104[?7h[6n[32766;32766H[6n[!p]104[?7h[6n[32766;32766H[6n
+KaadzOS 0.4 (trixie) kaadzos on ttyS0
+
+kaadzos login: KAADZOS_MODE live
+KAADZOS_SWAY_WAIT
+KAADZOS_INSTALLER_START
+KAADZOS_TOOLS rsync=/usr/bin/rsync unsquashfs=/usr/bin/unsquashfs zstd=/usr/bin/zstd
+KAADZOS_SWAY_READY
+KAADZOS_CFG /home/kaadzos/.config/sway/config bytes=7043
+KAADZOS_CFG /home/kaadzos/.config/waybar/style.css bytes=1585
+KAADZOS_CFG /home/kaadzos/.config/foot/foot.ini bytes=380
+KAADZOS_COMMANDS_OK
+KAADZOS_BLUETOOTH_OK
+KAADZOS_WAYBAR_OK
+KAADZOS_BLUETOOTH_MODULE_OK
+KAADZOS_CONTROL_OK
+KAADZOS_SETTINGS_OK
+KAADZOS_FILE_ACTIONS_OK
+KAADZOS_POLKIT_AGENT_OK
+KAADZOS_PORTAL_OK
+KAADZOS_LAUNCHER_OK
+KAADZOS_DIAG_BEGIN
+=== mode ===
+live
+=== outputs ===
+Output Virtual-1 'Red Hat, Inc. QEMU Monitor Unknown' (focused)
+  Current mode: 1280x800 @ 74.994 Hz
+  Power: on
+  Position: 0,0
+  Scale factor: 1.000000
+  Scale filter: nearest
+  Subpixel hinting: unknown
+  Transform: normal
+  Workspace: 1
+  Max render time: off
+  Adaptive sync: disabled
+  Allow tearing: no
+  Available modes:
+    1280x800 @ 74.994 Hz
+    5120x2160 @ 50.000 Hz (64:27)
+    4096x2160 @ 50.000 Hz (256:135)
+    3840x2160 @ 60.000 Hz (16:9)
+    3840x2160 @ 59.940 Hz (16:9)
+    3840x2160 @ 50.000 Hz (16:9)
+    1920x1440 @ 60.000 Hz
+    2560x1080 @ 50.000 Hz (64:27)
+    1856x1392 @ 59.995 Hz
+    1792x1344 @ 60.000 Hz
+    2048x1152 @ 60.000 Hz
+    1920x1200 @ 59.885 Hz
+    1920x1080 @ 60.000 Hz
+    1920x1080 @ 50.000 Hz (16:9)
+    1600x1200 @ 60.000 Hz
+    1680x1050 @ 59.954 Hz
+    1400x1050 @ 59.978 Hz
+    1280x1024 @ 60.020 Hz
+    1440x900 @ 59.887 Hz
+    1280x960 @ 60.000 Hz
+    1360x768 @ 60.015 Hz
+    1280x768 @ 59.870 Hz
+    1024x768 @ 60.004 Hz
+    800x600 @ 60.317 Hz
+    640x480 @ 60.000 Hz (4:3)
+    640x480 @ 59.940 Hz
+
+=== tree ===
+#1: root "root"
+  #2147483647: output "__i3"
+    #2147483646: workspace "__i3_scratch"
+  #3: output "Virtual-1"
+    #4: workspace "1"
+      #5: floating_con "KaadzOS Terminal" (xdg_shell, pid: 1393, app_id: "foot")
+=== processes ===
+1314 /bin/sh /usr/local/bin/kaadzos-sway-session
+1324 dbus-run-session -- sway
+1327 sway
+1352 swaybg -o * -i /usr/share/backgrounds/kaadzos/wallpaper.png -m fill
+1363 sh -c swayidle -w timeout 600 'swaylock -f' lock 'swaylock -f' before-sleep 'swaylock -f'
+1365 swayidle -w timeout 600 swaylock -f lock swaylock -f before-sleep swaylock -f
+1373 sh -c waybar >/tmp/waybar.log 2>&1
+1376 sh -c mako >/tmp/mako.log 2>&1
+1377 waybar
+1381 mako
+1386 sh -c sh -c 'if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Terminal" /usr/local/bin/kaadzos-welcome-terminal; fi'
+1391 sh -c if [ ! -e /etc/kaadzos/installed ]; then foot --title "KaadzOS Terminal" /usr/local/bin/kaadzos-welcome-terminal; fi
+1393 foot --title KaadzOS Terminal /usr/local/bin/kaadzos-welcome-terminal
+=== bluetooth ===
+enabled
+inactive
+○ bluetooth.service - Bluetooth service
+     Loaded: loaded (/usr/lib/systemd/system/bluetooth.service; enabled; preset: enabled)
+     Active: inactive (dead)
+       Docs: man:bluetoothd(8)
+=== portals ===
+()
+org.freedesktop.impl.portal.PermissionStore  1461 xdg-permission- kaadzos :1.10         session-1.scope 1       -
+org.freedesktop.impl.portal.desktop.gtk      1478 xdg-desktop-por kaadzos :1.12         session-1.scope 1       -
+org.freedesktop.impl.portal.desktop.wlr      1488 xdg-desktop-por kaadzos :1.16         session-1.scope 1       -
+org.freedesktop.portal.Desktop               1455 xdg-desktop-por kaadzos :1.9          session-1.scope 1       -
+org.freedesktop.portal.Documents             1467 xdg-document-po kaadzos :1.11         session-1.scope 1       -
+=== settings ===
+-rwxr-xr-x 1 root root 16950 Nov 24 12:12 /usr/local/bin/kaadzos-settings
+-rw-r--r-- 1 root root   327 Nov 24 12:12 /usr/share/applications/kaadzos-settings.desktop
+include ~/.config/sway/config.d/*.conf
+total 8
+-rw-r--r-- 1 kaadzos kaadzos 261 Nov 24 12:19 00-default.conf
+-rw-r--r-- 1 kaadzos kaadzos 729 Nov 24 12:19 README
+=== launchers ===
+/usr/local/bin/kaadzos
+-rw-r--r-- 1 root root 288 Nov 24 12:12 /usr/share/applications/kaadzos-control.desktop
+-rw-r--r-- 1 root root 266 Nov 24 12:12 /usr/share/applications/kaadzos-packages.desktop
+-rw-r--r-- 1 root root 327 Nov 24 12:12 /usr/share/applications/kaadzos-settings.desktop
+bindsym $mod+Return exec $term
+bindsym $mod+d exec kaadzos-search
+bindsym $mod+Shift+d exec $launcher
+bindsym $mod+a exec kaadzos addons
+bindsym $mod+i exec sh -c 'command -v kaadzos-install >/dev/null 2>&1 && kaadzos-install'
+bindsym $mod+x exec kaadzos-bluetooth manager
+bindsym $mod+Shift+s exec kaadzos-control
+bindsym $mod+comma exec kaadzos-settings
+bindsym $mod+Shift+p exec kaadzos-packages
+bindsym $mod+q kill
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit KaadzOS?' -b 'Power off' 'poweroff' -b 'Reboot' 'reboot' -b 'Log out' 'exit'
+bindsym $mod+Shift+x exec $lock
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r exec swaymsg restart
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+bindsym $mod+b splith
+bindsym $mod+v splitv
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+f fullscreen
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10
+bindsym $mod+Tab workspace next
+bindsym $mod+Shift+Tab workspace prev
+bindsym $mod+Print exec kaadzos-record
+bindsym $mod+r mode "resize"
+[Default Applications]
+inode/directory=thunar.desktop
+text/plain=mousepad.desktop
+application/pdf=zathura.desktop
+image/png=imv-dir.desktop
+image/jpeg=imv-dir.desktop
+image/gif=imv-dir.desktop
+image/webp=imv-dir.desktop
+image/bmp=imv-dir.desktop
+x-scheme-handler/http=org.gnome.Epiphany.desktop
+x-scheme-handler/https=org.gnome.Epiphany.desktop
+text/html=org.gnome.Epiphany.desktop
+
+[Added Associations]
+inode/directory=thunar.desktop
+text/plain=mousepad.desktop
+application/pdf=zathura.desktop
+image/png=imv-dir.desktop
+image/jpeg=imv-dir.desktop
+image/gif=imv-dir.desktop
+image/webp=imv-dir.desktop
+image/bmp=imv-dir.desktop
+text/html=org.gnome.Epiphany.desktop
+=== file actions ===
+-rw-r--r-- 1 kaadzos kaadzos  2583 Nov 24 12:19 /home/kaadzos/.config/Thunar/uca.xml
+-rw-r--r-- 1 root    root    34728 Feb  4  2025 /usr/lib/x86_64-linux-gnu/thunarx-3/thunar-archive-plugin.so
+-rwxr-xr-x 1 root    root     4832 Nov 24 12:12 /usr/local/bin/kaadzos-file-action
+/usr/bin/wl-copy
+1382 lxpolkit
+=== installer ===
+=== /tmp/sway.log ===
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.1' (uid=1000 pid=1378 comm="dbus-update-activation-environment --systemd WAYLA")
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+2026-11-24 12:19:41 - [main.c:282] Found config * for output Virtual-1 (Red Hat, Inc. QEMU Monitor)
+warn: wayland.c:1734: compositor does not implement the XDG toplevel icon protocol
+
+(lxpolkit:1382): dbind-WARNING **: 12:19:41.899: AT-SPI: Error retrieving accessibility bus address: org.freedesktop.DBus.Error.ServiceUnknown: The name org.a11y.Bus was not provided by any .service files
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Activating service name='org.gtk.vfs.Daemon' requested by ':1.3' (uid=1000 pid=1382 comm="lxpolkit")
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Successfully activated service 'org.gtk.vfs.Daemon'
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Activating service name='org.freedesktop.portal.Desktop' requested by ':1.4' (uid=1000 pid=1377 comm="waybar")
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Activating service name='org.freedesktop.impl.portal.PermissionStore' requested by ':1.9' (uid=1000 pid=1455 comm="/usr/libexec/xdg-desktop-portal")
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.PermissionStore'
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Activating service name='org.freedesktop.portal.Documents' requested by ':1.9' (uid=1000 pid=1455 comm="/usr/libexec/xdg-desktop-portal")
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Successfully activated service 'org.freedesktop.portal.Documents'
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.gtk' requested by ':1.9' (uid=1000 pid=1455 comm="/usr/libexec/xdg-desktop-portal")
+
+(xdg-desktop-portal-gtk:1478): dbind-WARNING **: 12:19:43.089: AT-SPI: Error retrieving accessibility bus address: org.freedesktop.DBus.Error.ServiceUnknown: The name org.a11y.Bus was not provided by any .service files
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.desktop.gtk'
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.wlr' requested by ':1.9' (uid=1000 pid=1455 comm="/usr/libexec/xdg-desktop-portal")
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.desktop.wlr'
+dbus-daemon[1325]: [session uid=1000 pid=1325 pidfd=5] Successfully activated service 'org.freedesktop.portal.Desktop'
+warn: render.c:3079: compositor is not releasing buffers immediately; expect lower rendering performance
+warn: terminal.c:2015: slave exited with signal 1 (Hangup)
+=== /tmp/waybar.log ===
+
+(waybar:1377): dbind-WARNING **: 12:19:42.025: AT-SPI: Error retrieving accessibility bus address: org.freedesktop.DBus.Error.ServiceUnknown: The name org.a11y.Bus was not provided by any .service files
+[2026-11-24 12:19:42.476] [info] Using configuration file /home/kaadzos/.config/waybar/config
+[2026-11-24 12:19:43.929] [info] Using CSS file /home/kaadzos/.config/waybar/style.css
+[2026-11-24 12:19:44.684] [warning] no bluetooth controller found
+[2026-11-24 12:19:44.708] [warning] module backlight: Disabling module "backlight", No backlight found
+[2026-11-24 12:19:44.737] [warning] No batteries.
+[2026-11-24 12:19:45.089] [info] Bar configured (width: 1280, height: 34) for output: Virtual-1
+=== /tmp/mako.log ===
+=== /tmp/calamares-ci.log ===
+QFont::fromString: Invalid description '(empty)'
+QFont::fromString: Invalid description '(empty)'
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::SystemPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::ToolButtonPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::ButtonPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::CheckBoxPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::RadioButtonPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::HeaderPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::ItemViewPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::MessageBoxLabelPelette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::TabBarPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::LabelPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::GroupBoxPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::MenuPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::MenuBarPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::TextEditPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::TextEditPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::TextLineEditPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::ToolTipPalette
+virtual QVariant Qt6CTPlatformTheme::themeHint(QPlatformTheme::ThemeHint) const
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::SystemPalette
+=== memory ===
+               total        used        free      shared  buff/cache   available
+Mem:            3913         496        3080          46         597        3417
+Swap:           1956           0        1956
+=== swaps ===
+Filename				Type		Size		Used		Priority
+/dev/zram0                              partition	2003908		0		100
+=== zram ===
+NAME       ALGORITHM DISKSIZE DATA COMPR TOTAL STREAMS MOUNTPOINT
+/dev/zram0 zstd          1.9G   4K   59B   20K       2 [SWAP]
+=== vm tuning ===
+swappiness=180 page-cluster=0
+=== boot timing ===
+Startup finished in 13.967s (kernel) + 44.552s (userspace) = 58.519s 
+graphical.target reached after 44.546s in userspace.
+KAADZOS_IDLE_RAM used=496 total=3913 zram_devices=1 zram_size_kb=2003908
+KAADZOS_DIAG_END
+KAADZOS_INSTALLER_WINDOW
+KAADZOS_CI_STEP welcome
+KAADZOS_CI_CLICK x=1190 y=782
+KAADZOS_CI_STEP locale
+KAADZOS_CI_CLICK x=1190 y=782
+KAADZOS_CI_STEP keyboard
+KAADZOS_CI_CLICK x=1190 y=782
+KAADZOS_CI_STEP partition
+KAADZOS_CI_CLICK x=1190 y=782
+KAADZOS_CI_STEP users
+KAADZOS_CI_CLICK x=1190 y=782
+KAADZOS_CI_STEP summary
+KAADZOS_CI_CLICK x=1190 y=782
+KAADZOS_INSTALL_EXEC_BEGIN
+KAADZOS_INSTALL_EXIT rc=0
+KAADZOS_CI_LOG_BEGIN
+QFont::fromString: Invalid description '(empty)'
+QFont::fromString: Invalid description '(empty)'
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::SystemPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::ToolButtonPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::ButtonPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::CheckBoxPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::RadioButtonPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::HeaderPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::ItemViewPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::MessageBoxLabelPelette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::TabBarPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::LabelPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::GroupBoxPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::MenuPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::MenuBarPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::TextEditPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::TextEditPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::TextLineEditPalette
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::ToolTipPalette
+virtual QVariant Qt6CTPlatformTheme::themeHint(QPlatformTheme::ThemeHint) const
+virtual const QPalette* Qt6CTPlatformTheme::palette(QPlatformTheme::Palette) const QPlatformTheme::SystemPalette
+Authorization required, but no authorization protocol specified
+
+Cannot open display ":0"
+chcon: failed to get security context of '/': No data available
+chcon: failed to get security context of '/boot/efi': No such file or directory
+chcon: failed to get security context of '/dev': No data available
+chcon: failed to get security context of '/dev/pts': Operation not supported
+chcon: failed to get security context of '/proc': Operation not supported
+chcon: failed to get security context of '/run': No data available
+chcon: failed to get security context of '/run/udev': No data available
+chcon: failed to get security context of '/sys': No data available
+chcon: failed to get security context of '/sys/firmware/efi/efivars': Operation not supported
+/usr/lib/x86_64-linux-gnu/calamares/modules/bootloader/main.py:392: SyntaxWarning: invalid escape sequence '\$'
+  prefix, generator_name = re.match("(.*)\${([^}]*)}$", name).groups()
+KAADZOS_CI_LOG_END
+[ 1146.733892] reboot: Power down
